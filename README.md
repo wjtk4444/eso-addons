@@ -6,6 +6,8 @@ Open addon directory to see it's readme file.
 
 - Install using [Minion](https://www.minion.gg/). Addon names are the same as subdirectory names in this repository.
 
-- Download this repository as a zip archive. Extract addons (directories with addon names) to your `C:/users/<your username>/Documents/Elder Scrolls Online/live/AddOns/` directory. If the directory does not exist, create it.
+- Download this repository as a zip archive. Extract addons (directories with addon names) to your \
+`C:/users/<your username>/Documents/Elder Scrolls Online/live/AddOns/` \
+directory. If the directory does not exist, create it.
 
 
