@@ -10,12 +10,6 @@ Teleport is a general purpose teleportation addon. It's main aim is to make tele
 
 Note that when you're not teleporting to a player or his house, you need to have the destination discovered on current character. Game won't allow you to travel to unknown wayshrine or dungeon.
 
-## Installation (choose one method)
-
-- Extract archive contents of __Teleport.zip__ to your `Documents/Elder Scrolls Online/live/AddOns/` directory. If the directory does not exist, create it.
-
-- Install using [Minion](https://www.minion.gg/)
-
 ## Dependencies
 
 - None
