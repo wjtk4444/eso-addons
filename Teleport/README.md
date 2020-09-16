@@ -166,7 +166,7 @@ Technically, users could add their own aliases for new dungeons, ie.
 
 `/tp addAlias ct CastleThorn`
 
-but some features such as dungeon difficulty changing, or aliases being case insensitive won't work. Also, if ZOS decides to bless us with a fourth arena, teleporting to it won't work at all unless someone adds it to the list in `Dungeons.lua`. If you're really that interested in _why_, go ahead and check the commends in `Dungeons.lua` file. Enjoy your brain smoothening experience provided to you by Zenimax™.
+but some features such as dungeon difficulty changing, or aliases being case insensitive won't work. Also, if ZOS decides to bless us with a fourth arena, teleporting to it won't work at all unless someone adds it to the list in `Dungeons.lua`. If you're really that interested in _why_, go ahead and check the comments in `Dungeons.lua` file. Enjoy your brain smoothening experience provided to you by Zenimax™.
 
 > Any further instructions?
 
