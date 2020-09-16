@@ -22,12 +22,12 @@ function Wayshrines:portToWayshrine(name)
 
     local nodeIndex, nodeName = Wayshrines:findWayshrine(name)
     if nodeIndex == nil then
-        dbg("Failed to port to " .. name .. ": No such wayshrine found.")
+        dbg("Failed to teleport to " .. name .. ": No such wayshrine found.")
         return false
     end
 	
 	if not Nodes:isKnown(nodeIndex) then
-		info("Failed to port to " .. nodeName .. ": Wayshrine not unlocked.")
+		info("Failed to teleport to " .. nodeName .. ": Wayshrine not unlocked.")
         return true
 	end
 

@@ -21,7 +21,7 @@ function Houses:portToHouse(name)
 
     local nodeIndex, nodeName = _findHouse(name)
     if not nodeIndex then
-        dbg("Failed to port to " .. name .. ": No such house.")
+        dbg("Failed to teleport to " .. name .. ": No such house.")
         return false
     end
 
@@ -29,7 +29,7 @@ function Houses:portToHouse(name)
     local _, _, _, _, unlocked, _, _, _, _, _ = GetCollectibleInfo(collectibleId)
 
     if not unlocked then
-        info("Failed to port to " .. nodeName .. ": House not owned.")
+        info("Failed to teleport to " .. nodeName .. ": House not owned.")
         return true
     end
     
@@ -49,7 +49,7 @@ function Houses:portToPlayersHouse(name, house)
     else
         player = Players:findPlayerByName(name, true)
         if not player then
-            info("Failed to port to " .. name .. "'s " .. house .. ": Player not found.")
+            info("Failed to teleport to " .. name .. "'s " .. house .. ": Player not found.")
             return true
         end
     end
@@ -62,7 +62,7 @@ function Houses:portToPlayersHouse(name, house)
 
     local nodeIndex, nodeName = _findHouse(house)
     if not nodeIndex then
-        info("Failed to port to " .. player.displayName .. "'s " .. house .. ": No such house.")
+        info("Failed to teleport to " .. player.displayName .. "'s " .. house .. ": No such house.")
         return false
     end
 

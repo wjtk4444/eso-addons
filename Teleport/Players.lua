@@ -130,7 +130,7 @@ end
 
 function Players:portToLeader()
     if not IsPlayerInGroup(GetDisplayName()) then 
-        info("Failed to port to group leader: Not in a group.")
+        info("Failed to teleport to group leader: Not in a group.")
         return
     end    
 

@@ -86,7 +86,7 @@ function Dungeons:portToDungeon(name, aliasOnly)
 
     local nodeIndex, nodeName, alias = _findDungeon(name)
     if nodeIndex == nil then
-        dbg("Failed to port to " .. name .. ": No such dungeon/trial/arena found.")
+        dbg("Failed to teleport to " .. name .. ": No such dungeon/trial/arena found.")
         return false
     end
     
@@ -128,7 +128,7 @@ function Dungeons:portToDungeon(name, aliasOnly)
     end
 	
 	if not Nodes:isKnown(nodeIndex) then
-		info("Failed to port to " .. nodeName .. ": Dungeon not unlocked.")
+		info("Failed to teleport to " .. nodeName .. ": Dungeon not unlocked.")
         return true
 	end
 

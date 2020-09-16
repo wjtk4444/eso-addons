@@ -69,13 +69,13 @@ function Zones:portToZone(name)
         
     local zone = Zones:findZone(name)
     if not zone then
-        dbg("Failed to port to " .. name .. ": No such zone found.")
+        dbg("Failed to teleport to " .. name .. ": No such zone found.")
         return false
     end
         
     local player = Players:findPlayerByZone(zone)
     if not player then
-        info("Failed to port to " .. zone .. ": No party members/friends/guildies in that zone.")
+        info("Failed to teleport to " .. zone .. ": No party members/friends/guildies in that zone.")
         return true
     end
     

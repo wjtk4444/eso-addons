@@ -63,7 +63,7 @@ local function _playerHelper(name)
     else
         player = Players:findPlayerByName(name)
         if not player then
-            info("Failed to port to " .. name .. ": Player not found.")
+            info("Failed to teleport to " .. name .. ": Player not found.")
             return true
         end
 
@@ -89,7 +89,7 @@ local function tp(name)
     if Houses    :portToHouse    (name) then return end
     if Dungeons  :portToDungeon  (name, false) then return end -- all matches
 
-    info("Failed to port to " .. name .. ": No dungeon/zone/wayshrine/house found")
+    info("Failed to teleport to " .. name .. ": No dungeon/zone/wayshrine/house found")
 end
 
 SLASH_COMMANDS['/tp'] = tp
