@@ -170,7 +170,7 @@ but some features such as dungeon difficulty changing, or aliases being case ins
 
 > Any further instructions?
 
-Nope, if you can't figure out the correct syntax by just looking at the code - just leave the maintenance of this addon to someone else.
+`README.md` is generated automatically from `readme-template.md` and `Aliases.lua`. Just call `make` after doing any changes to `readme-template.md` or `Aliases.lua` and don't edit `README.md` by hand.
 
 ## List of aliases:
 
