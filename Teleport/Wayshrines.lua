@@ -31,7 +31,7 @@ function Wayshrines:portToWayshrine(name)
         return true
 	end
 
-    info("Porting to wayshrine: " .. nodeName .. " (cost: " .. tostring(GetRecallCost(nodeIndex)) .. "g)")
+    info("Teleporting to wayshrine: " .. nodeName .. " (cost: " .. tostring(GetRecallCost(nodeIndex)) .. "g)")
     FastTravelToNode(nodeIndex)
     return true
 end

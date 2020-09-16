@@ -122,7 +122,7 @@ function Dungeons:portToDungeon(name, aliasOnly)
 
     local player = Players:findPlayerByDungeon(nodeName, vet)
     if player then
-        dbg("Porting to dungeon: " .. nodeName .. " (" .. player.displayName ..  ")")
+        dbg("Teleporting to dungeon: " .. nodeName .. " (" .. player.displayName ..  ")")
         Players:portToPlayer(player)
         return true
     end
@@ -132,7 +132,7 @@ function Dungeons:portToDungeon(name, aliasOnly)
         return true
 	end
 
-    info("Porting to dungeon: " .. nodeName .. " (cost: " .. tostring(GetRecallCost(nodeIndex)) .. "g)")
+    info("Teleporting to dungeon: " .. nodeName .. " (cost: " .. tostring(GetRecallCost(nodeIndex)) .. "g)")
     FastTravelToNode(nodeIndex)
     return true
 end

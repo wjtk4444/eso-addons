@@ -124,7 +124,7 @@ function Players:portToPlayer(player)
         JumpToGuildMember(player.displayName)
     end
 
-    info("Porting to " .. player.displayName .. " in " .. player.zoneName)
+    info("Teleporting to " .. player.displayName .. " in " .. player.zoneName)
     return true
 end
 
@@ -138,6 +138,6 @@ function Players:portToLeader()
     local displayName = GetUnitDisplayName(groupUnitTag)
     local zoneName = GetUnitZone(groupUnitTag)
 
-    info("Porting to group leader " .. displayName .. " in " .. zoneName)
+    info("Teleporting to group leader " .. displayName .. " in " .. zoneName)
     JumpToGroupLeader() 
 end

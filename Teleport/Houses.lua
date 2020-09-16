@@ -33,7 +33,7 @@ function Houses:portToHouse(name)
         return true
     end
     
-    info("Porting to house: " .. nodeName)
+    info("Teleporting to house: " .. nodeName)
     FastTravelToNode(nodeIndex)
     return true
 end
@@ -55,7 +55,7 @@ function Houses:portToPlayersHouse(name, house)
     end
 
     if house == 'primary' or house == 'main' then
-        info("Porting to " .. player.displayName .. "'s primary residence")
+        info("Teleporting to " .. player.displayName .. "'s primary residence")
         JumpToHouse(player.displayName)
         return true
     end
@@ -66,7 +66,7 @@ function Houses:portToPlayersHouse(name, house)
         return false
     end
 
-    info("Porting to " .. player.displayName .. "'s " .. nodeName)
+    info("Teleporting to " .. player.displayName .. "'s " .. nodeName)
     JumpToSpecificHouse(player.displayName, GetFastTravelNodeHouseId(nodeIndex))
     return true
 end
