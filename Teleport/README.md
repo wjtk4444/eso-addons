@@ -1,6 +1,6 @@
 # Teleport
 
-Teleport is a general purpose teleportation addon. It's main aim is to make teleportation a quick and pleasant experience, very different to what game offers - minutes, if not _seconds (!!!)_ of looking trough menus, icons and lists. Ugh. The only extra feature it offers over in-game menus is teleporting to a specific house of any player. I took some ideas from [BeamMeUp](https://www.esoui.com/downloads/info2143-BeamMeUp-TeleporterFastTravel.html) as well from [Travelleer](https://www.esoui.com/downloads/info1744-Traveller-FastTravelRedesigned.html), you may want to check them out before deciding on what to use. **Teleport** is not supposed to replace any of the addons mentioned above, it just takes a different approach to mostly the same problem (ok now that I look at **Traveler**'s readme it seems painfully similar, sorry not sorry).
+**Teleport** is a general purpose teleportation addon. It's main aim is to make teleportation a quick and pleasant experience, very different to what game offers - minutes, if not _seconds (!!!)_ of looking trough menus, icons and lists. Ugh. The only extra feature it offers over in-game menus is teleporting to a specific house of any player. I took some ideas from [BeamMeUp](https://www.esoui.com/downloads/info2143-BeamMeUp-TeleporterFastTravel.html) as well from [Travelleer](https://www.esoui.com/downloads/info1744-Traveller-FastTravelRedesigned.html), you may want to check them out before deciding on what to use. **Teleport** is not supposed to replace any of the addons mentioned above, it just takes a different approach to mostly the same problem (ok now that I look at **Traveler**'s readme it seems painfully similar, sorry not sorry).
 
 ## Features
 - Teleporting to zones for free (using party members / friends / guildies quick and)
@@ -55,7 +55,7 @@ The order was chosen in a way that should generate the least amount of conflicts
 
 ### Known bugs
 
-Once in a blue moon you will get a "**No suitable location to jump to**" message. It may happen when the player you're attempting to teleport to changed zones and is currently in the loading screen limbo, but the game still thinks that he's in the previous location (outdated cache). There is currently no plan of fixing or working around it. Just wait ~1s and try again.
+Once in a blue moon you will get a "**No suitable location to jump to**" (or something similar, can't really reproduce it on demand) message. It may happen when the player you're attempting to teleport to changed zones and is currently in the loading screen limbo, but the game still thinks that he's in the previous location (outdated cache). There is currently no plan of fixing or working around it. Just wait ~1s and try again.
 
 ### Teleporting to zones
 
