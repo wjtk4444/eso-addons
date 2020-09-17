@@ -3,12 +3,6 @@ Teleport = { }
 Teleport.info =           function(msg) CHAT_SYSTEM:AddMessage("[Teleport]: "        .. msg) end
 Teleport.dbg  = false and function(msg) CHAT_SYSTEM:AddMessage("[Teleport][DEBUG]: " .. msg) end or function() end
 
-local Aliases    = Teleport.Aliases
-local Dungeons   = Teleport.Dungeons
-local Helpers    = Teleport.Healpers
-local Players    = Teleport.Players
-local Wayshrines = Teleport.Wayshrines
-
 local info = Teleport.info
 local dbg  = Teleport.dbg
 
@@ -59,37 +53,41 @@ end
 --------------------------------------------------------------------------------
 
 local function _playerHelper(name)
-    local player, house = Helpers:splitInTwo(name, ' ')
+    local player, house = Teleport.Helpers:splitInTwo(name, ' ')
     if player and house then
-        return Houses:teleportToPlayersHouse(player, house)
+        return Teleport.Houses:teleportToPlayersHouse(player, house)
     else
-        player = Players:findPlayerByName(name)
+        player = Teleport.Players:findPlayerByName(name)
         if not player then
             info("Failed to teleport to " .. name .. ": Player not found.")
             return true
         end
 
-        return Players:teleportToPlayer(player) 
+        return Teleport.Players:teleportToPlayer(player) 
     end
 end
 
 local function tp(name)
-    name = Aliases:expand(name)
-    if Helpers:startsWith(name, '@') then return _playerHelper(name) end
+    name = Teleport.Aliases:expand(name)
+    if Teleport.Helpers:startsWith(name, '@') then return _playerHelper(name) end
 
     if name == 'help'     then return _printHelp()           end
     if name == 'examples' then return _printExamples()       end
-    if name == 'lstAlias' then return Aliases:listAliases()  end
-    if name == 'leader'   then return Players:teleportToLeader() end
+    if name == 'lstAlias' then return Teleport.Aliases:listAliases()  end
+    if name == 'leader'   then return Teleport.Players:teleportToLeader() end
 
-    if Helpers:startsWith(name, 'addAlias ') then return Aliases:addAlias   (string.sub(name, #'addAlias ' + 1)) end
-    if Helpers:startsWith(name, 'delAlias ') then return Aliases:removeAlias(string.sub(name, #'delAlias ' + 1)) end
+    if Teleport.Helpers:startsWith(name, 'addAlias ') then 
+        return Teleport.Aliases:addAlias   (string.sub(name, #'addAlias ' + 1)) 
+    end
+    if Teleport.Helpers:startsWith(name, 'delAlias ') then 
+        return Teleport.Aliases:removeAlias(string.sub(name, #'delAlias ' + 1)) 
+    end
 
-    if Dungeons  :teleportToDungeon  (name, true)  then return end -- alias only matches
-    if Zones     :teleportToZone     (name) then return end
-    if Wayshrines:teleportToWayshrine(name) then return end
-    if Houses    :teleportToHouse    (name) then return end
-    if Dungeons  :teleportToDungeon  (name, false) then return end -- all matches
+    if Teleport.Dungeons  :teleportToDungeon  (name, true)  then return end -- alias only matches
+    if Teleport.Zones     :teleportToZone     (name) then return end
+    if Teleport.Wayshrines:teleportToWayshrine(name) then return end
+    if Teleport.Houses    :teleportToHouse    (name) then return end
+    if Teleport.Dungeons  :teleportToDungeon  (name, false) then return end -- all matches
 
     info("Failed to teleport to " .. name .. ": No dungeon/zone/wayshrine/house found")
 end
@@ -99,6 +97,6 @@ SLASH_COMMANDS['/tp'] = tp
 EVENT_MANAGER:RegisterForEvent('Teleport', EVENT_ADD_ON_LOADED, function() 
         EVENT_MANAGER:UnregisterForEvent('Teleport', EVENT_ADD_ON_LOADED)
         local SAVED_VARS = ZO_SavedVars:NewAccountWide('TeleportAliases', 1, nil, { ALIASES = { } })
-        Aliases:setSavedVars(SAVED_VARS.ALIASES)
+        Teleport.Aliases:setSavedVars(SAVED_VARS.ALIASES)
     end)
 

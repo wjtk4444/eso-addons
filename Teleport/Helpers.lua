@@ -1,10 +1,8 @@
 Teleport.Helpers = { }
 
-local Helpers = Teleport.Helpers
-
 local info = Teleport.info
 
-function Helpers:checkIsEmptyAndPrintHelp(name)
+function Teleport.Helpers:checkIsEmptyAndPrintHelp(name)
     if not name or name == '' then
         info("No input specified, see `/tp help` for help")
         return true
@@ -13,29 +11,29 @@ function Helpers:checkIsEmptyAndPrintHelp(name)
     return false
 end
 
-function Helpers:startsWith(str, start)
+function Teleport.Helpers:startsWith(str, start)
     return string.sub(str, 1, #start) == start
 end
 
-function Helpers:endsWith(str, ending)
+function Teleport.Helpers:endsWith(str, ending)
     return string.sub(str, -#ending) == ending
 end
 
-function Helpers:startsWithCaseInsensitive(str, start)
-    return Helpers:startsWith(string.lower(str), string.lower(start))
+function Teleport.Helpers:startsWithCaseInsensitive(str, start)
+    return Teleport.Helpers:startsWith(string.lower(str), string.lower(start))
 end
 
-function Helpers:splitInTwo(input, separator)
+function Teleport.Helpers:splitInTwo(input, separator)
     local position = string.find(input, separator, 1, true)
     if not position then return nil end
     return string.sub(input, 1, position - 1), string.sub(input, position + 1)
 end
 
-function Helpers:findByCaseInsensitiveValuePrefix(map, prefix)
+function Teleport.Helpers:findByCaseInsensitiveValuePrefix(map, prefix)
     local matches = {}
 
     for key, value in pairs(map) do
-        if Helpers:startsWithCaseInsensitive(value, prefix) then
+        if Teleport.Helpers:startsWithCaseInsensitive(value, prefix) then
             table.insert(matches, {key, value})
         end
     end
@@ -46,7 +44,7 @@ function Helpers:findByCaseInsensitiveValuePrefix(map, prefix)
     return matches[1][1], matches[1][2]
 end
 
-function Helpers:findByValue(map, val)
+function Teleport.Helpers:findByValue(map, val)
     for key, value in pairs(map) do
         if value == val then
             return key, value
@@ -54,7 +52,7 @@ function Helpers:findByValue(map, val)
     end
 end
 
-function Helpers:getSortedKeys(dictionary)
+function Teleport.Helpers:getSortedKeys(dictionary)
     local keys = { }
     for key in pairs(dictionary) do
         table.insert(keys, key)

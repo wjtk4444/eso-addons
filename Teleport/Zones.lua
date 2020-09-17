@@ -1,8 +1,5 @@
 Teleport.Zones = { }
 
-local Players = Teleport.Players
-local Zones   = Teleport.Zones
-
 local info = Teleport.info
 local dbg  = Teleport.dbg
 
@@ -60,9 +57,9 @@ local ZONES = {
     
 -------------------------------------------------------------------------------    
 
-function Zones:findZone(prefix)
+function Teleport.Zones:findZone(prefix)
     for zone, _ in pairs(ZONES) do
-        if Helpers:startsWithCaseInsensitive(zone, prefix) then
+        if Teleport.Helpers:startsWithCaseInsensitive(zone, prefix) then
             return zone
         end
     end
@@ -70,21 +67,21 @@ function Zones:findZone(prefix)
     return nil
 end
 
-function Zones:teleportToZone(name)
+function Teleport.Zones:teleportToZone(name)
     if checkIsEmptyAndPrintHelp(name) then return true end
         
-    local zone = Zones:findZone(name)
+    local zone = Teleport.Zones:findZone(name)
     if not zone then
         dbg("Failed to teleport to " .. name .. ": No such zone found.")
         return false
     end
         
-    local player = Players:findPlayerByZone(zone)
+    local player = Teleport.Players:findPlayerByZone(zone)
     if not player then
         info("Failed to teleport to " .. zone .. ": No party members/friends/guildies in that zone.")
         return true
     end
     
-    return Players:teleportToPlayer(player)
+    return Teleport.Players:teleportToPlayer(player)
 end
 

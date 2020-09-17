@@ -1,9 +1,5 @@
 Teleport.Houses = { }
 
-local Houses  = Teleport.Houses
-local Nodes   = Teleport.Nodes
-local Players = Teleport.Players
-
 local info = Teleport.info
 local dbg  = Teleport.dbg
 
@@ -11,20 +7,20 @@ local _houses = nil
 local function _findHouse(prefix)
     if _houses == nil then
         _houses = {}
-        for nodeIndex, name in pairs(Nodes:getNodes()) do
-            if Nodes:getPointOfInterestType(nodeIndex) == POI_TYPE_HOUSE then
+        for nodeIndex, name in pairs(Teleport.Nodes:getNodes()) do
+            if Teleport.Nodes:getPointOfInterestType(nodeIndex) == POI_TYPE_HOUSE then
                 _houses[nodeIndex] = name
             end
         end
     end
 
-    return Helpers:findByCaseInsensitiveValuePrefix(_houses, prefix)
+    return Teleport.Helpers:findByCaseInsensitiveValuePrefix(_houses, prefix)
 end
 
 -------------------------------------------------------------------------------    
 
-function Houses:teleportToHouse(name)
-    if Helpers:checkIsEmptyAndPrintHelp(name) then return true end
+function Teleport.Houses:teleportToHouse(name)
+    if Teleport.Helpers:checkIsEmptyAndPrintHelp(name) then return true end
 
     local nodeIndex, nodeName = _findHouse(name)
     if not nodeIndex then
@@ -45,16 +41,16 @@ function Houses:teleportToHouse(name)
     return true
 end
 
-function Houses:teleportToPlayersHouse(name, house)
+function Teleport.Houses:teleportToPlayersHouse(name, house)
     local player = nil
     local exact = false
-    if Helpers:startsWith(name, '@@') then
+    if Teleport.Helpers:startsWith(name, '@@') then
         -- assume a correct exact name if @@ was used
         player = { }
         player.displayName = string.sub(name, 2)
         exact = true
     else
-        player = Players:findPlayerByName(name, true)
+        player = Teleport.Players:findPlayerByName(name, true)
         if not player then
             info("Failed to teleport to " .. name .. "'s " .. house .. ": Player not found.")
             return true

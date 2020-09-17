@@ -1,9 +1,7 @@
 Teleport.Nodes = {}
 
-local Nodes = Teleport.Nodes
-
 local _nodes = nil
-function Nodes:getNodes()
+function Teleport.Nodes:getNodes()
     if _nodes == nil then
         _nodes = {}
         for nodeIndex = 1, GetNumFastTravelNodes() do
@@ -15,11 +13,11 @@ function Nodes:getNodes()
     return _nodes
 end
     
-function Nodes:isKnown(nodeIndex)
+function Teleport.Nodes:isKnown(nodeIndex)
     return GetFastTravelNodeInfo(nodeIndex)
 end
 
-function Nodes:getPointOfInterestType(nodeIndex)
+function Teleport.Nodes:getPointOfInterestType(nodeIndex)
     local _, _, _, _, _, _, poiType = GetFastTravelNodeInfo(nodeIndex)
     return poiType
 end

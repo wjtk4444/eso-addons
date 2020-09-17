@@ -77,7 +77,7 @@ end
 
 -------------------------------------------------------------------------------
 
-function Players:findPlayerByZone(zone)
+function Teleport.Players:findPlayerByZone(zone)
     for _, fun in ipairs({ _getGroupMembers, _getFriends, _getGuildies }) do
         for key, player in pairs(fun()) do
             if _teleportabilityCheck(player) and player.zoneName == zone then
@@ -89,7 +89,7 @@ function Players:findPlayerByZone(zone)
     return nil
 end
 
-function Players:findPlayerByDungeon(dungeon, vet)
+function Teleport.Players:findPlayerByDungeon(dungeon, vet)
     for key, player in pairs(_getGroupMembers()) do
         if _teleportabilityCheck(player) and player.zoneName == dungeon
         --and (vet == nil or IsUnitUsingVeteranDifficulty(player.displayName) == vet)
@@ -101,11 +101,11 @@ function Players:findPlayerByDungeon(dungeon, vet)
     return nil
 end
 
-function Players:findPlayerByName(prefix, allowUnreachable)
+function Teleport.Players:findPlayerByName(prefix, allowUnreachable)
     for _, fun in ipairs({ _getGroupMembers, _getFriends, _getGuildies }) do
         for key, player in pairs(fun()) do
             if allowUnreachable or _teleportabilityCheck(player) then
-                if Helpers:startsWithCaseInsensitive(player.displayName, prefix) then 
+                if Teleport.Helpers:startsWithCaseInsensitive(player.displayName, prefix) then 
                     return player 
                 end
             end
@@ -115,7 +115,7 @@ function Players:findPlayerByName(prefix, allowUnreachable)
     return nil
 end
 
-function Players:teleportToPlayer(player)
+function Teleport.Players:teleportToPlayer(player)
     if not CanJumpToPlayerInZone(player.zoneId) then
         info(player.displayName .. " is currently in a location that prevents teleporting (" .. player.zoneName .. ")")
         return false
@@ -133,7 +133,7 @@ function Players:teleportToPlayer(player)
     return true
 end
 
-function Players:teleportToLeader()
+function Teleport.Players:teleportToLeader()
     if not IsPlayerInGroup(GetDisplayName()) then 
         info("Failed to teleport to group leader: Not in a group.")
         return

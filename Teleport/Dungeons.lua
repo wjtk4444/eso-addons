@@ -1,14 +1,10 @@
 Teleport.Dungeons = { }
 
-local Dungeons = Teleport.Dungeons
-local Nodes    = Teleport.Nodes
-local Helpers  = Teleport.Helpers
-
 local info = Teleport.info
 local dbg  = Teleport.dbg
 
 -- arenas
--- https://en.uesp.net/wiki/Online:Arenas
+-- https://en.uesp.net/wiki/Teleport:Arenas
 -- ' Arena' name suffix collides with other names
 -- each returns different POI type
 -- MA  == POI_TYPE_OBJECTIVE
@@ -25,12 +21,12 @@ local _dungeons = nil
 local function _findDungeon(prefix)
     if _dungeons == nil then
         _dungeons = {}
-        for nodeIndex, name in pairs(Nodes:getNodes()) do
+        for nodeIndex, name in pairs(Teleport.Nodes:getNodes()) do
             -- this one doesnt seem to work for trials, FFS ZOS
-            --if Nodes:getPointOfInterestType(nodeIndex) == POI_TYPE_GROUP_DUNGEON then
-            if Helpers:startsWith(name, 'Dungeon: ') then
+            --if Teleport.Nodes:getPointOfInterestType(nodeIndex) == POI_TYPE_GROUP_DUNGEON then
+            if Teleport.Helpers:startsWith(name, 'Teleport.Dungeon: ') then
                 _dungeons[nodeIndex] = string.sub(name, 10)
-            elseif Helpers:startsWith(name, 'Trial: ') then
+            elseif Teleport.Helpers:startsWith(name, 'Teleport.Trial: ') then
                 _dungeons[nodeIndex] = string.sub(name, 8)
             elseif ARENAS[name] then
                 _dungeons[nodeIndex] = name
@@ -38,12 +34,12 @@ local function _findDungeon(prefix)
         end
     end
     
-    local fromAlias = Aliases:getDungeonByAlias(string.lower(prefix))
+    local fromAlias = Teleport.Aliases:getDungeonByAlias(string.lower(prefix))
     local nodeIndex, nodeName
     if fromAlias then 
-        nodeIndex, nodeName = Helpers:findByValue(_dungeons, fromAlias)
+        nodeIndex, nodeName = Teleport.Helpers:findByValue(_dungeons, fromAlias)
     else
-        nodeIndex, nodeName = Helpers:findByCaseInsensitiveValuePrefix(_dungeons, prefix)
+        nodeIndex, nodeName = Teleport.Helpers:findByCaseInsensitiveValuePrefix(_dungeons, prefix)
     end
 
     return nodeIndex, nodeName, fromAlias and true or false
@@ -88,8 +84,8 @@ end
 
 -------------------------------------------------------------------------------    
 
-function Dungeons:teleportToDungeon(name, aliasOnly)
-    if Helpers:checkIsEmptyAndPrintHelp(name) then return true end
+function Teleport.Dungeons:teleportToDungeon(name, aliasOnly)
+    if Teleport.Helpers:checkIsEmptyAndPrintHelp(name) then return true end
 
     local nodeIndex, nodeName, alias = _findDungeon(name)
     if nodeIndex == nil then
@@ -127,14 +123,14 @@ function Dungeons:teleportToDungeon(name, aliasOnly)
         return false
     end
 
-    local player = Players:findPlayerByDungeon(nodeName, vet)
+    local player = Teleport.Players:findPlayerByDungeon(nodeName, vet)
     if player then
         dbg("Teleporting to dungeon: " .. nodeName .. " (" .. player.displayName ..  ")")
-        Players:teleportToPlayer(player)
+        Teleport.Players:teleportToPlayer(player)
         return true
     end
 	
-	if not Nodes:isKnown(nodeIndex) then
+	if not Teleport.Nodes:isKnown(nodeIndex) then
 		info("Failed to teleport to " .. nodeName .. ": Dungeon not unlocked.")
         return true
 	end

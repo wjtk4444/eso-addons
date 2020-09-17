@@ -1,8 +1,5 @@
 Teleport.Aliases = { }
 
-local Aliases = Teleport.Aliases
-local Helpers = Teleport.Helpers
-
 local info = Teleport.info
 
 local PREDEFINED_ALIASES = {
@@ -98,7 +95,7 @@ local PREDEFINED_ALIASES = {
 -------------------------------------------------------------------------------    
 
 local _ALIASES = nil
-function Aliases:getDungeonByAlias(alias)
+function Teleport.Aliases:getDungeonByAlias(alias)
     if _ALIASES == nil then
         _ALIASES = {}
         for alias, name in pairs(PREDEFINED_ALIASES) do
@@ -112,18 +109,18 @@ function Aliases:getDungeonByAlias(alias)
 end
 
 local USER_ALIASES = nil
-function Aliases:setSavedVars(savedVars)
+function Teleport.Aliases:setSavedVars(savedVars)
     USER_ALIASES = savedVars
 end
 
 -------------------------------------------------------------------------------    
 
-function Aliases:expand(alias)
+function Teleport.Aliases:expand(alias)
     return USER_ALIASES[alias] and USER_ALIASES[alias] or alias
 end
 
-function Aliases:listAliases()
-    local keys = Helpers:getSortedKeys(USER_ALIASES)
+function Teleport.Aliases:listAliases()
+    local keys = Teleport.Helpers:getSortedKeys(USER_ALIASES)
     if #keys == 0 then
         info("No aliases registered")
         return
@@ -134,10 +131,10 @@ function Aliases:listAliases()
     end
 end
 
-function Aliases:addAlias(alias)
-    local alias, expansion = Helpers:splitInTwo(alias, ' ')
-    if Helpers:checkIsEmptyAndPrintHelp(alias)     then return end
-    if Helpers:checkIsEmptyAndPrintHelp(expansion) then return end
+function Teleport.Aliases:addAlias(alias)
+    local alias, expansion = Teleport.Helpers:splitInTwo(alias, ' ')
+    if Teleport.Helpers:checkIsEmptyAndPrintHelp(alias)     then return end
+    if Teleport.Helpers:checkIsEmptyAndPrintHelp(expansion) then return end
     if USER_ALIASES[alias] then
         info("alias " .. alias .. " already exists")
         info(alias .. ' => ' .. USER_ALIASES[alias])
@@ -149,8 +146,8 @@ function Aliases:addAlias(alias)
     info(alias .. ' => ' .. expansion)
 end
 
-function Aliases:removeAlias(alias)
-    if Helpers:checkIsEmptyAndPrintHelp(alias) then return end
+function Teleport.Aliases:removeAlias(alias)
+    if Teleport.Helpers:checkIsEmptyAndPrintHelp(alias) then return end
     if not USER_ALIASES[alias] then
         info("alias " .. alias .. " doesn't exist")
         return
