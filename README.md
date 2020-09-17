@@ -6,8 +6,8 @@ Open addon directory to see it's readme file.
 
 - Install using [Minion](https://www.minion.gg/). Addon names are the same as subdirectory names in this repository.
 
-- Download this repository as a zip archive. Extract addons (directories with addon names) to your \
+- Download addons from [esoui website](https://www.esoui.com/) and extract them to your \
 `C:/users/<your username>/Documents/Elder Scrolls Online/live/AddOns/` \
-directory. If the directory does not exist, create it.
+directory. If the directory does not exist, create it. Technically, you can also download them from here, but I cannot guarantee that the last commit on master branch will always work as expected (or at all). Maybe I'll add working zips to github releases at some point, maybe I will not.
 
 
