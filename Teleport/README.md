@@ -37,8 +37,6 @@ will expand to their first match, **Deshaan**. However, the two examples present
 - `/tp Deshaan`
 - `/tp  Deshaan`
 
-Technically, `/tp  ` as well as `/tp addAlias     ` are perfectly valid commands. The first will attempt to teleport you to a location which name starts with a space and the other will alias a single space to a double space.
-
 Possible matches of every category are sorted (separately per category) in alphabetical order, which means that ie. **Vivec** will match **Vivec's Antlers** instead of **Vivec City** which most of the players would expect. If you want to travel specifically to **Vivec City** wayshrine, you need to either specify at least "**Vivec **" (note the extra space at the end), or create an alias. Aliases will be explained in a later part of this manual.
 
 The input matching order is:
@@ -55,7 +53,7 @@ The order was chosen in a way that should generate the least amount of conflicts
 
 ### Known bugs
 
-Once in a blue moon you will get a "**No suitable location to jump to**" (or something similar, can't really reproduce it on demand) message. It may happen when the player you're attempting to teleport to changed zones and is currently in the loading screen limbo, but the game still thinks that he's in the previous location (outdated cache). There is currently no plan of fixing or working around it. Just wait ~1s and try again.
+Once in a blue moon you will get a "**No suitable location found to jump to**" message. It may happen when the player you're attempting to teleport to changed zones and is currently in the loading screen limbo, but the game still thinks that he's in the previous location (outdated cache). There is currently no plan of fixing or working around it. Just wait ~1s and try again.
 
 ### Teleporting to zones
 
