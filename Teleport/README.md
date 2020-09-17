@@ -2,6 +2,10 @@
 
 **Teleport** is a general purpose teleportation addon. It's main aim is to make teleportation a quick and pleasant experience, very different to what game offers - minutes, if not _seconds (!!!)_ of looking trough menus, icons and lists. Ugh. The only extra feature it offers over in-game menus is teleporting to a specific house of any player. I took some ideas from [BeamMeUp](https://www.esoui.com/downloads/info2143-BeamMeUp-TeleporterFastTravel.html) as well from [Travelleer](https://www.esoui.com/downloads/info1744-Traveller-FastTravelRedesigned.html), you may want to check them out before deciding on what to use. **Teleport** is not supposed to replace any of the addons mentioned above, it just takes a different approach to mostly the same problem (ok now that I look at **Traveler**'s readme it seems painfully similar, sorry not sorry).
 
+## Changelog
+
+See [changelog.md](changelog.md)
+
 ## Features
 - Teleporting to zones for free (using party members / friends / guildies)
 - Teleporting to houses, other player's houses included (free, duh)
