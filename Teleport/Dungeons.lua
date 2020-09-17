@@ -1,4 +1,11 @@
-Dungeons = { }
+Teleport.Dungeons = { }
+
+local Dungeons = Teleport.Dungeons
+local Nodes    = Teleport.Nodes
+local Helpers  = Teleport.Helpers
+
+local info = Teleport.info
+local dbg  = Teleport.dbg
 
 -- arenas
 -- https://en.uesp.net/wiki/Online:Arenas
@@ -82,7 +89,7 @@ end
 -------------------------------------------------------------------------------    
 
 function Dungeons:portToDungeon(name, aliasOnly)
-    if checkIsEmptyAndPrintHelp(name) then return true end
+    if Helpers:checkIsEmptyAndPrintHelp(name) then return true end
 
     local nodeIndex, nodeName, alias = _findDungeon(name)
     if nodeIndex == nil then

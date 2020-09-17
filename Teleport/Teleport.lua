@@ -1,14 +1,16 @@
-info =           function(msg) CHAT_SYSTEM:AddMessage("[Teleport]: "        .. msg) end
-dbg  = false and function(msg) CHAT_SYSTEM:AddMessage("[Teleport][DEBUG]: " .. msg) end or function() end
+Teleport = { }
 
-function checkIsEmptyAndPrintHelp(name)
-    if not name or name == '' then
-        info("No input specified, see `/tp help` for help")
-        return true
-    end
-    
-    return false
-end
+Teleport.info =           function(msg) CHAT_SYSTEM:AddMessage("[Teleport]: "        .. msg) end
+Teleport.dbg  = false and function(msg) CHAT_SYSTEM:AddMessage("[Teleport][DEBUG]: " .. msg) end or function() end
+
+local Aliases    = Teleport.Aliases
+local Dungeons   = Teleport.Dungeons
+local Helpers    = Teleport.Healpers
+local Players    = Teleport.Players
+local Wayshrines = Teleport.Wayshrines
+
+local info = Teleport.info
+local dbg  = Teleport.dbg
 
 --------------------------------------------------------------------------------
 

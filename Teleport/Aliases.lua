@@ -1,4 +1,9 @@
-Aliases = { }
+Teleport.Aliases = { }
+
+local Aliases = Teleport.Aliases
+local Helpers = Teleport.Helpers
+
+local info = Teleport.info
 
 local PREDEFINED_ALIASES = {
         -- Trials https://en.uesp.net/wiki/Online:Trials

@@ -1,4 +1,9 @@
-Players = { }
+Teleport.Players = { }
+
+local Helpers = Teleport.Helpers
+local Players = Teleport.Players
+
+local info = Teleport.info
 
 local GROUP  = 1
 local FRIEND = 2

@@ -1,4 +1,11 @@
-Houses = { }
+Teleport.Houses = { }
+
+local Houses  = Teleport.Houses
+local Nodes   = Teleport.Nodes
+local Players = Teleport.Players
+
+local info = Teleport.info
+local dbg  = Teleport.dbg
 
 local _houses = nil
 local function _findHouse(prefix)
@@ -17,7 +24,7 @@ end
 -------------------------------------------------------------------------------    
 
 function Houses:portToHouse(name)
-    if checkIsEmptyAndPrintHelp(name) then return true end
+    if Helpers:checkIsEmptyAndPrintHelp(name) then return true end
 
     local nodeIndex, nodeName = _findHouse(name)
     if not nodeIndex then

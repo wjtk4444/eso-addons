@@ -1,4 +1,6 @@
-Nodes = {}
+Teleport.Nodes = {}
+
+local Nodes = Teleport.Nodes
 
 local _nodes = nil
 function Nodes:getNodes()

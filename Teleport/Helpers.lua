@@ -1,4 +1,17 @@
-Helpers = { }
+Teleport.Helpers = { }
+
+local Helpers = Teleport.Helpers
+
+local info = Teleport.info
+
+function Helpers:checkIsEmptyAndPrintHelp(name)
+    if not name or name == '' then
+        info("No input specified, see `/tp help` for help")
+        return true
+    end
+    
+    return false
+end
 
 function Helpers:startsWith(str, start)
     return string.sub(str, 1, #start) == start

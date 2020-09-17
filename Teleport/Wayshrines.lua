@@ -1,7 +1,12 @@
-Wayshrines = {}
+Teleport.Wayshrines = {}
+
+local Helpers    = Teleport.Helpers
+local Wayshrines = Teleport.Wayshrines
+
+local info = Teleport.info
+local dbg  = Teleport.dbg
 
 local _wayshrines = nil
-
 function Wayshrines:findWayshrine(prefix)
     if _wayshrines == nil then
         _wayshrines = {}

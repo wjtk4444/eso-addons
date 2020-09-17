@@ -1,4 +1,10 @@
-Zones = { }
+Teleport.Zones = { }
+
+local Players = Teleport.Players
+local Zones   = Teleport.Zones
+
+local info = Teleport.info
+local dbg  = Teleport.dbg
 
 -- similarly to arenas, there seems to be no separate POI type for those
 -- so lookup table is the only option
