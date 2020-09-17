@@ -24,9 +24,9 @@ local function _findDungeon(prefix)
         for nodeIndex, name in pairs(Teleport.Nodes:getNodes()) do
             -- this one doesnt seem to work for trials, FFS ZOS
             --if Teleport.Nodes:getPointOfInterestType(nodeIndex) == POI_TYPE_GROUP_DUNGEON then
-            if Teleport.Helpers:startsWith(name, 'Teleport.Dungeon: ') then
+            if Teleport.Helpers:startsWith(name, 'Dungeon: ') then
                 _dungeons[nodeIndex] = string.sub(name, 10)
-            elseif Teleport.Helpers:startsWith(name, 'Teleport.Trial: ') then
+            elseif Teleport.Helpers:startsWith(name, 'Trial: ') then
                 _dungeons[nodeIndex] = string.sub(name, 8)
             elseif ARENAS[name] then
                 _dungeons[nodeIndex] = name
