@@ -68,7 +68,7 @@ function Teleport.Zones:findZone(prefix)
 end
 
 function Teleport.Zones:teleportToZone(name)
-    if checkIsEmptyAndPrintHelp(name) then return true end
+    if Teleport.Helpers:checkIsEmptyAndPrintHelp(name) then return true end
         
     local zone = Teleport.Zones:findZone(name)
     if not zone then

@@ -20,7 +20,7 @@ end
 -------------------------------------------------------------------------------    
 
 function Teleport.Wayshrines:teleportToWayshrine(name)
-    if checkIsEmptyAndPrintHelp(name) then return true end
+    if Teleport.Helpers:checkIsEmptyAndPrintHelp(name) then return true end
 
     local nodeIndex, nodeName = Teleport.Wayshrines:findWayshrine(name)
     if nodeIndex == nil then
