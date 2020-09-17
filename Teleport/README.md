@@ -4,7 +4,7 @@
 
 ## Changelog
 
-See [changelog.md](changelog.md)
+See [changelog.md on github (or addon folder)](https://github.com/wjtk4444/eso-addons/blob/master/Teleport/changelog.md)
 
 ## Features
 - Teleporting to zones for free (using party members / friends / guildies)
