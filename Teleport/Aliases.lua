@@ -136,6 +136,8 @@ end
 
 function Aliases:addAlias(alias)
     local alias, expansion = Helpers:splitInTwo(alias, ' ')
+    if Helpers:checkIsEmptyAndPrintHelp(alias)     then return end
+    if Helpers:checkIsEmptyAndPrintHelp(expansion) then return end
     if USER_ALIASES[alias] then
         info("alias " .. alias .. " already exists")
         info(alias .. ' => ' .. USER_ALIASES[alias])
@@ -148,6 +150,7 @@ function Aliases:addAlias(alias)
 end
 
 function Aliases:removeAlias(alias)
+    if Helpers:checkIsEmptyAndPrintHelp(alias) then return end
     if not USER_ALIASES[alias] then
         info("alias " .. alias .. " doesn't exist")
         return
