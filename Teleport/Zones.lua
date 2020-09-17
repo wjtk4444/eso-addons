@@ -70,7 +70,7 @@ function Zones:findZone(prefix)
     return nil
 end
 
-function Zones:portToZone(name)
+function Zones:teleportToZone(name)
     if checkIsEmptyAndPrintHelp(name) then return true end
         
     local zone = Zones:findZone(name)
@@ -85,6 +85,6 @@ function Zones:portToZone(name)
         return true
     end
     
-    return Players:portToPlayer(player)
+    return Players:teleportToPlayer(player)
 end
 

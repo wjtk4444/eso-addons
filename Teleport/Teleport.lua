@@ -61,7 +61,7 @@ end
 local function _playerHelper(name)
     local player, house = Helpers:splitInTwo(name, ' ')
     if player and house then
-        return Houses:portToPlayersHouse(player, house)
+        return Houses:teleportToPlayersHouse(player, house)
     else
         player = Players:findPlayerByName(name)
         if not player then
@@ -69,7 +69,7 @@ local function _playerHelper(name)
             return true
         end
 
-        return Players:portToPlayer(player) 
+        return Players:teleportToPlayer(player) 
     end
 end
 
@@ -80,16 +80,16 @@ local function tp(name)
     if name == 'help'     then return _printHelp()           end
     if name == 'examples' then return _printExamples()       end
     if name == 'lstAlias' then return Aliases:listAliases()  end
-    if name == 'leader'   then return Players:portToLeader() end
+    if name == 'leader'   then return Players:teleportToLeader() end
 
     if Helpers:startsWith(name, 'addAlias ') then return Aliases:addAlias   (string.sub(name, #'addAlias ' + 1)) end
     if Helpers:startsWith(name, 'delAlias ') then return Aliases:removeAlias(string.sub(name, #'delAlias ' + 1)) end
 
-    if Dungeons  :portToDungeon  (name, true)  then return end -- alias only matches
-    if Zones     :portToZone     (name) then return end
-    if Wayshrines:portToWayshrine(name) then return end
-    if Houses    :portToHouse    (name) then return end
-    if Dungeons  :portToDungeon  (name, false) then return end -- all matches
+    if Dungeons  :teleportToDungeon  (name, true)  then return end -- alias only matches
+    if Zones     :teleportToZone     (name) then return end
+    if Wayshrines:teleportToWayshrine(name) then return end
+    if Houses    :teleportToHouse    (name) then return end
+    if Dungeons  :teleportToDungeon  (name, false) then return end -- all matches
 
     info("Failed to teleport to " .. name .. ": No dungeon/zone/wayshrine/house found")
 end

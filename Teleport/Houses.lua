@@ -23,7 +23,7 @@ end
 
 -------------------------------------------------------------------------------    
 
-function Houses:portToHouse(name)
+function Houses:teleportToHouse(name)
     if Helpers:checkIsEmptyAndPrintHelp(name) then return true end
 
     local nodeIndex, nodeName = _findHouse(name)
@@ -45,7 +45,7 @@ function Houses:portToHouse(name)
     return true
 end
 
-function Houses:portToPlayersHouse(name, house)
+function Houses:teleportToPlayersHouse(name, house)
     local player = nil
     local exact = false
     if Helpers:startsWith(name, '@@') then

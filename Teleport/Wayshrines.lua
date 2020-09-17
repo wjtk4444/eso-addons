@@ -22,7 +22,7 @@ end
 
 -------------------------------------------------------------------------------    
 
-function Wayshrines:portToWayshrine(name)
+function Wayshrines:teleportToWayshrine(name)
     if checkIsEmptyAndPrintHelp(name) then return true end
 
     local nodeIndex, nodeName = Wayshrines:findWayshrine(name)

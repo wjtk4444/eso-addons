@@ -115,7 +115,7 @@ function Players:findPlayerByName(prefix, allowUnreachable)
     return nil
 end
 
-function Players:portToPlayer(player)
+function Players:teleportToPlayer(player)
     if not CanJumpToPlayerInZone(player.zoneId) then
         info(player.displayName .. " is currently in a location that prevents teleporting (" .. player.zoneName .. ")")
         return false
@@ -133,7 +133,7 @@ function Players:portToPlayer(player)
     return true
 end
 
-function Players:portToLeader()
+function Players:teleportToLeader()
     if not IsPlayerInGroup(GetDisplayName()) then 
         info("Failed to teleport to group leader: Not in a group.")
         return

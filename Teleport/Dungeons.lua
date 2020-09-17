@@ -88,7 +88,7 @@ end
 
 -------------------------------------------------------------------------------    
 
-function Dungeons:portToDungeon(name, aliasOnly)
+function Dungeons:teleportToDungeon(name, aliasOnly)
     if Helpers:checkIsEmptyAndPrintHelp(name) then return true end
 
     local nodeIndex, nodeName, alias = _findDungeon(name)
@@ -130,7 +130,7 @@ function Dungeons:portToDungeon(name, aliasOnly)
     local player = Players:findPlayerByDungeon(nodeName, vet)
     if player then
         dbg("Teleporting to dungeon: " .. nodeName .. " (" .. player.displayName ..  ")")
-        Players:portToPlayer(player)
+        Players:teleportToPlayer(player)
         return true
     end
 	
