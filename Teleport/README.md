@@ -198,6 +198,12 @@ but some features such as dungeon difficulty changing, or aliases being case ins
 |dsa  | Dragonstar Arena|
 |bp   | Blackrose Prison|
 |brp  | Blackrose Prison|
+|va   | Vateshran Hollows|
+|vh   | Vateshran Hollows|
+|vha  | Vateshran Hollows|
+|vsa  | Vateshran Hollows|
+|vsh  | Vateshran Hollows|
+|vsha | Vateshran Hollows|
 
 ### Base Game Dungeons: ([https://en.uesp.net/wiki/Online:Group_Dungeons](https://en.uesp.net/wiki/Online:Group_Dungeons))
 |alias|full name|

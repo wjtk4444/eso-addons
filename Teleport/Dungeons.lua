@@ -12,9 +12,10 @@ local dbg  = Teleport.dbg
 -- DSA == POI_TYPE_STANDARD
 -- there seems to be no other way than a lookup table with hardcoded names
 local ARENAS = {
-        ['Blackrose Prison'] = true,
-        ['Dragonstar Arena'] = true,
-        ['Maelstrom Arena' ] = true,
+        ['Blackrose Prison' ] = true,
+        ['Dragonstar Arena' ] = true,
+        ['Maelstrom Arena'  ] = true,
+        ['Vateshran Hollows'] = true,
     }
 
 local _dungeons = nil

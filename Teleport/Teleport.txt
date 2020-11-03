@@ -7,8 +7,8 @@
 ## Title: Teleport
 ## Description: Teleport - General purpose command line teleporting tool
 ## Author: Schrodi
-## Version: 1.0.2
-## APIVersion: 100032
+## Version: 1.0.3
+## APIVersion: 100033
 ## SavedVariables: TeleportAliases
 
 Teleport.txt

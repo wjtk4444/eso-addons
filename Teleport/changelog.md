@@ -1,3 +1,6 @@
+### 1.0.3
+- updated for Markarth
+
 ### 1.0.2
 - fixed pre-defined aliases being broken for trials and dungeons (thanks to my trigger-happy regex replace)
 
