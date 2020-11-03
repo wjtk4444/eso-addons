@@ -68,7 +68,7 @@ local function _playerHelper(name)
 end
 
 local function tp(name)
-    name = Teleport.Aliases:expand(name)
+    name = Teleport.Aliases:expandUserDefined(name)
     if Teleport.Helpers:startsWith(name, '@') then return _playerHelper(name) end
 
     if name == 'help'     then return _printHelp()           end

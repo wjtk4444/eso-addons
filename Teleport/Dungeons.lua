@@ -19,7 +19,7 @@ local ARENAS = {
     }
 
 local _dungeons = nil
-local function _findDungeon(prefix)
+local function _findDungeon(prefix, aliasOnly)
     if _dungeons == nil then
         _dungeons = {}
         for nodeIndex, name in pairs(Teleport.Nodes:getNodes()) do
@@ -35,20 +35,24 @@ local function _findDungeon(prefix)
         end
     end
     
-    local fromAlias = Teleport.Aliases:getDungeonByAlias(string.lower(prefix))
+    local fullName, difficulty = Teleport.Aliases:getDungeonByAlias(prefix)
+    if aliasOnly and not fullName then
+        return nil, nil, nil
+    end
+
     local nodeIndex, nodeName
-    if fromAlias then 
-        nodeIndex, nodeName = Teleport.Helpers:findByValue(_dungeons, fromAlias)
+    if fullName then 
+        nodeIndex, nodeName = Teleport.Helpers:findByValue(_dungeons, fullName)
     else
         nodeIndex, nodeName = Teleport.Helpers:findByCaseInsensitiveValuePrefix(_dungeons, prefix)
     end
 
-    return nodeIndex, nodeName, fromAlias and true or false
+    return nodeIndex, nodeName, difficulty
 end
 
--- calling SetVeteranDifficulty seems to change the return value of IsUnitUsingVeteranDifficulty
--- however, it doesn't actually do anything
--- getting and setting dungeon mode via API when not in a grup is BROKEN, period
+-- calling SetVeteranDifficulty **WHEN NOT IN A GROUP** of 2 or more seems to change the return 
+-- value of IsUnitUsingVeteranDifficulty API call, but it doesn't actually do anything in-game,
+-- difficulty still has to be updated manually
 local function _changeDungeonDifficulty(veteran)
     local vet = nil
     if IsPlayerInGroup(GetDisplayName()) then
@@ -76,55 +80,43 @@ local function _changeDungeonDifficulty(veteran)
     return false, false
 end
 
-local function _getDifficultyFromAlias(alias)
-    local difficulty = string.lower(string.sub(alias, 1, 1))
-    if difficulty == 'v' then return true end
-    if difficulty == 'n' then return false end
-    return nil
-end
-
 -------------------------------------------------------------------------------    
 
 function Teleport.Dungeons:teleportToDungeon(name, aliasOnly)
     if Teleport.Helpers:checkIsEmptyAndPrintHelp(name) then return true end
 
-    local nodeIndex, nodeName, alias = _findDungeon(name)
+    local nodeIndex, nodeName, vet = _findDungeon(name, aliasOnly)
     if nodeIndex == nil then
-        dbg("Failed to teleport to " .. name .. ": No such dungeon/trial/arena found.")
+        dbg("Failed to teleport to " .. name .. ": No such dungeon/trial/arena found." 
+            .. (aliasOnly and "(aliasOnly)" or ""))
         return false
     end
     
-    local vet = nil
-    if alias == true then
-        vet = _getDifficultyFromAlias(name)
-        if vet ~= nil then
-            local success, change, errCode = _changeDungeonDifficulty(vet)
-            if errCode == 1 then
-                info("Changing dungeon difficulty when not in a group is currently broken.")
-                info("Change the difficulty manually and try again without the n/v prefix.")
-                info("Sorry for the inconvienience, but it's up to ZOS to fix their API.")
+    if vet ~= nil then
+        local success, change, errCode = _changeDungeonDifficulty(vet)
+        if errCode == 1 then
+            info("Changing dungeon difficulty when not in a group is currently broken.")
+            info("Change the difficulty manually and try again without the n/v prefix.")
+            info("Sorry for the inconvienience, but it's up to ZOS to fix their API.")
+            return true
+        elseif errCode == 2 then
+            info("One or more group members are currently in a dungeon/trial/arena. Difficulty change aborted.")
+            info("You can still change it manually, but know that they will be kicked from the instance.")
+            return true
+        elseif errCode == 3 then
+            info("You need to be a group leader to change dungeon difficulty")
+            return true
+        else
+            if change then
+                info('Changing dungeon difficulty to ' .. (vet and 'veteran' or 'normal'))
+            elseif not success then
+                info('Failed to change dungeon difficulty to ' .. (vet and 'veteran' or 'normal'))
                 return true
-            elseif errCode == 2 then
-                info("One or more group members are currently in a dungeon/trial/arena. Difficulty change aborted.")
-                info("You can still change it manually, but know that they will be kicked from the instance.")
-                return true
-            elseif errCode == 3 then
-                info("You need to be a group leader to change dungeon difficulty")
-                return true
-            else
-                if change then
-                    info('Changing dungeon difficulty to ' .. (vet and 'veteran' or 'normal'))
-                elseif not success then
-                    info('Failed to change dungeon difficulty to ' .. (vet and 'veteran' or 'normal'))
-                    return true
-                end
             end
         end
-    elseif aliasOnly then
-        return false
     end
 
-    local player = Teleport.Players:findPlayerByDungeon(nodeName, vet)
+    local player = Teleport.Players:findPlayerByDungeon(nodeName)
     if player then
         dbg("Teleporting to dungeon: " .. nodeName .. " (" .. player.displayName ..  ")")
         Teleport.Players:teleportToPlayer(player)

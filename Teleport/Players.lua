@@ -39,6 +39,7 @@ local function _getGroupMembers()
             player.status = (IsUnitOnline(groupUnitTag) and 1 or 4)
             player.zoneName = GetUnitZone(groupUnitTag)
             player.zoneId = GetZoneId(GetUnitZoneIndex(groupUnitTag))
+            player.gropUnitTag = groupUnitTag
             if _sanityCheck(player) then table.insert(players, player) end
         end    
     end
@@ -89,10 +90,10 @@ function Teleport.Players:findPlayerByZone(zone)
     return nil
 end
 
-function Teleport.Players:findPlayerByDungeon(dungeon, vet)
+function Teleport.Players:findPlayerByDungeon(dungeon)
     for key, player in pairs(_getGroupMembers()) do
         if _teleportabilityCheck(player) and player.zoneName == dungeon
-        --and (vet == nil or IsUnitUsingVeteranDifficulty(player.displayName) == vet)
+        -- and IsGroupMemberInSameInstanceAsPlayer(player.groupUnitTag))
         then
             return player 
         end

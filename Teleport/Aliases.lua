@@ -99,18 +99,15 @@ local PREDEFINED_ALIASES = {
 
 -------------------------------------------------------------------------------    
 
-local _ALIASES = nil
 function Teleport.Aliases:getDungeonByAlias(alias)
-    if _ALIASES == nil then
-        _ALIASES = {}
-        for alias, name in pairs(PREDEFINED_ALIASES) do
-            _ALIASES[alias] = name
-            _ALIASES['n' .. alias] = name
-            _ALIASES['v' .. alias] = name
-        end
+    alias = string.lower(alias)
+    local expansion = PREDEFINED_ALIASES[alias]
+    if expansion then return expansion, nil end
+    local difficulty = string.sub(alias, 1, 1)
+    if difficulty == 'n' or difficulty == 'v' then
+        return PREDEFINED_ALIASES[string.sub(alias, 2)], difficulty == 'v'
     end
-
-    return _ALIASES[alias]
+    return nil, nil
 end
 
 local USER_ALIASES = nil
@@ -120,8 +117,8 @@ end
 
 -------------------------------------------------------------------------------    
 
-function Teleport.Aliases:expand(alias)
-    return USER_ALIASES[alias] and USER_ALIASES[alias] or alias
+function Teleport.Aliases:expandUserDefined(alias)
+    return USER_ALIASES[alias] or alias
 end
 
 function Teleport.Aliases:listAliases()

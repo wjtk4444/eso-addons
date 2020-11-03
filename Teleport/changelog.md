@@ -1,3 +1,6 @@
+### 1.0.4
+- fixed an issue with aliases starting with 'n' or 'v' (Vateshran Hollows)
+
 ### 1.0.3
 - updated for Markarth
 
