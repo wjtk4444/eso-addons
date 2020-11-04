@@ -51,6 +51,7 @@ local ZONES = {
         ["Gold Coast"       ] = true,
         ["Hew's Bane"       ] = true,
         ["Murkmire"         ] = true,
+        ["The Reach"        ] = true,
         ["Southern Elsweyr" ] = true,
         ["Wrothgar"         ] = true,
     }
