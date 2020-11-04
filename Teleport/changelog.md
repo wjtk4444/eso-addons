@@ -1,3 +1,6 @@
+### 1.0.5
+- added "The Reach" to the zones list
+
 ### 1.0.4
 - fixed an issue with aliases starting with 'n' or 'v' (Vateshran Hollows)
 
