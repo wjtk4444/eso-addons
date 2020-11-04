@@ -163,12 +163,7 @@ As stated above, you can alias every possible command. Some examples below:
 
 In the case of me ceasing to keep this addon up to date, here's all you need to know:
 
-Pre-defined aliases in `Aliases.lua` and a hardcoded list of arenas in `Dungeons.lua` are required for everything to work as expected. If a new dungeon / arena / trial is added, someone has to update the aliases and the list of arenas.
-Technically, users could add their own aliases for new dungeons, ie.
-
-`/tp addAlias ct CastleThorn`
-
-but some features such as dungeon difficulty changing, or aliases being case insensitive won't work. Also, if ZOS decides to bless us with a fourth arena, teleporting to it won't work at all unless someone adds it to the list in `Dungeons.lua`. If you're really that interested in _why_, go ahead and check the comments in `Dungeons.lua` file. Enjoy your brain smoothening experience provided to you by Zenimax™.
+Pre-defined aliases in `Aliases.lua` and a hardcoded list of arenas in `Dungeons.lua` and zones in `Zones.lua` are required for everything to work as expected. If a new dungeon / arena / trial / zone is added, someone has to update the aliases and the list of arenas and zones.
 
 > Any further instructions?
 
