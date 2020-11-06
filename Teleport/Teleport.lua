@@ -31,7 +31,8 @@ local function _printHelp()
     info("/tp leader             (same as built-in /jumptoleader, just shorter and aliasable")
     info("User defined aliases are case sensitive")
     info("Call '/tp examples' to see command examples")
-    info("There's a HTML manual in addon folder, check it out for more detais")
+    info("There's a README.md file in addon folder, check it out for more detais")
+    info("Online version of the manual available at https://github.com/wjtk4444/eso-addons/tree/master/Teleport")
 end
 
 local function _printExamples()
