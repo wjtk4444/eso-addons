@@ -1,3 +1,7 @@
+### 1.0.6
+- improved dungeon difficulty changing for groups
+- fixed dungeon difficulty changing when not in a group
+
 ### 1.0.5
 - added "The Reach" to the zones list
 

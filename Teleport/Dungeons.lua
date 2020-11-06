@@ -23,7 +23,7 @@ local function _findDungeon(prefix, aliasOnly)
     if _dungeons == nil then
         _dungeons = {}
         for nodeIndex, name in pairs(Teleport.Nodes:getNodes()) do
-            -- this one doesnt seem to work for trials, FFS ZOS
+            -- this one doesnt seem to work for trials
             --if Teleport.Nodes:getPointOfInterestType(nodeIndex) == POI_TYPE_GROUP_DUNGEON then
             if Teleport.Helpers:startsWith(name, 'Dungeon: ') then
                 _dungeons[nodeIndex] = string.sub(name, 10)
@@ -50,34 +50,56 @@ local function _findDungeon(prefix, aliasOnly)
     return nodeIndex, nodeName, difficulty
 end
 
--- calling SetVeteranDifficulty **WHEN NOT IN A GROUP** of 2 or more seems to change the return 
--- value of IsUnitUsingVeteranDifficulty API call, but it doesn't actually do anything in-game,
--- difficulty still has to be updated manually
-local function _changeDungeonDifficulty(veteran)
-    local vet = nil
-    if IsPlayerInGroup(GetDisplayName()) then
-        vet = IsGroupUsingVeteranDifficulty()
-    else
-        return false, false, 1
-        --vet = IsUnitUsingVeteranDifficulty('player') 
+local function _teleportToDungeonAux(nodeIndex, nodeName)
+    local player = Teleport.Players:findPlayerByDungeon(nodeName)
+    if player then
+        dbg("Teleporting to dungeon: " .. nodeName .. " (" .. player.displayName ..  ")")
+        Teleport.Players:teleportToPlayer(player)
+        return
+    end
+    
+    if not Teleport.Nodes:isKnown(nodeIndex) then
+        info("Failed to teleport to " .. nodeName .. ": Dungeon not unlocked.")
+        return
     end
 
-    if vet == veteran then
-        return true, false
-    end
+    info("Teleporting to dungeon: " .. nodeName .. " (cost: " .. tostring(GetRecallCost(nodeIndex)) .. "g)")
+    FastTravelToNode(nodeIndex)
+end
 
-    if not IsUnitGroupLeader('player') then
-        return true, false, 3
-    end
+local function _getVeteranDifficulty()
+    return IsUnitGrouped("player") and IsGroupUsingVeteranDifficulty() or IsUnitUsingVeteranDifficulty("player")
+end
 
-    if CanPlayerChangeGroupDifficulty() then
-        if IsAnyGroupMemberInDungeon() then
-            return true, false, 2
+local function _setVeteranDifficultyAndExecute(veteranDifficulty, onChanged)
+	local grouped = IsUnitGrouped("player")
+	if grouped and not IsUnitGroupLeader("player") then
+		info("You have to be your group's leader to change dungeond difficulty.")
+        return
+	end
+		
+	if IsUnitInDungeon("player") then
+		info("You cannot change dungeon difficulty in a dungeon.")
+        return
+	end
+
+    if grouped and IsAnyGroupMemberInDungeon() then
+		info("One or more group members are currently in a dungeon. Changing dungeon difficulty will kick them out.")
+		info("If You wish to continue anyway, change dungeon difficulty manually in the group menu.")
+        return
+    end
+	
+    local unregisterAndExecute = function()
+            EVENT_MANAGER:UnregisterForEvent("TpSetVetDiff", EVENT_VETERAN_DIFFICULTY_CHANGED)
+            EVENT_MANAGER:UnregisterForEvent("TpSetVetDiff", EVENT_GEOUP_VETERAN_DIFFICULTY_CHANGED)
+            onChanged()
         end
-        SetVeteranDifficulty(veteran)
-        return true, true
-    end
-    return false, false
+
+	EVENT_MANAGER:RegisterForEvent("TpSetVetDiff", EVENT_VETERAN_DIFFICULTY_CHANGED, unregisterAndExecute)
+	EVENT_MANAGER:RegisterForEvent("TpSetVetDiff", EVENT_GEOUP_VETERAN_DIFFICULTY_CHANGED, unregisterAndExecute)
+
+    info('Changing dungeon difficulty to ' .. (veteranDifficulty and 'veteran' or 'normal'))
+	SetVeteranDifficulty(veteranDifficulty)
 end
 
 -------------------------------------------------------------------------------    
@@ -85,50 +107,19 @@ end
 function Teleport.Dungeons:teleportToDungeon(name, aliasOnly)
     if Teleport.Helpers:checkIsEmptyAndPrintHelp(name) then return true end
 
-    local nodeIndex, nodeName, vet = _findDungeon(name, aliasOnly)
+    local nodeIndex, nodeName, veteranDifficulty = _findDungeon(name, aliasOnly)
     if nodeIndex == nil then
         dbg("Failed to teleport to " .. name .. ": No such dungeon/trial/arena found." 
             .. (aliasOnly and "(aliasOnly)" or ""))
         return false
     end
     
-    if vet ~= nil then
-        local success, change, errCode = _changeDungeonDifficulty(vet)
-        if errCode == 1 then
-            info("Changing dungeon difficulty when not in a group is currently broken.")
-            info("Change the difficulty manually and try again without the n/v prefix.")
-            info("Sorry for the inconvienience, but it's up to ZOS to fix their API.")
-            return true
-        elseif errCode == 2 then
-            info("One or more group members are currently in a dungeon/trial/arena. Difficulty change aborted.")
-            info("You can still change it manually, but know that they will be kicked from the instance.")
-            return true
-        elseif errCode == 3 then
-            info("You need to be a group leader to change dungeon difficulty")
-            return true
-        else
-            if change then
-                info('Changing dungeon difficulty to ' .. (vet and 'veteran' or 'normal'))
-            elseif not success then
-                info('Failed to change dungeon difficulty to ' .. (vet and 'veteran' or 'normal'))
-                return true
-            end
-        end
-    end
-
-    local player = Teleport.Players:findPlayerByDungeon(nodeName)
-    if player then
-        dbg("Teleporting to dungeon: " .. nodeName .. " (" .. player.displayName ..  ")")
-        Teleport.Players:teleportToPlayer(player)
+    if veteranDifficulty == nil or veteranDifficulty == _getVeteranDifficulty() then
+        _teleportToDungeonAux(nodeIndex, nodeName)
         return true
     end
-	
-	if not Teleport.Nodes:isKnown(nodeIndex) then
-		info("Failed to teleport to " .. nodeName .. ": Dungeon not unlocked.")
-        return true
-	end
 
-    info("Teleporting to dungeon: " .. nodeName .. " (cost: " .. tostring(GetRecallCost(nodeIndex)) .. "g)")
-    FastTravelToNode(nodeIndex)
+    _setVeteranDifficultyAndExecute(veteranDifficulty, function() _teleportToDungeonAux(nodeIndex, nodeName) end)
     return true
 end
+

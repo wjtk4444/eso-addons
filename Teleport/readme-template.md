@@ -90,7 +90,11 @@ There is a list of predefined aliases available. You can view it at the end of t
 - `/tp FG1`
 - `/tp CoH2`
 
-Additionally, you can prepend all of the aliases with **n** or **v** (for normal and veteran). In that case addon will attempt changing dungeon difficulty for you and your group. Note that this is currently a little bit **bRoKEn**. You can thank ZOS for that, hopefully next game update will resolve it and I will finally be able to adjust this feature to work as initially intended. Basically, don't bother unless you're in group and you're a group leader. Also, note that changing difficulty when someone from the team is in arena/dungeon/trial will kick them. Again, blame ZOS, not me.
+Additionally, you can prepend all of the aliases with **n** or **v** (for normal and veteran). In that case addon will attempt changing dungeon difficulty for you and your group.
+
+- `/tp vHRC`
+- `/tp NDSA`
+- `/tp vcoh1`
 
 If for whatever reason you prefer using full(er?) name instead, you're welcome to do the usual `/tp <dungeon name prefix>`.
 
@@ -122,7 +126,7 @@ At this point, if your brain hasn't melted from reading this huge wall of text, 
 
 > `/tp @@prettylongnameXXX69240_GAMER_69420XXX Hakkvild's High Hall`
 
-> every time you want to visit your friends house. So simple, so elegant, I'm never using in-game menus again!
+> every time you want to visit your friends house. So simple, so elegant! I'm never using in-game menus again!
 
 First - you could probably just do `/tp @pretty hakk`, but if there are name conflicts or that player is not online and in your party / friends / guild, or you still consider it too much writing - there's aliases. 
 
@@ -163,11 +167,11 @@ As stated above, you can alias every possible command. Some examples below:
 
 In the case of me ceasing to keep this addon up to date, here's all you need to know:
 
-Pre-defined aliases in `Aliases.lua` and a hardcoded list of arenas in `Dungeons.lua` and zones in `Zones.lua` are required for everything to work as expected. If a new dungeon / arena / trial / zone is added, someone has to update the aliases and the list of arenas and zones.
+Pre-defined aliases in `Aliases.lua` as well as hardcoded lists of arenas (`Dungeons.lua`) and zones (`Zones.lua`) are required for everything to work as expected. If a new dungeon / arena / trial / zone is added, someone has to add new aliases and the lists.
 
 > Any further instructions?
 
-`README.md` is generated automatically from `readme-template.md` and `Aliases.lua`. Just call `make` after doing any changes to `readme-template.md` or `Aliases.lua` and don't edit `README.md` by hand.
+`README.md` is generated automatically from `readme-template.md` and `Aliases.lua`. Just call `make` after doing any changes to `readme-template.md` or `Aliases.lua`. **DO NOT edit `README.md` by hand!**
 
 ## List of aliases:
 
