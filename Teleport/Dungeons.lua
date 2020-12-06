@@ -68,18 +68,22 @@ local function _teleportToDungeonAux(nodeIndex, nodeName)
 end
 
 local function _getVeteranDifficulty()
-    return IsUnitGrouped("player") and IsGroupUsingVeteranDifficulty() or IsUnitUsingVeteranDifficulty("player")
+    if IsUnitGrouped("player") then
+        return IsGroupUsingVeteranDifficulty()
+    else
+        return IsUnitUsingVeteranDifficulty("player")
+    end
 end
 
 local function _setVeteranDifficultyAndExecute(veteranDifficulty, onChanged)
 	local grouped = IsUnitGrouped("player")
 	if grouped and not IsUnitGroupLeader("player") then
-		info("You have to be your group's leader to change dungeond difficulty.")
+		info("You have to be your group's leader to change dungeon difficulty.")
         return
 	end
 		
 	if IsUnitInDungeon("player") then
-		info("You cannot change dungeon difficulty in a dungeon.")
+		info("You cannot change dungeon difficulty while in a dungeon.")
         return
 	end
 
