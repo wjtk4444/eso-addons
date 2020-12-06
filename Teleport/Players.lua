@@ -18,6 +18,7 @@ end
 
 local function _teleportabilityCheck(player)
     return (true
+        and _sanityCheck(player)
         and player.status ~= 4
         and player.zoneName ~= nil 
         and player.zoneName ~= "" 
@@ -105,7 +106,7 @@ end
 function Teleport.Players:findPlayerByName(prefix, allowUnreachable)
     for _, fun in ipairs({ _getGroupMembers, _getFriends, _getGuildies }) do
         for key, player in pairs(fun()) do
-            if allowUnreachable or _teleportabilityCheck(player) then
+            if (allowUnreachable and _sanityCheck(player)) or _teleportabilityCheck(player) then
                 if Teleport.Helpers:startsWithCaseInsensitive(player.displayName, prefix) then 
                     return player 
                 end
