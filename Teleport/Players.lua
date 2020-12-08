@@ -79,10 +79,10 @@ end
 
 -------------------------------------------------------------------------------
 
-function Teleport.Players:findPlayerByZone(zone)
+function Teleport.Players:findPlayerByZoneId(zoneId)
     for _, fun in ipairs({ _getGroupMembers, _getFriends, _getGuildies }) do
         for key, player in pairs(fun()) do
-            if _teleportabilityCheck(player) and player.zoneName == zone then
+            if _teleportabilityCheck(player) and player.zoneId == zoneId then
                 return player 
             end
         end

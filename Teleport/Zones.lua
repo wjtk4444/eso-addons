@@ -6,80 +6,97 @@ local dbg  = Teleport.dbg
 -- similarly to arenas, there seems to be no separate POI type for those
 -- so lookup table is the only option
 -- https://en.uesp.net/wiki/Online:Zones#Overworld_Zones
+-- https://wiki.esoui.com/Zones
 local ZONES = {
         -- Aldmeri Dominion
-        ["Auridon"          ] = true,
-        ["Grahtwood"        ] = true,
-        ["Greenshade"       ] = true,
-        ["Khenarthi's Roost"] = true,
-        ["Malabal Tor"      ] = true,
-        ["Reaper's March"   ] = true,
+        ["Auridon"                     ] = 381,
+        ["Grahtwood"                   ] = 383,
+        ["Greenshade"                  ] = 108,
+        ["Khenarthi's Roost"           ] = 537,
+        ["Malabal Tor"                 ] = 58,
+        ["Reaper's March"              ] = 382,
 
         -- Daggerfall Covenant
-        ["Alik'r Desert"    ] = true,
-        ["Bangkorai"        ] = true,
-        ["Betnikh"          ] = true,
-        ["Glenumbra"        ] = true,
-        ["Rivenspire"       ] = true,
-        ["Stormhaven"       ] = true,
-        ["Stros M'Kai"      ] = true,
+        ["Alik'r Desert"               ] = 104,
+        ["Bangkorai"                   ] = 92,
+        ["Betnikh"                     ] = 535,
+        ["Glenumbra"                   ] = 3,
+        ["Rivenspire"                  ] = 20,
+        ["Stormhaven"                  ] = 19,
+        ["Stros M'Kai"                 ] = 534,
 
         -- Ebonheart Pact
-        ["Bal Foyen"        ] = true,
-        ["Bleakrock Isle"   ] = true,
-        ["Deshaan"          ] = true,
-        ["Eastmarch"        ] = true,
-        ["The Rift"         ] = true,
-        ["Shadowfen"        ] = true,
-        ["Stonefalls"       ] = true,
+        ["Bal Foyen"                   ] = 281,
+        ["Bleakrock Isle"              ] = 280,
+        ["Deshaan"                     ] = 57,
+        ["Eastmarch"                   ] = 101,
+        ["The Rift"                    ] = 103,
+        ["Shadowfen"                   ] = 117,
+        ["Stonefalls"                  ] = 41,
 
         -- Neutral and Disputed
-        ["Coldharbour"      ] = true,
-        ["Craglorn"         ] = true,
-        ["Cyrodiil"         ] = true,
+        ["Coldharbour"                 ] = 347,
+        ["Craglorn"                    ] = 888,
+        ["Cyrodiil"                    ] = 181,
 
         -- Chapter Zones
-        ["Artaeum"          ] = true,
-        ["Blackreach"       ] = true,
-        ["Northern Elsweyr" ] = true,
-        ["Summerset"        ] = true,
-        ["Vvardenfell"      ] = true,
-        ["Western Skyrim"   ] = true,
+        ["Artaeum"                     ] = 1027,
+        ["Blackreach: Greymoor Caverns"] = 1161,
+        ["Northern Elsweyr"            ] = 1068,
+        ["Summerset"                   ] = 1011,
+        ["Vvardenfell"                 ] = 849,
+        ["Western Skyrim"              ] = 1160,
 
         -- Story DLC Zones
-        ["Clockwork City"   ] = true,
-        ["Gold Coast"       ] = true,
-        ["Hew's Bane"       ] = true,
-        ["Murkmire"         ] = true,
-        ["The Reach"        ] = true,
-        ["Southern Elsweyr" ] = true,
-        ["Wrothgar"         ] = true,
+        ["Blackreach: Arkthzand Cavern"] = 1208,
+        ["Clockwork City"              ] = 980,
+        ["Gold Coast"                  ] = 823,
+        ["Hew's Bane"                  ] = 816,
+        ["Murkmire"                    ] = 726,
+        ["The Reach"                   ] = 1207,
+        ["Southern Elsweyr"            ] = 1133,
+        ["Wrothgar"                    ] = 684,
+    }
+
+local ZONE_ALIASES = {
+        ["Reach"                       ] = "The Reach",
+        ["Rift"                        ] = "The Rift",
+        ["Arkthzand Cavern"            ] = "Blackreach: Arkthzand Cavern",
+        ["Greymoor Caverns"            ] = "Blackreach: Greymoor Caverns",
+        ["Elsweyr"                     ] = "Northern Elsweyr",
+        ["Skyrim"                      ] = "Western Skyrim",
     }
     
 -------------------------------------------------------------------------------    
 
 function Teleport.Zones:findZone(prefix)
-    for zone, _ in pairs(ZONES) do
-        if Teleport.Helpers:startsWithCaseInsensitive(zone, prefix) then
-            return zone
+    for alias, zoneName in pairs(ZONE_ALIASES) do
+        if Teleport.Helpers:startsWithCaseInsensitive(alias, prefix) then
+            return zoneName, ZONES[zoneName]
+        end
+    end
+
+    for zoneName, zoneId in pairs(ZONES) do
+        if Teleport.Helpers:startsWithCaseInsensitive(zoneName, prefix) then
+            return zoneName, zoneId
         end
     end
     
-    return nil
+    return nil, nil
 end
 
-function Teleport.Zones:teleportToZone(name)
-    if Teleport.Helpers:checkIsEmptyAndPrintHelp(name) then return true end
+function Teleport.Zones:teleportToZone(prefix)
+    if Teleport.Helpers:checkIsEmptyAndPrintHelp(prefix) then return true end
         
-    local zone = Teleport.Zones:findZone(name)
-    if not zone then
-        dbg("Failed to teleport to " .. name .. ": No such zone found.")
+    local zoneName, zoneId = Teleport.Zones:findZone(prefix)
+    if not zoneName then
+        dbg("Failed to teleport to " .. prefix .. ": No such zone found.")
         return false
     end
         
-    local player = Teleport.Players:findPlayerByZone(zone)
+    local player = Teleport.Players:findPlayerByZoneId(zoneId)
     if not player then
-        info("Failed to teleport to " .. zone .. ": No party members/friends/guildies in that zone.")
+        info("Failed to teleport to " .. zoneName .. ": No party members/friends/guildies in that zone.")
         return true
     end
     
