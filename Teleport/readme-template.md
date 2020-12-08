@@ -167,7 +167,7 @@ As stated above, you can alias every possible command. Some examples below:
 
 In the case of me ceasing to keep this addon up to date, here's all you need to know:
 
-Pre-defined aliases in `Aliases.lua` as well as hardcoded lists of arenas (`Dungeons.lua`) and zones (`Zones.lua`) are required for everything to work as expected. If a new dungeon / arena / trial / zone is added, someone has to add new aliases and the lists.
+Pre-defined aliases in `Aliases.lua` as well as hardcoded list of zones (`Zones.lua`) are required for everything to work as expected. If a new dungeon / arena / trial / zone is added, someone has to add new aliases and the lists.
 
 > Any further instructions?
 
