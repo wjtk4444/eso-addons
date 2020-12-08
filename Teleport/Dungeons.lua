@@ -3,34 +3,33 @@ Teleport.Dungeons = { }
 local info = Teleport.info
 local dbg  = Teleport.dbg
 
--- arenas
--- https://en.uesp.net/wiki/Teleport:Arenas
--- ' Arena' name suffix collides with other names
--- each returns different POI type
--- MA  == POI_TYPE_OBJECTIVE
--- BRP == POI_TYPE_GROUP_DUNGEON
--- DSA == POI_TYPE_STANDARD
--- there seems to be no other way than a lookup table with hardcoded names
-local ARENAS = {
-        ['Blackrose Prison' ] = true,
-        ['Dragonstar Arena' ] = true,
-        ['Maelstrom Arena'  ] = true,
-        ['Vateshran Hollows'] = true,
-    }
+-- There seems to be no other way of telling if something is a 4-man dungeon
+-- (POI_TYPE_GROUP_DUNGEON includes those and Blackrose Prison)
+-- a trial or a solo/group arena (POI_TYPE seems to be almost random for those)
+-- so I'm using texture names instead to tell them apart from different 
+-- fast travel nodes. Better that than a hardcoded list of arenas, eh?
+local DUNGEON_TEXTURE_NAMES = {
+		['/esoui/art/icons/poi/poi_groupinstance_complete.dds']   = true, -- 4-man dungeon
+		['/esoui/art/icons/poi/poi_raiddungeon_complete.dds']     = true, -- trial
+		['/esoui/art/icons/poi/poi_solotrial_complete.dds']       = true, -- solo arena
+		['/esoui/art/icons/poi/poi_groupinstance_incomplete.dds'] = true, -- 4-man dungeon
+		['/esoui/art/icons/poi/poi_raiddungeon_incomplete.dds']   = true, -- trial
+		['/esoui/art/icons/poi/poi_solotrial_incomplete.dds']     = true, -- solo arena
+	}
 
 local _dungeons = nil
 local function _findDungeon(prefix, aliasOnly)
     if _dungeons == nil then
         _dungeons = {}
         for nodeIndex, name in pairs(Teleport.Nodes:getNodes()) do
-            -- this one doesnt seem to work for trials
-            --if Teleport.Nodes:getPointOfInterestType(nodeIndex) == POI_TYPE_GROUP_DUNGEON then
-            if Teleport.Helpers:startsWith(name, 'Dungeon: ') then
-                _dungeons[nodeIndex] = string.sub(name, 10)
-            elseif Teleport.Helpers:startsWith(name, 'Trial: ') then
-                _dungeons[nodeIndex] = string.sub(name, 8)
-            elseif ARENAS[name] then
-                _dungeons[nodeIndex] = name
+            if DUNGEON_TEXTURE_NAMES[Teleport.Nodes:getPointOfInterestTextureName(nodeIndex)] then
+                if Teleport.Helpers:startsWith(name, 'Dungeon: ') then
+                    _dungeons[nodeIndex] = string.sub(name, 10)
+                elseif Teleport.Helpers:startsWith(name, 'Trial: ') then
+                    _dungeons[nodeIndex] = string.sub(name, 8)
+                elseif ARENAS[name] then
+                    _dungeons[nodeIndex] = name
+                end
             end
         end
     end
