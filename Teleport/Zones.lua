@@ -42,7 +42,7 @@ local ZONES = {
         -- Chapter Zones
         ["Artaeum"                     ] = 1027,
         ["Blackreach: Greymoor Caverns"] = 1161,
-        ["Northern Elsweyr"            ] = 1068,
+        ["Northern Elsweyr"            ] = 1086,
         ["Summerset"                   ] = 1011,
         ["Vvardenfell"                 ] = 849,
         ["Western Skyrim"              ] = 1160,

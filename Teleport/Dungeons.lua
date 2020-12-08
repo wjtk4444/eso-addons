@@ -27,7 +27,7 @@ local function _findDungeon(prefix, aliasOnly)
                     _dungeons[nodeIndex] = string.sub(name, 10)
                 elseif Teleport.Helpers:startsWith(name, 'Trial: ') then
                     _dungeons[nodeIndex] = string.sub(name, 8)
-                elseif ARENAS[name] then
+                else
                     _dungeons[nodeIndex] = name
                 end
             end
