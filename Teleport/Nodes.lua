@@ -21,3 +21,8 @@ function Teleport.Nodes:getPointOfInterestType(nodeIndex)
     local _, _, _, _, _, _, poiType = GetFastTravelNodeInfo(nodeIndex)
     return poiType
 end
+
+function Teleport.Nodes:getPointOfInterestTextureName(nodeIndex)
+    local _, _, _, _, textureName = GetFastTravelNodeInfo(nodeIndex)
+    return textureName
+end
