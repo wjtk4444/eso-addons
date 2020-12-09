@@ -171,108 +171,117 @@ Pre-defined aliases in `Aliases.lua` as well as hardcoded lists of arenas (`Dung
 
 > Any further instructions?
 
-`README.md` is generated automatically from `readme-template.md` and `Aliases.lua`. Just call `make` after doing any changes to `readme-template.md` or `Aliases.lua`. **DO NOT edit `README.md` by hand!**
+`README.md` is updated automatically with new aliases from `Aliases.lua` file. Just call `make` after doing any changes to `Aliases.lua`.
 
-## List of aliases:
+<!--splitter-->
 
+### Zones: ([https://en.uesp.net/wiki/Online:Zones#Overworld_Zones](https://en.uesp.net/wiki/Online:Zones#Overworld_Zones))
+|alias|full name|
+|-|-|
+|Reach                        | The Reach |
+|Rift                         | The Rift |
+|Arkthzand Cavern             | Blackreach: Arkthzand Cavern |
+|Greymoor Caverns             | Blackreach: Greymoor Caverns |
+|Elsweyr                      | Northern Elsweyr |
+|Skyrim                       | Western Skyrim |
 
 ### Trials: ([https://en.uesp.net/wiki/Online:Trials](https://en.uesp.net/wiki/Online:Trials))
 |alias|full name|
 |-|-|
-|as   | Asylum Sanctorium|
-|aa   | Aetherian Archive|
-|hrc  | Hel Ra Citadel|
-|so   | Sanctum Ophidia|
-|ss   | Sunspire|
-|mol  | Maw of Lorkhaj|
-|cr   | Cloudrest|
-|hof  | Halls of Fabrication|
-|ka   | Kyne's Aegis|
+|as   | Asylum Sanctorium |
+|aa   | Aetherian Archive |
+|hrc  | Hel Ra Citadel |
+|so   | Sanctum Ophidia |
+|ss   | Sunspire |
+|mol  | Maw of Lorkhaj |
+|cr   | Cloudrest |
+|hof  | Halls of Fabrication |
+|ka   | Kyne's Aegis |
 
 ### Arenas: ([https://en.uesp.net/wiki/Online:Arenas](https://en.uesp.net/wiki/Online:Arenas))
 |alias|full name|
 |-|-|
-|ma   | Maelstrom Arena|
-|msa  | Maelstrom Arena|
-|dsa  | Dragonstar Arena|
-|bp   | Blackrose Prison|
-|brp  | Blackrose Prison|
-|va   | Vateshran Hollows|
-|vh   | Vateshran Hollows|
-|vha  | Vateshran Hollows|
-|vsa  | Vateshran Hollows|
-|vsh  | Vateshran Hollows|
-|vsha | Vateshran Hollows|
+|ma   | Maelstrom Arena |
+|msa  | Maelstrom Arena |
+|dsa  | Dragonstar Arena |
+|bp   | Blackrose Prison |
+|brp  | Blackrose Prison |
+|va   | Vateshran Hollows |
+|vh   | Vateshran Hollows |
+|vha  | Vateshran Hollows |
+|vsa  | Vateshran Hollows |
+|vsh  | Vateshran Hollows |
+|vsha | Vateshran Hollows |
 
 ### Base Game Dungeons: ([https://en.uesp.net/wiki/Online:Group_Dungeons](https://en.uesp.net/wiki/Online:Group_Dungeons))
 |alias|full name|
 |-|-|
-|ac   | Arx Corinium|
-|arx  | Arx Corinium|
-|bc   | The Banished Cells I|
-|bc1  | The Banished Cells I|
-|tbc1 | The Banished Cells I|
-|bc2  | The Banished Cells II|
-|tbc2 | The Banished Cells II|
-|bh   | Blackheart Haven|
-|bc   | Blessed Crucible|
-|coa  | City of Ash I|
-|coa1 | City of Ash I|
-|coa2 | City of Ash II|
-|coh  | Crypt of Hearts I|
-|coh1 | Crypt of Hearts I|
-|coh2 | Crypt of Hearts II|
-|dc   | Darkshade Caverns I|
-|dc1  | Darkshade Caverns I|
-|dc2  | Darkshade Caverns II|
-|dk   | Direfrost Keep|
-|dfk  | Direfrost Keep|
-|eh   | Elden Hollow I|
-|eh1  | Elden Hollow I|
-|eh2  | Elden Hollow II|
-|fg   | Fungal Grotto I|
-|fg2  | Fungal Grotto II|
-|sw   | Selene's Web|
-|sc   | Spindleclutch I|
-|sc1  | Spindleclutch I|
-|sc2  | Spindleclutch II|
-|ti   | Tempest Island|
-|vom  | Vaults of Madness|
-|vf   | Volenfell|
-|ws   | Wayrest Sewers I|
-|ws1  | Wayrest Sewers I|
-|ws2  | Wayrest Sewers II|
+|ac   | Arx Corinium |
+|arx  | Arx Corinium |
+|bc   | The Banished Cells I |
+|bc1  | The Banished Cells I |
+|tbc1 | The Banished Cells I |
+|bc2  | The Banished Cells II |
+|tbc2 | The Banished Cells II |
+|bh   | Blackheart Haven |
+|bc   | Blessed Crucible |
+|coa  | City of Ash I |
+|coa1 | City of Ash I |
+|coa2 | City of Ash II |
+|coh  | Crypt of Hearts I |
+|coh1 | Crypt of Hearts I |
+|coh2 | Crypt of Hearts II |
+|dc   | Darkshade Caverns I |
+|dc1  | Darkshade Caverns I |
+|dc2  | Darkshade Caverns II |
+|dk   | Direfrost Keep |
+|dfk  | Direfrost Keep |
+|eh   | Elden Hollow I |
+|eh1  | Elden Hollow I |
+|eh2  | Elden Hollow II |
+|fg   | Fungal Grotto I |
+|fg2  | Fungal Grotto II |
+|sw   | Selene's Web |
+|sc   | Spindleclutch I |
+|sc1  | Spindleclutch I |
+|sc2  | Spindleclutch II |
+|ti   | Tempest Island |
+|vom  | Vaults of Madness |
+|vf   | Volenfell |
+|ws   | Wayrest Sewers I |
+|ws1  | Wayrest Sewers I |
+|ws2  | Wayrest Sewers II |
 
 ### DLC Dungeons: ([https://en.uesp.net/wiki/Online:Group_Dungeons](https://en.uesp.net/wiki/Online:Group_Dungeons))
 |alias|full name|
 |-|-|
-|icp  | Imperial City Prison|
-|ic   | Imperial City Prison|
-|ip   | Imperial City Prison|
-|wgt  | White-Gold Tower|
-|cos  | Cradle of Shadows|
-|rom  | Ruins of Mazzatun|
-|maz  | Ruins of Mazzatun|
-|mazz | Ruins of Mazzatun|
-|bf   | Bloodroot Forge|
-|brf  | Bloodroot Forge|
-|fh   | Falkreath Hold|
-|fkh  | Falkreath Hold|
-|fl   | Fang Lair|
-|sp   | Scalecaller Peak|
-|scp  | Scalecaller Peak|
-|mos  | March of Sacrifices|
-|mk   | Moon Hunter Keep|
-|mhk  | Moon Hunter Keep|
-|dom  | Depths of Malatar|
-|fv   | Frostvault|
-|lom  | Lair of Maarselok|
-|mf   | Moongrave Fane|
-|mgf  | Moongrave Fane|
-|ir   | Icereach|
-|ice  | Icereach|
-|ug   | Unhallowed Grave|
-|uhg  | Unhallowed Grave|
-|ct   | Castle Thorn|
-|sg   | Stone Garden|
-|stg  | Stone Garden|
+|icp  | Imperial City Prison |
+|ic   | Imperial City Prison |
+|ip   | Imperial City Prison |
+|wgt  | White-Gold Tower |
+|cos  | Cradle of Shadows |
+|rom  | Ruins of Mazzatun |
+|maz  | Ruins of Mazzatun |
+|mazz | Ruins of Mazzatun |
+|bf   | Bloodroot Forge |
+|brf  | Bloodroot Forge |
+|fh   | Falkreath Hold |
+|fkh  | Falkreath Hold |
+|fl   | Fang Lair |
+|sp   | Scalecaller Peak |
+|scp  | Scalecaller Peak |
+|mos  | March of Sacrifices |
+|mk   | Moon Hunter Keep |
+|mhk  | Moon Hunter Keep |
+|dom  | Depths of Malatar |
+|fv   | Frostvault |
+|lom  | Lair of Maarselok |
+|mf   | Moongrave Fane |
+|mgf  | Moongrave Fane |
+|ir   | Icereach |
+|ice  | Icereach |
+|ug   | Unhallowed Grave |
+|uhg  | Unhallowed Grave |
+|ct   | Castle Thorn |
+|sg   | Stone Garden |
+|stg  | Stone Garden |
