@@ -4,7 +4,7 @@ local info = Teleport.info
 local dbg  = Teleport.dbg
 
 -- similarly to arenas, there seems to be no separate POI type for those
--- so lookup table is the only option
+-- so a Zone Name => Zone ID lookup table is the only option
 -- https://en.uesp.net/wiki/Online:Zones#Overworld_Zones
 -- https://wiki.esoui.com/Zones
 local ZONES = {
@@ -58,19 +58,10 @@ local ZONES = {
         ["Wrothgar"                    ] = 684,
     }
 
-local ZONE_ALIASES = {
-        ["Reach"                       ] = "The Reach",
-        ["Rift"                        ] = "The Rift",
-        ["Arkthzand Cavern"            ] = "Blackreach: Arkthzand Cavern",
-        ["Greymoor Caverns"            ] = "Blackreach: Greymoor Caverns",
-        ["Elsweyr"                     ] = "Northern Elsweyr",
-        ["Skyrim"                      ] = "Western Skyrim",
-    }
-    
 -------------------------------------------------------------------------------    
 
 function Teleport.Zones:findZone(prefix)
-    for alias, zoneName in pairs(ZONE_ALIASES) do
+    for alias, zoneName in pairs(Teleport.Aliases:getZoneAliases()) do
         if Teleport.Helpers:startsWithCaseInsensitive(alias, prefix) then
             return zoneName, ZONES[zoneName]
         end

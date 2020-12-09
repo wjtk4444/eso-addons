@@ -2,7 +2,17 @@ Teleport.Aliases = { }
 
 local info = Teleport.info
 
-local PREDEFINED_ALIASES = {
+local PREDEFINED_ALIASES_ZONES = {
+        -- Zones https://en.uesp.net/wiki/Online:Zones#Overworld_Zones
+        ["Reach"                       ] = "The Reach",
+        ["Rift"                        ] = "The Rift",
+        ["Arkthzand Cavern"            ] = "Blackreach: Arkthzand Cavern",
+        ["Greymoor Caverns"            ] = "Blackreach: Greymoor Caverns",
+        ["Elsweyr"                     ] = "Northern Elsweyr",
+        ["Skyrim"                      ] = "Western Skyrim",
+    }
+
+local PREDEFINED_ALIASES_DUNGEONS = {
         -- Trials https://en.uesp.net/wiki/Online:Trials
         ["as"  ] = "Asylum Sanctorium",
         ["aa"  ] = "Aetherian Archive",
@@ -99,13 +109,17 @@ local PREDEFINED_ALIASES = {
 
 -------------------------------------------------------------------------------    
 
+function Teleport.Aliases:getZoneAliases()
+    return PREDEFINED_ALIASES_ZONES
+end
+
 function Teleport.Aliases:getDungeonByAlias(alias)
     alias = string.lower(alias)
-    local expansion = PREDEFINED_ALIASES[alias]
+    local expansion = PREDEFINED_ALIASES_DUNGEONS[alias]
     if expansion then return expansion, nil end
     local difficulty = string.sub(alias, 1, 1)
     if difficulty == 'n' or difficulty == 'v' then
-        return PREDEFINED_ALIASES[string.sub(alias, 2)], difficulty == 'v'
+        return PREDEFINED_ALIASES_DUNGEONS[string.sub(alias, 2)], difficulty == 'v'
     end
     return nil, nil
 end
