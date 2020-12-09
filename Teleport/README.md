@@ -1,6 +1,6 @@
 # Teleport
 
-**Teleport** is a general purpose teleportation addon. It's main aim is to make teleportation a quick and pleasant experience, very different to what game offers - minutes, if not _seconds (!!!)_ of looking trough menus, icons and lists. Ugh. The only extra feature it offers over in-game menus is teleporting to a specific house of any player. I took some ideas from [BeamMeUp](https://www.esoui.com/downloads/info2143-BeamMeUp-TeleporterFastTravel.html) as well from [Travelleer](https://www.esoui.com/downloads/info1744-Traveller-FastTravelRedesigned.html), you may want to check them out before deciding on what to use. **Teleport** is not supposed to replace any of the addons mentioned above, it just takes a different approach to mostly the same problem (ok now that I look at **Traveler**'s readme it seems painfully similar, sorry not sorry).
+**Teleport** is a general purpose teleportation addon. It's main aim is to make teleportation a quick and pleasant experience, very different to what the game offers - minutes, if not _seconds (!!!)_ of looking trough menus, icons and lists. Ugh. The only extra feature it offers over in-game menus is teleporting to a specific house of any player. I took some ideas from [BeamMeUp](https://www.esoui.com/downloads/info2143-BeamMeUp-TeleporterFastTravel.html) as well from [Travelleer](https://www.esoui.com/downloads/info1744-Traveller-FastTravelRedesigned.html), you may want to check them out before deciding on what to use. **Teleport** is not supposed to replace any of the addons mentioned above, it just takes a different approach to mostly the same problem (ok now that I look at **Traveler**'s readme it seems painfully similar, sorry not sorry).
 
 ## Changelog
 
@@ -41,7 +41,7 @@ will expand to their first match, **Deshaan**. However, the two examples present
 - `/tp Deshaan`
 - `/tp  Deshaan`
 
-Possible matches of every category are sorted (separately per category) in alphabetical order, which means that ie. **Vivec** will match **Vivec's Antlers** instead of **Vivec City** which most of the players would expect. If you want to travel specifically to **Vivec City** wayshrine, you need to either specify at least "**Vivec **" (note the extra space at the end), or create an alias. If you want to target wayshrines only, you can append "** Wayshrine **" at the end to avoid collisions with other names. Aliases will be explained in a later part of this manual.
+Possible matches of every category are sorted (separately per category) in alphabetical order, which means that ie. **Vivec** will match **Vivec's Antlers** instead of **Vivec City** which most of the players would expect. If you want to travel specifically to **Vivec City** wayshrine, you need to either specify at least "**Vivec **" (note the extra space at the end), or create an alias. If you want to target wayshrines only, you can append "** Wayshrine **" at the end to avoid collisions with other names. User-defined aliases will be explained in a [later part of this manual](#aliases).
 
 The input matching order is:
 
@@ -51,7 +51,7 @@ The input matching order is:
 - Zone name
 - Wayshrine name
 - House name
-- Dungeon name
+- Full dungeon/arena/trial name
 
 The order was chosen in a way that should generate the least amount of conflicts.
 
@@ -61,7 +61,7 @@ Once in a blue moon you will get a "**No suitable location found to jump to**" m
 
 ### Teleporting to zones
 
-To travel to any of the in-game zones, simply type `/tp <zone name prefix>` in chat.
+To travel to any of the in-game zones, simply type `/tp <zone name prefix>` in chat. There are also [zone name aliases](#zones-httpsenuespnetwikionlinezonesoverworld_zones) available and they work the exact same way as regular zone names.
 
 For example:
 
@@ -78,11 +78,11 @@ If you want to travel to other player's house, check the "Teleporting to other p
 
 ### Teleporting to wayshrines
 
-Same as teleporting to zones: `/tp <wayshrine name prefix>`.
+Same as teleporting to zones: `/tp <wayshrine name prefix>`. If you want to avoid name collisions you can also use `/tp <full wayshrine name> Wayshrine` instead.
 
 ### Teleporting to dungeons/arenas/trials
 
-There is a list of predefined aliases available. You can view it at the end of this guide. Aliases contain (hopefully) all of the common shortcuts that players use. **Predefined aliases are still case insensitive, but other than that you have to use an exact match. HR won't expand to HRC, etc.** A few examples below:
+There is a list of [predefined aliases available](#trials-httpsenuespnetwikionlinetrials). You can view it at the end of this guide. Aliases contain all of the common shortcuts that players use (hopefully). **These aliases are still case insensitive, but other than that you have to use an exact match. HR won't expand to HRC, etc.** A few examples below:
 
 - `/tp HRC`
 - `/tp MoL`
@@ -102,17 +102,16 @@ If for whatever reason you prefer using full(er?) name instead, you're welcome t
 
 To travel to a player, first make sure he's in your group / friends / guild and online. This is an in-game restriction that cannot by bypassed. Command syntax is very similar to all other presented up to this point, the only difference being **@** symbol at the beginning of account name. `/tp @<account_name>`. Using character name instead is not supported, because I'm not convinced that it should be. Feel free to make it into a feature request, I might reconsider if you bring actual arguments.
 
-Special `/tp leader` command works exactly the same as built-in `/jumptoleader`, it's just shorter to type (and aliasable, see below). (Yes, it takes you to the group leader. It also displays some extra info in the chat (unlike the build one), so you can abuse spamming it and cancelling teleport when waiting on leader to "port in". Though personally I'd spam `/tp dungeon_alias` instead, maybe someone will be faster than the group leader.
+Special `/tp leader` command works exactly the same as built-in `/jumptoleader`, it's just shorter to type (and aliasable, see [below](#aliases)) (yes, it takes you to the group leader). It also displays some extra info in the chat (unlike the built-in one), so you can abuse spamming it and cancelling teleport when waiting on leader to "port in". Though personally I'd spam `/tp <dungeon alias>` instead, maybe someone will be faster than the group leader.
 
 ### Teleporting to other players' houses
 
-For group members / friends and guildies, the syntax is the same as when travelling to player, only followed by house name. `/tp @account_name house name`. First word is considered account name prefix, everything else house name prefix. You can also use **primary** or **main** instead of house name, this will take you to player's primary residence instead. This shouldn't be a problem because ESO doesn't allow for account names with spaces. If you were thinking about opening a feature request mentioned above - think again. 
-
+For group members / friends and guildies, the syntax is the same as when travelling to player, followed by house name. `/tp @account_name house name`. First word is considered account name prefix, everything else house name prefix. You can also use **primary** or **main** instead of house name, this will take you to player's primary residence instead. 
 For every other player you need to use the **exact account name** and double **@** instead. For example:
 
 - `/tp @@schrodingerscatgirl Snugpod`
 
-will take you to this addon author's residence. Feel free to visit. For house name, you can still use prefixes all you want. 
+will take you to this addon author's residence. Feel free to visit. For house name, you can still use prefixes instead of full names. 
 
 By the way, did you know that account names in ESO are not case sensitive even though they appear as such? Now you do.
 
@@ -120,7 +119,7 @@ By the way, did you know that account names in ESO are not case sensitive even t
 
 Hey, you. You're finally ~~awake~~ here.
 
-At this point, if your brain hasn't melted from reading this huge wall of text, you must be thinking one thing:
+At this point, if your brain hasn't melted yet from reading this huge wall of text, you must be thinking one thing:
 
 > Oh, how convienient. Free teleporting to zones and dungeon aliases are pretty cool, but just imagine typing
 
