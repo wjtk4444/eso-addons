@@ -1,3 +1,9 @@
+### 1.0.7
+- changed how wayshrines are handled (restored "wayshrine" suffix in names)
+- fixed group difficulty settings being read incorrectly at times
+- added zone aliases
+- other minor or major improvements not directly visible to the users
+
 ### 1.0.6
 - improved dungeon difficulty changing for groups
 - fixed dungeon difficulty changing when not in a group
