@@ -1,3 +1,6 @@
+### 1.0.8
+- restored the ability to travel to houses you don't own (preview mode)
+
 ### 1.0.7
 - changed how wayshrines are handled (restored "wayshrine" suffix in names)
 - fixed group difficulty settings being read incorrectly at times

@@ -32,7 +32,8 @@ function Teleport.Houses:teleportToHouse(name)
     local _, _, _, _, unlocked, _, _, _, _, _ = GetCollectibleInfo(collectibleId)
 
     if not unlocked then
-        info("Failed to teleport to " .. nodeName .. ": House not owned.")
+        info("Previewing house: " .. nodeName)
+        FastTravelToNode(nodeIndex)
         return true
     end
     
