@@ -6,7 +6,7 @@ function Teleport.Nodes:getNodes()
         _nodes = {}
         for nodeIndex = 1, GetNumFastTravelNodes() do
             _, nodeName, _, _, _, _, _ = GetFastTravelNodeInfo(nodeIndex)
-            if nodeName then _nodes[nodeIndex] = nodeName end
+            if nodeName then _nodes[nodeName] = nodeIndex end
         end
     end
     

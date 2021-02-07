@@ -78,7 +78,7 @@ If you want to travel to other player's house, check the "Teleporting to other p
 
 ### Teleporting to wayshrines
 
-Same as teleporting to zones: `/tp <wayshrine name prefix>`. If you want to avoid name collisions you can also use `/tp <full wayshrine name> Wayshrine` instead.
+Same as teleporting to zones: `/tp <wayshrine name prefix>`. If you want to avoid name collisions you can also use `/tp <full wayshrine name> Wayshrine` instead. Wayshrines are sorted alphabetically without the " Wayshrine" suffix, for example `/tp solitude` will take you to `Solitude Wayshrine` instead of `Solitude Docks Wayshrine`. 
 
 ### Teleporting to dungeons/arenas/trials
 
@@ -123,7 +123,7 @@ At this point, if your brain hasn't melted yet from reading this huge wall of te
 
 > Oh, how convienient. Free teleporting to zones and dungeon aliases are pretty cool, but just imagine typing
 
-> `/tp @@prettylongnameXXX69240_GAMER_69420XXX Hakkvild's High Hall`
+> `/tp @@prettylongnameXXX69420_GAMER_69420XXX Hakkvild's High Hall`
 
 > every time you want to visit your friends house. So simple, so elegant! I'm never using in-game menus again!
 
@@ -137,7 +137,7 @@ First - you could probably just do `/tp @pretty hakk`, but if there are name con
 
 As their syntax suggests, first is for adding, second for removing and third for listing saved aliases. Aliases are saved account wide, obviously. So, going back to the case of visiting your old friend with a very long name, you can do this (once):
 
-- `/tp add 1 @@prettylongnameXXX69240_GAMER_69420XXX Hakkvild's High Hall`
+- `/tp add 1 @@prettylongnameXXX69420_GAMER_69420XXX Hakkvild's High Hall`
 
 and then just use `/tp 1` to get there. Obviously, you are not limited to using numbers. Anything works as long as it doesn't contain spaces. Just remember that aliases are **exact matches** and, unlike everything else in this addon: **case sensitive**. They are also first in the order of matching, which means you can even re-alias dungeons if that's what you desire.
 

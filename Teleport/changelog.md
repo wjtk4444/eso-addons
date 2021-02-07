@@ -1,3 +1,7 @@
+### 1.0.9
+- improved alphabetical sorting for wayshrines, now the " Wayshrine" suffix is ignored
+- some internal changes and refactoring that shouldn't affect end-user experience
+
 ### 1.0.8
 - restored the ability to travel to houses you don't own (preview mode)
 

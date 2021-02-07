@@ -9,47 +9,45 @@ local dbg  = Teleport.dbg
 -- so I'm using texture names instead to tell them apart from different 
 -- fast travel nodes. Better that than a hardcoded list of arenas, eh?
 local DUNGEON_TEXTURE_NAMES = {
-		['/esoui/art/icons/poi/poi_groupinstance_complete.dds']   = true, -- 4-man dungeon
-		['/esoui/art/icons/poi/poi_raiddungeon_complete.dds']     = true, -- trial
-		['/esoui/art/icons/poi/poi_solotrial_complete.dds']       = true, -- solo arena
+		['/esoui/art/icons/poi/poi_groupinstance_complete.dds'  ] = true, -- 4-man dungeon
+		['/esoui/art/icons/poi/poi_raiddungeon_complete.dds'    ] = true, -- trial
+		['/esoui/art/icons/poi/poi_solotrial_complete.dds'      ] = true, -- solo arena
 		['/esoui/art/icons/poi/poi_groupinstance_incomplete.dds'] = true, -- 4-man dungeon
-		['/esoui/art/icons/poi/poi_raiddungeon_incomplete.dds']   = true, -- trial
-		['/esoui/art/icons/poi/poi_solotrial_incomplete.dds']     = true, -- solo arena
+		['/esoui/art/icons/poi/poi_raiddungeon_incomplete.dds'  ] = true, -- trial
+		['/esoui/art/icons/poi/poi_solotrial_incomplete.dds'    ] = true, -- solo arena
 	}
 
 local _dungeons = nil
 local function _findDungeon(prefix, aliasOnly)
     if _dungeons == nil then
         _dungeons = {}
-        for nodeIndex, name in pairs(Teleport.Nodes:getNodes()) do
+        for nodeName, nodeIndex in pairs(Teleport.Nodes:getNodes()) do
             if DUNGEON_TEXTURE_NAMES[Teleport.Nodes:getPointOfInterestTextureName(nodeIndex)] then
-                if Teleport.Helpers:startsWith(name, 'Dungeon: ') then
-                    _dungeons[nodeIndex] = string.sub(name, 10)
-                elseif Teleport.Helpers:startsWith(name, 'Trial: ') then
-                    _dungeons[nodeIndex] = string.sub(name, 8)
+                if Teleport.Helpers:startsWith(nodeName, 'Dungeon: ') then
+                    _dungeons[string.sub(nodeName, 10)] = nodeIndex
+                elseif Teleport.Helpers:startsWith(nodeName, 'Trial: ') then
+                    _dungeons[string.sub(nodeName, 8)] = nodeIndex
                 else
-                    _dungeons[nodeIndex] = name
+                    _dungeons[nodeName] = nodeIndex
                 end
             end
         end
     end
     
-    local fullName, difficulty = Teleport.Aliases:getDungeonByAlias(prefix)
-    if aliasOnly and not fullName then
+    local nodeName, difficulty = Teleport.Aliases:getDungeonByAlias(prefix)
+    if aliasOnly and not nodeName then
         return nil, nil, nil
     end
 
-    local nodeIndex, nodeName
-    if fullName then 
-        nodeIndex, nodeName = Teleport.Helpers:findByValue(_dungeons, fullName)
-    else
-        nodeIndex, nodeName = Teleport.Helpers:findByCaseInsensitiveValuePrefix(_dungeons, prefix)
+    if nodeName then 
+        return nodeName, _dungeons[nodeName], difficulty
     end
 
-    return nodeIndex, nodeName, difficulty
+    local nodeName, nodeIndex = Teleport.Helpers:findByCaseInsensitiveKeyPrefix(_dungeons, prefix)
+    return nodeName, nodeIndex, difficulty
 end
 
-local function _teleportToDungeonAux(nodeIndex, nodeName)
+local function _teleportToDungeonAux(nodeName, nodeIndex)
     local player = Teleport.Players:findPlayerByDungeon(nodeName)
     if player then
         dbg("Teleporting to dungeon: " .. nodeName .. " (" .. player.displayName ..  ")")
@@ -110,7 +108,7 @@ end
 function Teleport.Dungeons:teleportToDungeon(name, aliasOnly)
     if Teleport.Helpers:checkIsEmptyAndPrintHelp(name) then return true end
 
-    local nodeIndex, nodeName, veteranDifficulty = _findDungeon(name, aliasOnly)
+    local nodeName, nodeIndex, veteranDifficulty = _findDungeon(name, aliasOnly)
     if nodeIndex == nil then
         dbg("Failed to teleport to " .. name .. ": No such dungeon/trial/arena found." 
             .. (aliasOnly and "(aliasOnly)" or ""))
@@ -118,11 +116,11 @@ function Teleport.Dungeons:teleportToDungeon(name, aliasOnly)
     end
     
     if veteranDifficulty == nil or veteranDifficulty == _getVeteranDifficulty() then
-        _teleportToDungeonAux(nodeIndex, nodeName)
+        _teleportToDungeonAux(nodeName, nodeIndex)
         return true
     end
 
-    _setVeteranDifficultyAndExecute(veteranDifficulty, function() _teleportToDungeonAux(nodeIndex, nodeName) end)
+    _setVeteranDifficultyAndExecute(veteranDifficulty, function() _teleportToDungeonAux(nodeName, nodeIndex) end)
     return true
 end
 

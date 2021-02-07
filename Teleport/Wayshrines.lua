@@ -3,18 +3,22 @@ Teleport.Wayshrines = {}
 local info = Teleport.info
 local dbg  = Teleport.dbg
 
+local function _compareNames(w1, w2)
+    return string.sub(w1, 1, #w1 - #' Wayshrine') < string.sub(w2, 1, #w2 - #' Wayshrine')
+end
+
 local _wayshrines = nil
 local function _findWayshrine(prefix)
     if _wayshrines == nil then
         _wayshrines = {}
-        for nodeIndex, name in pairs(Teleport.Nodes:getNodes()) do
+        for nodeName, nodeIndex in pairs(Teleport.Nodes:getNodes()) do
             if Teleport.Nodes:getPointOfInterestType(nodeIndex) == POI_TYPE_WAYSHRINE then
-                _wayshrines[nodeIndex] = name
+                _wayshrines[nodeName] = nodeIndex
             end
         end
     end
 
-    return Teleport.Helpers:findByCaseInsensitiveValuePrefix(_wayshrines, prefix)
+    return Teleport.Helpers:findByCaseInsensitiveKeyPrefix(_wayshrines, prefix, _compareNames)
 end
 
 -------------------------------------------------------------------------------    
@@ -22,8 +26,8 @@ end
 function Teleport.Wayshrines:teleportToWayshrine(name)
     if Teleport.Helpers:checkIsEmptyAndPrintHelp(name) then return true end
 
-    local nodeIndex, nodeName = _findWayshrine(name)
-    if nodeIndex == nil then
+    local nodeName, nodeIndex = _findWayshrine(name)
+    if nodeName == nil then
         dbg("Failed to teleport to " .. name .. ": No such wayshrine found.")
         return false
     end

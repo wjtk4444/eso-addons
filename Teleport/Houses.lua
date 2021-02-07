@@ -7,14 +7,14 @@ local _houses = nil
 local function _findHouse(prefix)
     if _houses == nil then
         _houses = {}
-        for nodeIndex, name in pairs(Teleport.Nodes:getNodes()) do
+        for nodeName, nodeIndex in pairs(Teleport.Nodes:getNodes()) do
             if Teleport.Nodes:getPointOfInterestType(nodeIndex) == POI_TYPE_HOUSE then
-                _houses[nodeIndex] = name
+                _houses[nodeName] = nodeIndex
             end
         end
     end
 
-    return Teleport.Helpers:findByCaseInsensitiveValuePrefix(_houses, prefix)
+    return Teleport.Helpers:findByCaseInsensitiveKeyPrefix(_houses, prefix)
 end
 
 -------------------------------------------------------------------------------    
@@ -22,8 +22,8 @@ end
 function Teleport.Houses:teleportToHouse(name)
     if Teleport.Helpers:checkIsEmptyAndPrintHelp(name) then return true end
 
-    local nodeIndex, nodeName = _findHouse(name)
-    if not nodeIndex then
+    local nodeName, nodeIndex = _findHouse(name)
+    if not nodeName then
         dbg("Failed to teleport to " .. name .. ": No such house.")
         return false
     end
@@ -64,8 +64,8 @@ function Teleport.Houses:teleportToPlayersHouse(name, house)
         return true
     end
 
-    local nodeIndex, nodeName = _findHouse(house)
-    if not nodeIndex then
+    local nodeName, nodeIndex = _findHouse(house)
+    if not nodeName then
         info("Failed to teleport to " .. player.displayName .. "'s " .. house .. ": No such house.")
         return false
     end

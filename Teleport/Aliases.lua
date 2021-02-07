@@ -36,6 +36,7 @@ local PREDEFINED_ALIASES_DUNGEONS = {
         ["vsa" ] = "Vateshran Hollows",
         ["vsh" ] = "Vateshran Hollows",
         ["vsha"] = "Vateshran Hollows",
+
         -- Base Game Dungeons https://en.uesp.net/wiki/Online:Group_Dungeons
         ["ac"  ] = "Arx Corinium",
         ["arx" ] = "Arx Corinium",

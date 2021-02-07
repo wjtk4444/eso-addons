@@ -15,12 +15,8 @@ function Teleport.Helpers:startsWith(str, start)
     return string.sub(str, 1, #start) == start
 end
 
-function Teleport.Helpers:endsWith(str, ending)
-    return string.sub(str, -#ending) == ending
-end
-
 function Teleport.Helpers:startsWithCaseInsensitive(str, start)
-    return Teleport.Helpers:startsWith(string.lower(str), string.lower(start))
+    return self:startsWith(string.lower(str), string.lower(start))
 end
 
 function Teleport.Helpers:splitInTwo(input, separator)
@@ -29,36 +25,23 @@ function Teleport.Helpers:splitInTwo(input, separator)
     return string.sub(input, 1, position - 1), string.sub(input, position + 1)
 end
 
-function Teleport.Helpers:findByCaseInsensitiveValuePrefix(map, prefix)
-    local matches = {}
-
-    for key, value in pairs(map) do
-        if Teleport.Helpers:startsWithCaseInsensitive(value, prefix) then
-            table.insert(matches, {key, value})
+function Teleport.Helpers:findByCaseInsensitiveKeyPrefix(map, prefix, customComparator)
+    for _, key in ipairs(self:getSortedKeys(map, customComparator)) do
+        if self:startsWithCaseInsensitive(key, prefix) then
+            return key, map[key]
         end
     end
-
-    -- some extra fuckery to match ie. fungal grotto I before fungal grotto II
-    if #matches == 0 then return nil end
-    table.sort(matches, function (a, b) return a[2] < b[2] end)
-    return matches[1][1], matches[1][2]
+    
+    return nil
 end
 
-function Teleport.Helpers:findByValue(map, val)
-    for key, value in pairs(map) do
-        if value == val then
-            return key, value
-        end
-    end
-end
-
-function Teleport.Helpers:getSortedKeys(dictionary)
+function Teleport.Helpers:getSortedKeys(map, comparator)
     local keys = { }
-    for key in pairs(dictionary) do
+    for key in pairs(map) do
         table.insert(keys, key)
     end
 
-    table.sort(keys, function (a, b) return a < b end)
+    table.sort(keys, comparator or (function (a, b) return a < b end))
     return keys
 end
 
