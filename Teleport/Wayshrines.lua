@@ -4,7 +4,7 @@ local info = Teleport.info
 local dbg  = Teleport.dbg
 
 local _wayshrines = nil
-function Teleport.Wayshrines:findWayshrine(prefix)
+local function _findWayshrine(prefix)
     if _wayshrines == nil then
         _wayshrines = {}
         for nodeIndex, name in pairs(Teleport.Nodes:getNodes()) do
@@ -22,7 +22,7 @@ end
 function Teleport.Wayshrines:teleportToWayshrine(name)
     if Teleport.Helpers:checkIsEmptyAndPrintHelp(name) then return true end
 
-    local nodeIndex, nodeName = Teleport.Wayshrines:findWayshrine(name)
+    local nodeIndex, nodeName = _findWayshrine(name)
     if nodeIndex == nil then
         dbg("Failed to teleport to " .. name .. ": No such wayshrine found.")
         return false
