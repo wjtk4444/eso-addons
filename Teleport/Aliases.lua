@@ -105,7 +105,13 @@ local PREDEFINED_ALIASES_DUNGEONS = {
         ["uhg" ] = "Unhallowed Grave",
         ["ct"  ] = "Castle Thorn",
         ["sg"  ] = "Stone Garden",
-        ["stg" ] = "Stone Garden",
+        ["bdv" ] = "Black Drake Villa",
+        ["bv"  ] = "Black Drake Villa",
+        ["bd"  ] = "Black Drake Villa",
+        ["dv"  ] = "Black Drake Villa",
+        ["tc"  ] = "The Cauldron",
+        ["cd"  ] = "The Cauldron"
+        ["c"   ] = "The Cauldron"
     }
 
 -------------------------------------------------------------------------------    
