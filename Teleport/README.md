@@ -39,7 +39,7 @@ There is no graphical user interface provided, everything is done using a `/tp` 
 will expand to their first match, **Deshaan**. However, the two examples presented below are not equal because of the additional space used in the second command.
 
 - `/tp Deshaan`
-- `/tp  Deshaan`
+- `/tp  Deshaan` (extra space between `/tp` and `Deshaan` is invisble, thanks github...)
 
 Possible matches of every category are sorted (separately per category) in alphabetical order, which means that ie. **Vivec** will match **Vivec's Antlers** instead of **Vivec City** which most of the players would expect. If you want to travel specifically to **Vivec City** wayshrine, you need to either specify at least "**Vivec **" (note the extra space at the end), or create an alias. If you want to target wayshrines only, you can append "** Wayshrine **" at the end to avoid collisions with other names. User-defined aliases will be explained in a [later part of this manual](#aliases).
 
