@@ -1,0 +1,31 @@
+<GuiXml>
+	<Controls>	
+	<TopLevelControl name="HideInventoryClutterContainer">
+			<Controls>
+				<Button name="HideInventoryClutterButton" inherits="ZO_ButtonBehaviorClickSound" mouseEnabled="true" hidden="true" movable="false">
+					<Dimensions x="32" y="32" />
+					<Anchor point="BOTTOM" relativePoint="CENTER" relativeTo="GuiRoot" />
+					<OnMoveStop>
+						HideInventoryClutter:saveGuiPosition()
+					</OnMoveStop>
+					<OnClicked>
+						HideInventoryClutter:toggleAll()
+					</OnClicked>
+					<OnMouseEnter>
+						InitializeTooltip(InformationTooltip, self, TOP, 0, 0)
+						SetTooltipText(InformationTooltip, HideInventoryClutter:getTooltipText())
+					</OnMouseEnter>
+					<OnMouseExit>
+						ClearTooltip(InformationTooltip)
+					</OnMouseExit>
+					<Textures
+						normal="esoui/art/miscellaneous/locked_up.dds"
+						pressed="esoui/art/miscellaneous/locked_down.dds"
+						mouseOver="esoui/art/miscellaneous/locked_over.dds"
+					/>
+					<Anchor point="CENTER" relativePoint="CENTER" relativeTo="$(parent)" />
+				</Button>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>
