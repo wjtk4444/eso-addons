@@ -1,3 +1,8 @@
+### 1.0.10
+- added two new dungeons
+- API version bump
+- added the ability to teleport outside of owned houses
+
 ### 1.0.9
 - improved alphabetical sorting for wayshrines, now the " Wayshrine" suffix is ignored
 - some internal changes and refactoring that shouldn't affect end-user experience

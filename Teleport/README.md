@@ -74,7 +74,9 @@ For example:
 
 Same as zones: `/tp <house name prefix>`.
 
-If you want to travel to other player's house, check the "Teleporting to other player's houses" section instead.
+If you want to travel to other player's house, check the "Teleporting to other player's houses" section instead. If you want to travel outside of _your own_ house, prepend the name with "outside", ie.
+
+- `/tp outside snugpod`
 
 ### Teleporting to wayshrines
 
@@ -283,4 +285,10 @@ Pre-defined aliases in `Aliases.lua` as well as hardcoded lists of arenas (`Dung
 |uhg  | Unhallowed Grave |
 |ct   | Castle Thorn |
 |sg   | Stone Garden |
-|stg  | Stone Garden |
+|bdv  | Black Drake Villa |
+|bv   | Black Drake Villa |
+|bd   | Black Drake Villa |
+|dv   | Black Drake Villa |
+|tc   | The Cauldron |
+|cd   | The Cauldron
+|c    | The Cauldron
