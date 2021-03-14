@@ -1,6 +1,5 @@
 ### 1.0.10
 - added two new dungeons
-- API version bump
 - added the ability to teleport outside of owned houses
 
 ### 1.0.9
