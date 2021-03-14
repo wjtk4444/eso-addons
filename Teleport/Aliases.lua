@@ -110,8 +110,8 @@ local PREDEFINED_ALIASES_DUNGEONS = {
         ["bd"  ] = "Black Drake Villa",
         ["dv"  ] = "Black Drake Villa",
         ["tc"  ] = "The Cauldron",
-        ["cd"  ] = "The Cauldron"
-        ["c"   ] = "The Cauldron"
+        ["cd"  ] = "The Cauldron",
+        ["c"   ] = "The Cauldron",
     }
 
 -------------------------------------------------------------------------------    
