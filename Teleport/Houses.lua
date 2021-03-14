@@ -1,7 +1,7 @@
 Teleport.Houses = { }
-
 local info = Teleport.info
 local dbg  = Teleport.dbg
+local help
 
 local _houses = nil
 local function _findHouse(prefix)
@@ -10,6 +10,7 @@ local function _findHouse(prefix)
         for nodeName, nodeIndex in pairs(Teleport.Nodes:getNodes()) do
             if Teleport.Nodes:getPointOfInterestType(nodeIndex) == POI_TYPE_HOUSE then
                 _houses[nodeName] = nodeIndex
+				_houses["outside " .. nodeName] = nodeIndex
             end
         end
     end
@@ -28,17 +29,31 @@ function Teleport.Houses:teleportToHouse(name)
         return false
     end
 
-    local collectibleId = GetCollectibleIdForHouse(GetFastTravelNodeHouseId(nodeIndex))
+	local outside = Teleport.Helpers:startsWithCaseInsensitive(nodeName, "outside ")
+	local houseId = GetFastTravelNodeHouseId(nodeIndex)
+    local collectibleId = GetCollectibleIdForHouse(houseId)
     local _, _, _, _, unlocked, _, _, _, _, _ = GetCollectibleInfo(collectibleId)
 
+	
+
     if not unlocked then
+		if outside then
+			info("Cannot teleport outside of a house you don't own")
+			return true
+		end
+        
         info("Previewing house: " .. nodeName)
-        FastTravelToNode(nodeIndex)
+        RequestJumpToHouse(houseId, false)
         return true
     end
-    
-    info("Teleporting to house: " .. nodeName)
-    FastTravelToNode(nodeIndex)
+	
+    if not outside then
+		info("Teleporting to house: " .. nodeName)
+		RequestJumpToHouse(houseId, false)
+	else
+		info("Teleporting outside of house: " .. string.sub(nodeName, 9)) -- 'remove "outside " prefix from house's name'
+		RequestJumpToHouse(houseId, true)
+	end
     return true
 end
 
@@ -69,6 +84,11 @@ function Teleport.Houses:teleportToPlayersHouse(name, house)
         info("Failed to teleport to " .. player.displayName .. "'s " .. house .. ": No such house.")
         return false
     end
+	
+	if Teleport.Helpers:startsWithCaseInsensitive(nodeName, "outside ") then
+		info("You cannot teleport outside of other people's houses")
+        return true
+	end
 
     info("Teleporting to " .. player.displayName .. "'s " .. nodeName)
     JumpToSpecificHouse(player.displayName, GetFastTravelNodeHouseId(nodeIndex))
