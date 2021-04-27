@@ -18,3 +18,9 @@ Items that everyone carries at all times, seeing them is unnecessary unless rest
 - potions
 - poisons
 
+# Usage
+
+To move icons to the desired location on your screen use the following command, move them and use the command again.
+
+`/hideinventorycluttertogglemoveicons`
+
