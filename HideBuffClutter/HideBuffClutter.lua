@@ -3,15 +3,15 @@ local ADDON_NAME = "HideBuffClutter"
 local savedVariables
 
 local DEFAULTS = {
-	[127596] = true, -- Bewitched Sugar Skulls
-	[84720 ] = true, -- Ghastly Eye Bowl
-	[86673 ] = true, -- Lava Foot Soup-and-Saltrice
+	-- [127596] = true, -- Bewitched Sugar Skulls
+	-- [84720 ] = true, -- Ghastly Eye Bowl
+	-- [86673 ] = true, -- Lava Foot Soup-and-Saltrice
 	
 	[21230 ] = true, -- Glyph of Weapon Damage
 
-	[61694 ] = true, -- Major Resolve
+	-- [61694 ] = true, -- Major Resolve
 	
-	[61744 ] = true, -- Minor Berserk
+	-- [61744 ] = true, -- Minor Berserk
 	
 	[40224 ] = true, -- Aggresive Horn
 	-- [61747 ] = true, -- Major Force
