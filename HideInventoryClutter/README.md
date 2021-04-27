@@ -24,3 +24,4 @@ To move icons to the desired location on your screen use the following command, 
 
 `/hideinventorycluttertogglemoveicons`
 
+![](../_screenshots/HideInventoryClutter/HideInventoryClutter.png)
