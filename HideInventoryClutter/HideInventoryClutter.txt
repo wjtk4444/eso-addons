@@ -7,7 +7,7 @@
 ## Title: HideInventoryClutter
 ## Description: toggle visibility of locked items in inventory
 ## Author: Schrodi
-## Version: 1.0
+## Version: 2
 ## APIVersion: 100034
 ## DependsOn: LibFilters-3.0
 ## SavedVariables: HideInventoryClutterPosition
