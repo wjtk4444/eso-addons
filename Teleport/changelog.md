@@ -1,3 +1,6 @@
+### 1.0.11
+- updated for Blackwood
+
 ### 1.0.10
 - added two new dungeons
 - added the ability to teleport outside of owned houses
