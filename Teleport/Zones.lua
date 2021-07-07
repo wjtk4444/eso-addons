@@ -42,6 +42,7 @@ local ZONES = {
         -- Chapter Zones
         ["Artaeum"                     ] = 1027,
         ["Blackreach: Greymoor Caverns"] = 1161,
+        ["Blackwood"                   ] = 1261,
         ["Northern Elsweyr"            ] = 1086,
         ["Summerset"                   ] = 1011,
         ["Vvardenfell"                 ] = 849,
