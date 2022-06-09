@@ -185,6 +185,7 @@ Pre-defined aliases in `Aliases.lua` as well as hardcoded lists of arenas (`Dung
 |Greymoor Caverns             | Blackreach: Greymoor Caverns |
 |Elsweyr                      | Northern Elsweyr |
 |Skyrim                       | Western Skyrim |
+|Isle                         | High Isle |
 
 ### Trials: ([https://en.uesp.net/wiki/Online:Trials](https://en.uesp.net/wiki/Online:Trials))
 |alias|full name|
@@ -198,6 +199,9 @@ Pre-defined aliases in `Aliases.lua` as well as hardcoded lists of arenas (`Dung
 |cr   | Cloudrest |
 |hof  | Halls of Fabrication |
 |ka   | Kyne's Aegis |
+|rg   | Rockgrove |
+|dr   | Dreadsail Reef |
+|dsr  | Dreadsail Reef |
 
 ### Arenas: ([https://en.uesp.net/wiki/Online:Arenas](https://en.uesp.net/wiki/Online:Arenas))
 |alias|full name|
@@ -232,7 +236,6 @@ Pre-defined aliases in `Aliases.lua` as well as hardcoded lists of arenas (`Dung
 |coh  | Crypt of Hearts I |
 |coh1 | Crypt of Hearts I |
 |coh2 | Crypt of Hearts II |
-|dc   | Darkshade Caverns I |
 |dc1  | Darkshade Caverns I |
 |dc2  | Darkshade Caverns II |
 |dk   | Direfrost Keep |
@@ -292,3 +295,8 @@ Pre-defined aliases in `Aliases.lua` as well as hardcoded lists of arenas (`Dung
 |tc   | The Cauldron |
 |cd   | The Cauldron |
 |c    | The Cauldron |
+|tdc  | The Dread Cellar |
+|dc   | The Dread Cellar |
+|rpb  | Red Petal Bastion |
+|ca   | Coral Aerie |
+|sr   | Shipwright's Regret |

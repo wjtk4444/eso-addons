@@ -10,6 +10,7 @@ local PREDEFINED_ALIASES_ZONES = {
         ["Greymoor Caverns"            ] = "Blackreach: Greymoor Caverns",
         ["Elsweyr"                     ] = "Northern Elsweyr",
         ["Skyrim"                      ] = "Western Skyrim",
+        ["Isle"                        ] = "High Isle",
     }
 
 local PREDEFINED_ALIASES_DUNGEONS = {
@@ -23,6 +24,9 @@ local PREDEFINED_ALIASES_DUNGEONS = {
         ["cr"  ] = "Cloudrest",
         ["hof" ] = "Halls of Fabrication",
         ["ka"  ] = "Kyne's Aegis",
+        ["rg"  ] = "Rockgrove",
+        ["dr"  ] = "Dreadsail Reef",
+        ["dsr" ] = "Dreadsail Reef",
 
         -- Arenas https://en.uesp.net/wiki/Online:Arenas
         ["ma"  ] = "Maelstrom Arena",
@@ -53,7 +57,6 @@ local PREDEFINED_ALIASES_DUNGEONS = {
         ["coh" ] = "Crypt of Hearts I",		
         ["coh1"] = "Crypt of Hearts I",
         ["coh2"] = "Crypt of Hearts II",
-        ["dc"  ] = "Darkshade Caverns I",
         ["dc1" ] = "Darkshade Caverns I",
         ["dc2" ] = "Darkshade Caverns II",
         ["dk"  ] = "Direfrost Keep",
@@ -112,6 +115,11 @@ local PREDEFINED_ALIASES_DUNGEONS = {
         ["tc"  ] = "The Cauldron",
         ["cd"  ] = "The Cauldron",
         ["c"   ] = "The Cauldron",
+        ["tdc" ] = "The Dread Cellar",
+        ["dc"  ] = "The Dread Cellar",
+        ["rpb" ] = "Red Petal Bastion",
+        ["ca"  ] = "Coral Aerie",
+        ["sr"  ] = "Shipwright's Regret",
     }
 
 -------------------------------------------------------------------------------    

@@ -119,7 +119,7 @@ end
 
 function Teleport.Players:teleportToPlayer(player)
     if not CanJumpToPlayerInZone(player.zoneId) then
-        info(player.displayName .. " is currently in a location that prevents teleporting (" .. player.zoneName .. ")")
+        info(ZO_LinkHandler_CreateDisplayNameLink(player.displayName) .. " is currently in a location that prevents teleporting (" .. player.zoneName .. ")")
         return false
     end
 
@@ -131,7 +131,7 @@ function Teleport.Players:teleportToPlayer(player)
         JumpToGuildMember(player.displayName)
     end
 
-    info("Teleporting to " .. player.displayName .. " in " .. player.zoneName)
+    info("Teleporting to " .. ZO_LinkHandler_CreateDisplayNameLink(player.displayName) .. " in " .. player.zoneName)
     return true
 end
 
@@ -145,6 +145,6 @@ function Teleport.Players:teleportToLeader()
     local displayName = GetUnitDisplayName(groupUnitTag)
     local zoneName = GetUnitZone(groupUnitTag)
 
-    info("Teleporting to group leader " .. displayName .. " in " .. zoneName)
+    info("Teleporting to group leader " .. ZO_LinkHandler_CreateDisplayNameLink(displayName) .. " in " .. zoneName)
     JumpToGroupLeader() 
 end

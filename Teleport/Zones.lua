@@ -47,6 +47,7 @@ local ZONES = {
         ["Summerset"                   ] = 1011,
         ["Vvardenfell"                 ] = 849,
         ["Western Skyrim"              ] = 1160,
+        ["High Isle"                   ] = 1318,
 
         -- Story DLC Zones
         ["Blackreach: Arkthzand Cavern"] = 1208,
@@ -57,6 +58,7 @@ local ZONES = {
         ["The Reach"                   ] = 1207,
         ["Southern Elsweyr"            ] = 1133,
         ["Wrothgar"                    ] = 684,
+        ["The Deadlands"               ] = 1272,
     }
 
 -------------------------------------------------------------------------------    
