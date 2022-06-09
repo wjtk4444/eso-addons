@@ -120,7 +120,7 @@ end
 function Teleport.Players:teleportToPlayer(player)
     if not CanJumpToPlayerInZone(player.zoneId) then
         info(ZO_LinkHandler_CreateDisplayNameLink(player.displayName) .. " is currently in a location that prevents teleporting (" .. player.zoneName .. ")")
-        return false
+        return true
     end
 
     if player.type == GROUP then
