@@ -1,3 +1,11 @@
+### 1.0.12
+- added Rockgrove (finally)
+- updated for Waking Flame
+- updated for Ascending Tide
+- updated for High Isle
+- player names can now be clicked (left and right click) for player interactions
+- fixed a minor issue regarding teleporting to zones that prevent fast travel
+
 ### 1.0.11
 - updated for Blackwood
 
