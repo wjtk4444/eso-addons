@@ -118,11 +118,6 @@ function Teleport.Players:findPlayerByName(prefix, allowUnreachable)
 end
 
 function Teleport.Players:teleportToPlayer(player)
-    if not CanJumpToPlayerInZone(player.zoneId) then
-        info(ZO_LinkHandler_CreateDisplayNameLink(player.displayName) .. " is currently in a location that prevents teleporting (" .. player.zoneName .. ")")
-        return true
-    end
-
     if player.type == GROUP then
         JumpToGroupMember(player.displayName)
     elseif player.type == FRIEND then
