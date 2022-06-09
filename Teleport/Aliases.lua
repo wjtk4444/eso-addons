@@ -10,6 +10,7 @@ local PREDEFINED_ALIASES_ZONES = {
         ["Greymoor Caverns"            ] = "Blackreach: Greymoor Caverns",
         ["Elsweyr"                     ] = "Northern Elsweyr",
         ["Skyrim"                      ] = "Western Skyrim",
+        ["Deadlands"                   ] = "The Deadlands",
         ["Isle"                        ] = "High Isle",
     }
 

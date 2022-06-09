@@ -58,7 +58,8 @@ local ZONES = {
         ["The Reach"                   ] = 1207,
         ["Southern Elsweyr"            ] = 1133,
         ["Wrothgar"                    ] = 684,
-        ["The Deadlands"               ] = 1272,
+        ["The Deadlands"               ] = 1286,
+        ["Fargrave"                    ] = 1282,
     }
 
 -------------------------------------------------------------------------------    

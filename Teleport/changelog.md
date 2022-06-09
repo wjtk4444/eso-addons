@@ -1,5 +1,6 @@
-### 1.0.12
+### 1.0.13
 - added Rockgrove (finally)
+- updated for Deadlands
 - updated for Waking Flame
 - updated for Ascending Tide
 - updated for High Isle

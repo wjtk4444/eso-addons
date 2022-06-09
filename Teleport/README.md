@@ -185,6 +185,7 @@ Pre-defined aliases in `Aliases.lua` as well as hardcoded lists of arenas (`Dung
 |Greymoor Caverns             | Blackreach: Greymoor Caverns |
 |Elsweyr                      | Northern Elsweyr |
 |Skyrim                       | Western Skyrim |
+|Deadlands                    | The Deadlands |
 |Isle                         | High Isle |
 
 ### Trials: ([https://en.uesp.net/wiki/Online:Trials](https://en.uesp.net/wiki/Online:Trials))
