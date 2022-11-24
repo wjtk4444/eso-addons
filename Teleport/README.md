@@ -92,11 +92,12 @@ There is a list of [predefined aliases available](#trials-httpsenuespnetwikionli
 - `/tp FG1`
 - `/tp CoH2`
 
-Additionally, you can prepend all of the aliases with **n** or **v** (for normal and veteran). In that case addon will attempt changing dungeon difficulty for you and your group.
+Additionally, you can prepend all of the aliases with **n**, **v** or **r** (for normal, veteran and a reset instance). In that case addon will attempt changing dungeon difficulty for you and your group.
 
 - `/tp vHRC`
 - `/tp NDSA`
 - `/tp vcoh1`
+- `/tp rCR`
 
 If for whatever reason you prefer using full(er?) name instead, you're welcome to do the usual `/tp <dungeon name prefix>`.
 
