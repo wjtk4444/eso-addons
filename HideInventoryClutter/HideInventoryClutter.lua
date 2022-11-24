@@ -16,7 +16,7 @@ function HideInventoryClutter:isWorthDeconstructing(b, i)
 
 	local itemType = GetItemType(b, i)
 	if itemType == ITEMTYPE_GLYPH_ARMOR or itemType == ITEMTYPE_GLYPH_JEWELRY or itemType == ITEMTYPE_GLYPH_WEAPON then
-		return not IsItemLinkCrafted(GetItemItemLink(b, i))
+		return not IsItemLinkCrafted(GetItemLink(b, i))
 	end
 	
 	local quality = GetItemQuality(b, i)
