@@ -1,6 +1,18 @@
+### 1.0.15
+- added Galen zone (yes, finally applies here as well)
+- added a new feature - travel to a reset instance 
+`rDungeonAlias`, similar to previously available `nDungeonAlias` or `vDungeonAlias`, ie.
+- `nKA` - normal Kyne's Aegis
+- `rCA` - reset instance of Coral Aerie
+- `vSS` - veteran Sunspire
+Resets the instance or assumes that instance was already reset by a group leader. 
+This is always a paid teleport. Same as with other paid teleports, you can 
+mitigate the cost by having a wayshrine menu open.
+
 ### 1.0.14
 - added Earthen Root Enclave and Graven Deep dungeons (finally)
-- added a new feature - travel to survey map zones from your inventory (/tp SurveyMaps - can be aliased just like any other command)
+- added a new feature - travel to survey map zones from your inventory 
+`/tp SurveyMaps` - it can be aliased just like any other command
 
 ### 1.0.13
 - added Rockgrove (finally)

@@ -9,13 +9,13 @@ local dbg  = Teleport.dbg
 -- so I'm using texture names instead to tell them apart from different 
 -- fast travel nodes. Better that than a hardcoded list of arenas, eh?
 local DUNGEON_TEXTURE_NAMES = {
-		['/esoui/art/icons/poi/poi_groupinstance_complete.dds'  ] = true, -- 4-man dungeon
-		['/esoui/art/icons/poi/poi_raiddungeon_complete.dds'    ] = true, -- trial
-		['/esoui/art/icons/poi/poi_solotrial_complete.dds'      ] = true, -- solo arena
-		['/esoui/art/icons/poi/poi_groupinstance_incomplete.dds'] = true, -- 4-man dungeon
-		['/esoui/art/icons/poi/poi_raiddungeon_incomplete.dds'  ] = true, -- trial
-		['/esoui/art/icons/poi/poi_solotrial_incomplete.dds'    ] = true, -- solo arena
-	}
+        ['/esoui/art/icons/poi/poi_groupinstance_complete.dds'  ] = true, -- 4-man dungeon
+        ['/esoui/art/icons/poi/poi_raiddungeon_complete.dds'    ] = true, -- trial
+        ['/esoui/art/icons/poi/poi_solotrial_complete.dds'      ] = true, -- solo arena
+        ['/esoui/art/icons/poi/poi_groupinstance_incomplete.dds'] = true, -- 4-man dungeon
+        ['/esoui/art/icons/poi/poi_raiddungeon_incomplete.dds'  ] = true, -- trial
+        ['/esoui/art/icons/poi/poi_solotrial_incomplete.dds'    ] = true, -- solo arena
+    }
 
 local _dungeons = nil
 local function _findDungeon(prefix, aliasOnly)
@@ -66,41 +66,41 @@ end
 
 local function _getVeteranDifficulty()
     if IsUnitGrouped("player") then
-        return IsGroupUsingVeteranDifficulty()
+        return IsGroupUsingVeteranDifficulty() == true and 'v' or 'n'
     else
-        return IsUnitUsingVeteranDifficulty("player")
+        return IsUnitUsingVeteranDifficulty("player") == true and 'v' or 'n'
     end
 end
 
-local function _setVeteranDifficultyAndExecute(veteranDifficulty, onChanged)
-	local grouped = IsUnitGrouped("player")
-	if grouped and not IsUnitGroupLeader("player") then
-		info("You have to be your group's leader to change dungeon difficulty.")
-        return
-	end
-		
-	if IsUnitInDungeon("player") then
-		info("You cannot change dungeon difficulty while in a dungeon.")
-        return
-	end
-
-    if grouped and IsAnyGroupMemberInDungeon() then
-		info("One or more group members are currently in a dungeon. Changing dungeon difficulty will kick them out.")
-		info("If You wish to continue anyway, change dungeon difficulty manually in the group menu.")
+local function _setVeteranDifficultyAndExecute(difficulty, onChanged)
+    local grouped = IsUnitGrouped("player")
+    if grouped and not IsUnitGroupLeader("player") then
+        info("You have to be your group's leader to change dungeon difficulty.")
         return
     end
-	
+        
+    if IsUnitInDungeon("player") then
+        info("You cannot change dungeon difficulty while in a dungeon.")
+        return
+    end
+
+    if grouped and IsAnyGroupMemberInDungeon() then
+        info("One or more group members are currently in a dungeon. Changing dungeon difficulty will kick them out.")
+        info("If You wish to continue anyway, change dungeon difficulty manually in the group menu.")
+        return
+    end
+    
     local unregisterAndExecute = function()
-            EVENT_MANAGER:UnregisterForEvent("TpSetVetDiff", EVENT_VETERAN_DIFFICULTY_CHANGED)
-            EVENT_MANAGER:UnregisterForEvent("TpSetVetDiff", EVENT_GEOUP_VETERAN_DIFFICULTY_CHANGED)
+            EVENT_MANAGER:UnregisterForEvent("TpSetVetDiff-" .. difficulty, EVENT_VETERAN_DIFFICULTY_CHANGED)
+            EVENT_MANAGER:UnregisterForEvent("TpSetVetDiff-" .. difficulty, EVENT_GEOUP_VETERAN_DIFFICULTY_CHANGED)
             onChanged()
         end
 
-	EVENT_MANAGER:RegisterForEvent("TpSetVetDiff", EVENT_VETERAN_DIFFICULTY_CHANGED, unregisterAndExecute)
-	EVENT_MANAGER:RegisterForEvent("TpSetVetDiff", EVENT_GEOUP_VETERAN_DIFFICULTY_CHANGED, unregisterAndExecute)
+    EVENT_MANAGER:RegisterForEvent("TpSetVetDiff-" .. difficulty, EVENT_VETERAN_DIFFICULTY_CHANGED, unregisterAndExecute)
+    EVENT_MANAGER:RegisterForEvent("TpSetVetDiff-" .. difficulty, EVENT_GEOUP_VETERAN_DIFFICULTY_CHANGED, unregisterAndExecute)
 
-    info('Changing dungeon difficulty to ' .. (veteranDifficulty and 'veteran' or 'normal'))
-	SetVeteranDifficulty(veteranDifficulty)
+    info('Changing dungeon difficulty to ' .. (difficulty == 'v' and 'veteran' or 'normal'))
+    SetVeteranDifficulty(difficulty == 'v')
 end
 
 -------------------------------------------------------------------------------    
@@ -108,19 +108,92 @@ end
 function Teleport.Dungeons:teleportToDungeon(name, aliasOnly)
     if Teleport.Helpers:checkIsEmptyAndPrintHelp(name) then return true end
 
-    local nodeName, nodeIndex, veteranDifficulty = _findDungeon(name, aliasOnly)
+    local nodeName, nodeIndex, difficulty = _findDungeon(name, aliasOnly)
     if nodeIndex == nil then
         dbg("Failed to teleport to " .. name .. ": No such dungeon/trial/arena found." 
             .. (aliasOnly and "(aliasOnly)" or ""))
         return false
     end
     
-    if veteranDifficulty == nil or veteranDifficulty == _getVeteranDifficulty() then
+    -- no change in difficulty
+    if difficulty == nil or difficulty == _getVeteranDifficulty() then
         _teleportToDungeonAux(nodeName, nodeIndex)
         return true
     end
 
-    _setVeteranDifficultyAndExecute(veteranDifficulty, function() _teleportToDungeonAux(nodeName, nodeIndex) end)
+    local leader = IsUnitGroupLeader("player") or not IsUnitGrouped("player") 
+    local inDungeon = IsUnitInDungeon("player")
+
+    if difficulty == 'n' or difficulty == 'v' then
+        -- change difficulty to desired one
+        if not leader then
+            info("You have to be your group's leader to change difficulty.")
+            return true
+        end
+            
+        if IsUnitInDungeon("player") then
+            info("You cannot change dungeon difficulty while in an instance.")
+            return true
+        end
+
+        if grouped and IsAnyGroupMemberInDungeon() then
+            info("One or more group members are currently in a dungeon. Changing dungeon difficulty will kick them out.")
+            info("If You wish to continue anyway, change dungeon difficulty manually in the group menu.")
+            return true
+        end
+        
+        local unregisterAndExecute = function()
+                EVENT_MANAGER:UnregisterForEvent("TpSetVetDiff-" .. difficulty, EVENT_VETERAN_DIFFICULTY_CHANGED)
+                EVENT_MANAGER:UnregisterForEvent("TpSetVetDiff-" .. difficulty, EVENT_GEOUP_VETERAN_DIFFICULTY_CHANGED)
+                _teleportToDungeonAux(nodeName, nodeIndex)
+            end
+
+        EVENT_MANAGER:RegisterForEvent("TpSetVetDiff-" .. difficulty, EVENT_VETERAN_DIFFICULTY_CHANGED, unregisterAndExecute)
+        EVENT_MANAGER:RegisterForEvent("TpSetVetDiff-" .. difficulty, EVENT_GEOUP_VETERAN_DIFFICULTY_CHANGED, unregisterAndExecute)
+
+        info('Changing dungeon difficulty to ' .. (difficulty == 'v' and 'veteran' or 'normal'))
+        SetVeteranDifficulty(difficulty == 'v')        
+    else -- difficulty == 'r'
+        -- reset instance / travel to reset instance
+        if not leader then
+            info("Teleporting to a hopefully reset instance of: " .. nodeName .. " (cost: " .. tostring(GetRecallCost(nodeIndex)) .. "g)")
+            FastTravelToNode(nodeIndex)
+            return true
+        end
+        
+        if inDungeon then
+            info("You need to leave the instance first.")
+            return true
+        end
+        
+        local currentDifficulty = _getVeteranDifficulty()
+        local oppositeDifficulty = currentDifficulty == 'v' and 'n' or 'v'
+        
+        local unregisterAndExecute = function()
+                EVENT_MANAGER:UnregisterForEvent("TpSetVetDiff-" .. currentDifficulty, EVENT_VETERAN_DIFFICULTY_CHANGED)
+                EVENT_MANAGER:UnregisterForEvent("TpSetVetDiff-" .. currentDifficulty, EVENT_GEOUP_VETERAN_DIFFICULTY_CHANGED)
+                
+                local unregisterAndExecute2 = function()
+                        EVENT_MANAGER:UnregisterForEvent("TpSetVetDiff-" .. oppositeDifficulty, EVENT_VETERAN_DIFFICULTY_CHANGED)
+                        EVENT_MANAGER:UnregisterForEvent("TpSetVetDiff-" .. oppositeDifficulty, EVENT_GEOUP_VETERAN_DIFFICULTY_CHANGED)
+                        info("Teleporting to a reset instance of: " .. nodeName .. " (cost: " .. tostring(GetRecallCost(nodeIndex)) .. "g)")
+                        FastTravelToNode(nodeIndex)
+                    end
+
+                EVENT_MANAGER:RegisterForEvent("TpSetVetDiff-" .. oppositeDifficulty, EVENT_VETERAN_DIFFICULTY_CHANGED, unregisterAndExecute2)
+                EVENT_MANAGER:RegisterForEvent("TpSetVetDiff-" .. oppositeDifficulty, EVENT_GEOUP_VETERAN_DIFFICULTY_CHANGED, unregisterAndExecute2)
+
+                info('Changing dungeon difficulty to ' .. (currentDifficulty == 'v' and 'veteran' or 'normal'))
+                SetVeteranDifficulty(currentDifficulty == 'v')                    
+            end
+
+        EVENT_MANAGER:RegisterForEvent("TpSetVetDiff-" .. currentDifficulty, EVENT_VETERAN_DIFFICULTY_CHANGED, unregisterAndExecute)
+        EVENT_MANAGER:RegisterForEvent("TpSetVetDiff-" .. currentDifficulty, EVENT_GEOUP_VETERAN_DIFFICULTY_CHANGED, unregisterAndExecute)
+
+        info('Changing dungeon difficulty to ' .. (oppositeDifficulty == 'v' and 'veteran' or 'normal'))
+        SetVeteranDifficulty(oppositeDifficulty == 'v')    
+        
+    end
     return true
 end
 

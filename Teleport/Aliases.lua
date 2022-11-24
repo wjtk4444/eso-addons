@@ -136,8 +136,8 @@ function Teleport.Aliases:getDungeonByAlias(alias)
     local expansion = PREDEFINED_ALIASES_DUNGEONS[alias]
     if expansion then return expansion, nil end
     local difficulty = string.sub(alias, 1, 1)
-    if difficulty == 'n' or difficulty == 'v' then
-        return PREDEFINED_ALIASES_DUNGEONS[string.sub(alias, 2)], difficulty == 'v'
+    if difficulty == 'n' or difficulty == 'v' or difficulty == 'r' then
+        return PREDEFINED_ALIASES_DUNGEONS[string.sub(alias, 2)], difficulty
     end
     return nil, nil
 end
