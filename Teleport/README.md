@@ -245,6 +245,7 @@ Pre-defined aliases in `Aliases.lua` as well as hardcoded lists of arenas (`Dung
 |eh1  | Elden Hollow I |
 |eh2  | Elden Hollow II |
 |fg   | Fungal Grotto I |
+|fg1  | Fungal Grotto I |
 |fg2  | Fungal Grotto II |
 |sw   | Selene's Web |
 |sc   | Spindleclutch I |
@@ -301,3 +302,5 @@ Pre-defined aliases in `Aliases.lua` as well as hardcoded lists of arenas (`Dung
 |rpb  | Red Petal Bastion |
 |ca   | Coral Aerie |
 |sr   | Shipwright's Regret |
+|ere  | Earthen Root Enclave |
+|gd   | Graven Deep |

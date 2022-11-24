@@ -7,7 +7,7 @@
 ## Title: Teleport
 ## Description: Teleport - General purpose command line teleporting tool
 ## Author: Schrodi
-## Version: 1.0.13
+## Version: 1.0.14
 ## APIVersion: 100033
 ## SavedVariables: TeleportAliases
 
@@ -21,4 +21,5 @@ Wayshrines.lua
 Dungeons.lua
 Houses.lua
 Aliases.lua
+SurveyMaps.lua
 

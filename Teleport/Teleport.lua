@@ -79,10 +79,11 @@ local function tp(name)
     name = Teleport.Aliases:expandUserDefined(name)
     if Teleport.Helpers:startsWith(name, '@') then return _playerHelper(name) end
 
-    if name == 'help'     then return _printHelp()           end
-    if name == 'examples' then return _printExamples()       end
-    if name == 'lstAlias' then return Teleport.Aliases:listAliases()  end
-    if name == 'leader'   then return Teleport.Players:teleportToLeader() end
+    if name == 'help'       then return _printHelp()           end
+    if name == 'examples'   then return _printExamples()       end
+    if name == 'lstAlias'   then return Teleport.Aliases:listAliases()  end
+    if name == 'leader'     then return Teleport.Players:teleportToLeader() end
+    if name == 'SurveyMaps' then return Teleport.SurveyMaps:teleportToNext() end
 
     if Teleport.Helpers:startsWith(name, 'addAlias ') then 
         return Teleport.Aliases:addAlias   (string.sub(name, #'addAlias ' + 1)) 

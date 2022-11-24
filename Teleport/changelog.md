@@ -1,3 +1,7 @@
+### 1.0.14
+- added Earthen Root Enclave and Graven Deep dungeons (finally)
+- added a new feature - travel to survey map zones from your inventory (/tp SurveyMaps - can be aliased just like any other command)
+
 ### 1.0.13
 - added Rockgrove (finally)
 - updated for Deadlands
