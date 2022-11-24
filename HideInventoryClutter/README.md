@@ -36,7 +36,7 @@ This addon determines whether something is worth deconstructing, ie., if materia
 - Green or above quality jewelry. Terne Grains are not particularly expensive, but it's still worth more than selling an item to the merchant.
 - Purple or above quality gear. Blue and green upgrade materials are cheap, prices offered by merchant are superior. This check does not account for rare style materials that could be obtained by deconstructing items of lower quality. The reasoning behind this is simplicity, most of style materials aren't worth much and the rare ones are, well, rare.
 
-To toggle visibility in deconstruction menu use the **Lock** icon (that otherwise has no effect as locked items cannot be deconstructed without unlocking them first).
+To toggle visibility in deconstruction menu use the **Lock** icon (that otherwise has no effect as locked items cannot be deconstructed without unlocking them first). Best used with [DoItAll](https://www.esoui.com/downloads/info690-DoItAllMassExtractDeconstructMoveMailattach....html) to just 1-click decon all without thinking. Just don't blame me for deconstructing any not-locked set items you wanted to keep, or things you wanted to sell.
 
 # Merchant filters
 
