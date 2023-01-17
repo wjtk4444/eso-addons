@@ -1,30 +1,82 @@
 HideInventoryClutter = { 
 	ADDON_NAME = "HideInventoryClutter",
+	activeMenu = LF_INVENTORY,
 	log = true  and function(msg) d("[HideInventoryClutter]: "        .. msg) end or function() end,
-	dbg = true  and function(msg) d("[HideInventoryClutter][DEBUG]: " .. msg) end or function() end,
+	dbg = false and function(msg) d("[HideInventoryClutter][DEBUG]: " .. msg) end or function() end,
 	err = true  and function(msg) d("[HideInventoryClutter][ERROR]: " .. msg) end or function() end,
 }
 
 function HideInventoryClutter:isCraftingMaterial(slot) 
 	if not self.savedVariables.materialsEnabled then return false end
-	return GetItemFilterTypeInfo(slot.bagId, slot.slotIndex) == ITEMFILTERTYPE_CRAFTING 
-		or GetItemType(slot.bagId, slot.slotIndex) == ITEMTYPE_LURE
+	if GetItemFilterTypeInfo(slot.bagId, slot.slotIndex) == ITEMFILTERTYPE_CRAFTING or GetItemType(slot.bagId, slot.slotIndex) == ITEMTYPE_LURE then
+		return not self.lockedVisible
+	end
+	
+	return false
 end
 
 function HideInventoryClutter:isWorthDeconstructing(b, i)
 	if not self.savedVariables.deconstructionEnabled then return true end
 
+	if GetItemType(b, i) == ITEMTYPE_TREASURE then
+		return self.lockedVisible
+	end
+
 	local itemType = GetItemType(b, i)
 	if itemType == ITEMTYPE_GLYPH_ARMOR or itemType == ITEMTYPE_GLYPH_JEWELRY or itemType == ITEMTYPE_GLYPH_WEAPON then
-		return not IsItemLinkCrafted(GetItemLink(b, i))
+		if not IsItemLinkCrafted(GetItemLink(b, i)) then
+			return true
+		else
+			return self.lockedVisible
+		end
 	end
 	
 	local quality = GetItemQuality(b, i)
 	if GetItemFilterTypeInfo(b, i) == ITEMFILTERTYPE_JEWELRY then 
-		return quality >= ITEM_QUALITY_MAGIC
+		if quality >= ITEM_QUALITY_MAGIC then
+			return true
+		else
+			return self.lockedVisible
+		end
 	end
 
-	return quality >= ITEM_QUALITY_ARTIFACT
+	if quality >= ITEM_QUALITY_ARTIFACT then
+		return true
+	end
+	
+	return self.lockedVisible
+end
+
+function HideInventoryClutter:isWorthSelling(b, i)
+	if not self.savedVariables.deconstructionEnabled then return true end
+
+	if GetItemType(b, i) == ITEMTYPE_TREASURE then
+		return true
+	end
+
+	local itemType = GetItemType(b, i)
+	if itemType == ITEMTYPE_GLYPH_ARMOR or itemType == ITEMTYPE_GLYPH_JEWELRY or itemType == ITEMTYPE_GLYPH_WEAPON then
+		if not IsItemLinkCrafted(GetItemLink(b, i)) then
+			return self.lockedVisible
+		else
+			return true
+		end
+	end
+	
+	local quality = GetItemQuality(b, i)
+	if GetItemFilterTypeInfo(b, i) == ITEMFILTERTYPE_JEWELRY then 
+		if quality >= ITEM_QUALITY_MAGIC then
+			return self.lockedVisible
+		else
+			return true
+		end
+	end
+
+	if quality >= ITEM_QUALITY_ARTIFACT then
+		return self.lockedVisible
+	end
+	
+	return true
 end
 
 function HideInventoryClutter:isConsumable(slot)
@@ -32,55 +84,48 @@ function HideInventoryClutter:isConsumable(slot)
 	
 	if IsItemStolen(slot.bagId, slot.slotIndex) then return false end
 
-	if self.EXTRA_CONSUMABLES[GetItemId(slot.bagId, slot.slotIndex)] then return true end
+	if self.EXTRA_CONSUMABLES[GetItemId(slot.bagId, slot.slotIndex)] then return not self.consumablesVisible end
 	
-	local itemType = GetItemType(slot.bagId, slot.slotIndex) -- returns: itemType, specializedItemType
-	return self.CONSUMABLE_ITEMTYPES[itemType] ~= nil
+	local itemType = GetItemType(slot.bagId, slot.slotIndex)
+	if self.CONSUMABLE_ITEMTYPES[itemType] ~= nil then
+		return not self.consumablesVisible
+	end
+	
+	return false
 end
 
 function HideInventoryClutter:isLocked(slot)
 	if not self.savedVariables.lockedEnabled then return false end
-	return CanItemBePlayerLocked(slot.bagId, slot.slotIndex) and IsItemPlayerLocked(slot.bagId, slot.slotIndex)
+	if CanItemBePlayerLocked(slot.bagId, slot.slotIndex) and IsItemPlayerLocked(slot.bagId, slot.slotIndex) then
+		return not self.lockedVisible
+	end
+	
+	return false
 end
 
 --------------------------------------------------------------------------------
 
 function HideInventoryClutter:toggleConsumables()
 	if self.movableIcon then
-		self.log("Toggle is disabled when icons are unlocked " .. (self.movableIcon and "un" or "") .. "locked!")
+		self.log("Toggle is disabled when icons are unlocked!")
 		return
-	end
-
-	for menu, filter in pairs(self.CONSUMABLE_FILTERS) do
-		if self.consumablesVisible then
-			self.libFilters:RegisterFilter(self.ADDON_NAME .. "consumables" .. tostring(menu), menu, filter)
-		else
-			self.libFilters:UnregisterFilter(self.ADDON_NAME .. "consumables" .. tostring(menu), menu)
-		end
-		self.libFilters:RequestUpdate(menu)
 	end
 	self.consumablesVisible = not self.consumablesVisible
-	
+	self.libFilters:RequestUpdate(self.activeMenu)
 	HideInventoryClutter_ConsumablesButton:SetAlpha(self.consumablesVisible and 1 or 0.3)
+	self.dbg("toggle consumables -> " .. tostring(self.consumablesVisible))
 end
 
-function HideInventoryClutter:toggleLocked()
+function HideInventoryClutter:toggleLocked(filter)
 	if self.movableIcon then
-		self.log("Toggle is disabled when icons are unlocked " .. (self.movableIcon and "un" or "") .. "locked!")
+		self.log("Toggle is disabled when icons are unlocked!")
 		return
 	end
-
-	for menu, filter in pairs(self.LOCKED_FILTERS) do
-		if self.lockedVisible then		
-			self.libFilters:RegisterFilter(self.ADDON_NAME .. "locked" .. tostring(menu), menu, filter)
-		else
-			self.libFilters:UnregisterFilter(self.ADDON_NAME .. "locked" .. tostring(menu), menu)
-		end
-		self.libFilters:RequestUpdate(menu)
-	end
-	self.lockedVisible = not self.lockedVisible
 	
+	self.lockedVisible = not self.lockedVisible
+	self.libFilters:RequestUpdate(self.activeMenu)
 	HideInventoryClutter_LockedButton:SetAlpha(self.lockedVisible and 1 or 0.3)
+	self.dbg("toggle locked -> " .. tostring(self.lockedVisible))
 end
 
 --------------------------------------------------------------------------------
@@ -90,15 +135,25 @@ function HideInventoryClutter:saveGuiPosition()
 	self.savedVariables.positionConsumable.top  = math.floor(HideInventoryClutter_ConsumablesButton:GetTop())	
 	
 	self.savedVariables.positionLocked.left = math.floor(HideInventoryClutter_LockedButton:GetLeft())
-	self.savedVariables.positionLocked.top  = math.floor(HideInventoryClutter_LockedButton:GetTop())	
+	self.savedVariables.positionLocked.top  = math.floor(HideInventoryClutter_LockedButton:GetTop())		
 end
 
-function HideInventoryClutter:getTooltipTextClutter()
+function HideInventoryClutter:getTooltipTextConsumables()
+	if self.activeMenu == LF_SMITHING_DECONSTRUCT or self.activeMenu == LF_JEWELRY_DECONSTRUCT or self.activeMenu == LF_ENCHANTING_EXTRACTION then
+		return "This filter doesn't affect deconstruction menu"
+	end
+
 	return "Consumables " .. (self.consumablesVisible and "visible" or "hidden")
 end
 
 function HideInventoryClutter:getTooltipTextLocked()
-	return "Locked items " .. (self.lockedVisible and "visible" or "hidden")
+	if self.activeMenu == LF_INVENTORY or self.activeMenu == LF_BANK_DEPOSIT or self.activeMenu == LF_HOUSE_BANK_DEPOSIT then
+		return "Locked items " .. (self.lockedVisible and "visible" or "hidden")
+	elseif self.activeMenu == LF_VENDOR_SELL then
+		return "Items not worth selling " .. (self.lockedVisible and "visible" or "hidden")
+	elseif self.activeMenu == LF_SMITHING_DECONSTRUCT or self.activeMenu == LF_JEWELRY_DECONSTRUCT or self.activeMenu == LF_ENCHANTING_EXTRACTION then
+		return "Items not worth deconstructing " .. (self.lockedVisible and "visible" or "hidden")
+	end
 end
 
 --------------------------------------------------------------------------------
@@ -107,41 +162,51 @@ function HideInventoryClutter:showButtons()
 	self.buttonsVisible = true
 	HideInventoryClutter_ConsumablesButton:SetHidden(false)
 	HideInventoryClutter_LockedButton:SetHidden(false)
+	self.dbg("buttons -> " .. tostring(self.buttonsVisible))
 end
 
 function HideInventoryClutter:hideButtons()
 	self.buttonsVisible = false
 	HideInventoryClutter_ConsumablesButton:SetHidden(true)
 	HideInventoryClutter_LockedButton:SetHidden(true)
+	self.dbg("buttons -> " .. tostring(self.buttonsVisible))
 end
 
 function HideInventoryClutter:initalize()
-	self.consumablesVisible = true
-	self.lockedVisible = true
+	self.consumablesVisible = false
+	self.lockedVisible = false
 	self.movableIcon = false
 	self.buttonsVisible = false
 	self.libFilters = LibFilters3
 	self.libFilters:InitializeLibFilters()
 	
-	self.savedVariables = ZO_SavedVars:NewAccountWide("HideInventoryClutterPosition", 1, nil, { 
-			positionLocked     = { top = 820, left = 1361 },
-			positionConsumable = { top = 811, left = 1379 },
+	self.savedVariables = ZO_SavedVars:NewAccountWide("HideInventoryClutterPosition", 2, nil, { 
+			positionLocked     = { top = nil, left = nil },
+			positionConsumable = { top = nil, left = nil },
 			lockedEnabled = true,
 			consumablesEnabled = true,
 			materialsEnabled = true,
 			deconstructionEnabled = true,
 		})
 
-	HideInventoryClutter_ConsumablesButton:SetAlpha(1)
+	HideInventoryClutter_ConsumablesButton:SetAlpha(0.3)
 	HideInventoryClutter_ConsumablesButton:ClearAnchors()
-	HideInventoryClutter_ConsumablesButton:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, 
+	if self.savedVariables.positionConsumable.top == nil and self.savedVariables.positionConsumable.left == nil then
+		HideInventoryClutter_ConsumablesButton:SetAnchor(TOPLEFT, ZO_PlayerInventoryInfoBar, TOPLEFT, 282, 9)
+	else
+		HideInventoryClutter_ConsumablesButton:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, 
 		self.savedVariables.positionConsumable.left, self.savedVariables.positionConsumable.top)
+	end
 	
-	HideInventoryClutter_LockedButton:SetAlpha(1)
+	HideInventoryClutter_LockedButton:SetAlpha(0.3)
 	HideInventoryClutter_LockedButton:ClearAnchors()
-	HideInventoryClutter_LockedButton:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, 
-		self.savedVariables.positionLocked.left, self.savedVariables.positionLocked.top)
-
+	if self.savedVariables.positionLocked.top == nil and self.savedVariables.positionLocked.left == nil then
+		HideInventoryClutter_LockedButton:SetAnchor(TOPLEFT, ZO_PlayerInventoryInfoBar, TOPLEFT, 300, 0)
+	else
+		HideInventoryClutter_LockedButton:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, 
+			self.savedVariables.positionLocked.left, self.savedVariables.positionLocked.top)
+	end
+	
 	self.CONSUMABLE_ITEMTYPES = {
 		[ITEMTYPE_FOOD  ] = true,
 		[ITEMTYPE_DRINK ] = true,
@@ -156,62 +221,81 @@ function HideInventoryClutter:initalize()
 		[121550] = true, -- Scroll of Pelinal's Ferocity
 	}
 
-	self.LOCKED_FILTERS = {
-		[LF_BANK_DEPOSIT        ] = function(s) return not self:isLocked(s) end,
-		[LF_HOUSE_BANK_DEPOSIT  ] = function(s) return not self:isLocked(s) end,
-		[LF_BANK_WITHDRAW       ] = function(s) return true end, -- temporary countermeasure to libFilters bug
-		[LF_HOUSE_BANK_WITHDRAW ] = function(s) return true end, -- temporary countermeasure to libFilters bug
-		[LF_INVENTORY           ] = function(s) return not self:isLocked(s) end,
-		[LF_VENDOR_SELL         ] = function(s) 
-				if self.savedVariables.deconstructionEnabled then
-					return not self:isCraftingMaterial(s) and not self:isWorthDeconstructing(s.bagId, s.slotIndex)
-				else
-					return not self:isCraftingMaterial(s)
-				end
-			end,
-		[LF_SMITHING_DECONSTRUCT] = function(b, i) return self:isWorthDeconstructing(b, i) end,
-		[LF_JEWELRY_DECONSTRUCT ] = function(b, i) return self:isWorthDeconstructing(b, i) end,
+	local lockedFilters = {
+		[LF_BANK_DEPOSIT         ] = function(s) return not self:isLocked(s) end,
+		[LF_HOUSE_BANK_DEPOSIT   ] = function(s) return not self:isLocked(s) end,
+		[LF_INVENTORY            ] = function(s) return not self:isLocked(s) end,
+		[LF_VENDOR_SELL          ] = function(s) return self:isWorthSelling(s.bagId, s.slotIndex) end,
+		[LF_SMITHING_DECONSTRUCT ] = function(b, i) return self:isWorthDeconstructing(b, i) end,
+		[LF_JEWELRY_DECONSTRUCT  ] = function(b, i) return self:isWorthDeconstructing(b, i) end,
+		[LF_ENCHANTING_EXTRACTION] = function(b, i) return self:isWorthDeconstructing(b, i) end,
 	}
 	
-	self.CONSUMABLE_FILTERS = {
-		[LF_BANK_DEPOSIT        ] = function(s) return not self:isConsumable(s) end,
-		[LF_HOUSE_BANK_DEPOSIT  ] = function(s) return not self:isConsumable(s) end,
-		[LF_GUILDBANK_WITHDRAW  ] = function(s) return not self:isConsumable(s) end,
-		[LF_GUILDBANK_DEPOSIT   ] = function(s) return not self:isConsumable(s) end,
-		[LF_BANK_WITHDRAW       ] = function(s) return true end, -- temporary countermeasure to libFilters bug
-		[LF_HOUSE_BANK_WITHDRAW ] = function(s) return true end, -- temporary countermeasure to libFilters bug
-		[LF_VENDOR_SELL         ] = function(s) return not self:isConsumable(s) end,
-		[LF_MAIL_SEND           ] = function(s) return not self:isConsumable(s) end,
-		[LF_TRADE               ] = function(s) return not self:isConsumable(s) end,
-		[LF_INVENTORY           ] = function(s) return not self:isConsumable(s) end,
-		[LF_GUILDSTORE_SELL     ] = function(s) return not self:isConsumable(s) end,
+	local consumableFilters = {
+		[LF_BANK_DEPOSIT         ] = function(s) return not self:isConsumable(s) end,
+		[LF_HOUSE_BANK_DEPOSIT   ] = function(s) return not self:isConsumable(s) end,
+		[LF_GUILDBANK_DEPOSIT    ] = function(s) return not self:isConsumable(s) end,
+		[LF_VENDOR_SELL          ] = function(s) return not self:isConsumable(s) end,
+		[LF_MAIL_SEND            ] = function(s) return not self:isConsumable(s) end,
+		[LF_TRADE                ] = function(s) return not self:isConsumable(s) end,
+		[LF_INVENTORY            ] = function(s) return not self:isConsumable(s) end,
+		[LF_GUILDSTORE_SELL      ] = function(s) return not self:isConsumable(s) end,
 	}
+	
+	self:SetupFilters(lockedFilters, "locked")
+	self:SetupFilters(consumableFilters, "consumable")
+	
+	local isWorthToDecon = function(b, i) return self:isWorthDeconstructing(b, i) end
+	self:SetupDeconFilter(LF_SMITHING_DECONSTRUCT,  "all",        isWorthToDecon)
+	self:SetupDeconFilter(LF_SMITHING_DECONSTRUCT,  "armor",      isWorthToDecon)
+	self:SetupDeconFilter(LF_SMITHING_DECONSTRUCT,  "weapons",    isWorthToDecon)
+	self:SetupDeconFilter(LF_JEWELRY_DECONSTRUCT,   "jewelry",    isWorthToDecon)
+	self:SetupDeconFilter(LF_ENCHANTING_EXTRACTION, "enchanting", isWorthToDecon)
+end
 
-	local onShowPlayerInventory = ZO_PlayerInventory:GetHandler("OnShow")
-	ZO_PlayerInventory:SetHandler("OnShow", function(...)
-		self:showButtons()
-		if onShowPlayerInventory then onShowPlayerInventory(...) end
-    end)
-	
-	local onHidePlayerInventory = ZO_PlayerInventory:GetHandler("OnHide")
-	ZO_PlayerInventory:SetHandler("OnHide", function(...)
-		--if not self.buttonsVisible then 
-		self:hideButtons()
-		--end
-		if onHidePlayerInventory then onHidePlayerInventory(...) end
-    end)	
-	
-	EVENT_MANAGER:RegisterForEvent(self.ADDON_NAME, EVENT_OPEN_BANK,  function() self:showButtons() end)
-	EVENT_MANAGER:RegisterForEvent(self.ADDON_NAME, EVENT_CLOSE_BANK, function() self:hideButtons() end)
+function HideInventoryClutter:SetupFilters(filters, name)
+	for menu, filter in pairs(filters) do
+		local nameShown  = self.libFilters:RegisterCallbackName(self.ADDON_NAME .. name, menu, true)
+		local nameHidden = self.libFilters:RegisterCallbackName(self.ADDON_NAME .. name, menu, false)
 		
-	EVENT_MANAGER:RegisterForEvent(self.ADDON_NAME, EVENT_OPEN_STORE,  function() self:showButtons() end)
-	EVENT_MANAGER:RegisterForEvent(self.ADDON_NAME, EVENT_CLOSE_STORE, function() self:hideButtons() end)
+		local callbackShown = function (callbackName, filterType, _, _, _, _, _)
+			if not self.libFilters:IsFilterRegistered(self.ADDON_NAME .. name .. menu, menu) then
+				self.libFilters:RegisterFilter(self.ADDON_NAME .. name .. menu, menu, filters[menu])
+				self.libFilters:RequestUpdate(menu)
+			end
+			self.activeMenu = menu
+			self.dbg("activeMenu -> " .. tostring(self.activeMenu))
+			self:showButtons()
+			self.dbg("shown -> " .. tostring(self.name))
+		end
+		
+		local callbackHidden = function (callbackName, filterType, _, _, _, _, _)
+			self.libFilters:UnregisterFilter(self.ADDON_NAME .. name .. menu, menu)
+			self:hideButtons()
+			self.dbg("hidden -> " .. tostring(self.name))
+		end
+		
+		CALLBACK_MANAGER:RegisterCallback(nameShown, callbackShown)
+		CALLBACK_MANAGER:RegisterCallback(nameHidden, callbackHidden)
+	end
+end
 
-	EVENT_MANAGER:RegisterForEvent(self.ADDON_NAME, EVENT_CRAFTING_STATION_INTERACT, function() self:showButtons() end)
-	EVENT_MANAGER:RegisterForEvent(self.ADDON_NAME, EVENT_END_CRAFTING_STATION_INTERACT, function() self:hideButtons() end)
-	
-	self:toggleLocked()
-	self:toggleConsumables()
+function HideInventoryClutter:SetupDeconFilter(menu, scope, filter)
+	local nameShown  = self.libFilters:RegisterCallbackName(self.ADDON_NAME .. "decon", menu, true,  nil, scope)
+	local nameHidden = self.libFilters:RegisterCallbackName(self.ADDON_NAME .. "decon", menu, false, nil, scope)
+		
+	CALLBACK_MANAGER:RegisterCallback(nameShown, function (...)
+			if not self.libFilters:IsFilterRegistered(self.ADDON_NAME .. "decon" .. scope, menu) then
+				self.libFilters:RegisterFilter(self.ADDON_NAME .. "decon" .. scope, menu, filter)
+				self.libFilters:RequestUpdate(menu)
+			end
+			self.activeMenu = menu
+			self:showButtons()
+		end)
+	CALLBACK_MANAGER:RegisterCallback(nameHidden, function (...)
+			self.libFilters:UnregisterFilter(self.ADDON_NAME .. "decon" .. scope, menu)
+			self:hideButtons()
+		end)
 end
 
 function HideInventoryClutter:buildMenu()
@@ -222,92 +306,85 @@ function HideInventoryClutter:buildMenu()
 			type = "description",
 			width = "full",
 			text = 
-[[An addon that hides inventory clutter, namely locked items and common consumbles.
-See available filters below (hover over them to get a short description).
-Check addon's website or see README.md file in addon folder to learn the details.
-Full list of affected consumables:
-- lockpicks
-- grand repair kits
-- soul gems
-- buff food / drinks
-- potions
-- poisons]]
+			[[An addon that hides inventory clutter, namely locked items and common consumbles.
+			See available filters below (hover over them to get a short description).
+			Check addon's website or see README.md file in addon folder to learn the details.
+			Full list of affected consumables:
+			- lockpicks
+			- grand repair kits
+			- soul gems
+			- buff food / drinks
+			- potions
+			- poisons]]
 		},
 		[2] = {
 			type = "button",
-			name = "toggle lock / unlock icon position",
+			name = "Unlock icon position",
 			func = function() 
-				self.movableIcon = not self.movableIcon
-				self.log("Icons " .. (self.movableIcon and "un" or "") .. "locked!")
-				HideInventoryClutter_ConsumablesButton:SetMovable(self.movableIcon)
-				HideInventoryClutter_LockedButton:SetMovable(self.movableIcon)
+				self.movableIcon = true
+				HideInventoryClutter_ConsumablesButton:SetMovable(true)
+				HideInventoryClutter_LockedButton:SetMovable(true)
 
-				if self.movableIcon then
-					HideInventoryClutter_LockedButton:SetAlpha(1)
-					HideInventoryClutter_LockedButton:SetHidden(false)
-					HideInventoryClutter_ConsumablesButton:SetAlpha(1)
-					HideInventoryClutter_ConsumablesButton:SetHidden(false)
-				else
-					HideInventoryClutter_LockedButton:SetAlpha(self.lockedVisible and 1 or 0.3)
-					HideInventoryClutter_LockedButton:SetHidden(true)
-					HideInventoryClutter_ConsumablesButton:SetAlpha(self.lockedVisible and 1 or 0.3)
-					HideInventoryClutter_ConsumablesButton:SetHidden(true)
-				end
+				HideInventoryClutter_LockedButton:SetAlpha(1)
+				HideInventoryClutter_LockedButton:SetHidden(false)
+				HideInventoryClutter_ConsumablesButton:SetAlpha(1)
+				HideInventoryClutter_ConsumablesButton:SetHidden(false)
+				
+				self.log("Icons unlocked.")
 			end
 		},
 		[3] = {
 			type = "button",
-			name = "reset position",
+			name = "Reset position",
 			func = function()
-				if not self.movableIcon then
-					self.log("Icons " .. (self.movableIcon and "un" or "") .. "locked!")
-				end
-
-				self.savedVariables.positionConsumable.top  = 811 
-				self.savedVariables.positionConsumable.left = 1379 
-				HideInventoryClutter_ConsumablesButton:ClearAnchors()
-				HideInventoryClutter_ConsumablesButton:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, 
-					self.savedVariables.positionConsumable.left, self.savedVariables.positionConsumable.top)
-				
-				self.savedVariables.positionLocked.top  = 820 	
-				self.savedVariables.positionLocked.left = 1361 
 				HideInventoryClutter_LockedButton:ClearAnchors()
-				HideInventoryClutter_LockedButton:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, 
-					self.savedVariables.positionLocked.left, self.savedVariables.positionLocked.top)
+				HideInventoryClutter_LockedButton:SetAnchor(TOPLEFT, ZO_PlayerInventoryInfoBar, TOPLEFT, 282, 9)
+					
+				HideInventoryClutter_ConsumablesButton:ClearAnchors()
+				HideInventoryClutter_ConsumablesButton:SetAnchor(TOPLEFT, ZO_PlayerInventoryInfoBar, TOPLEFT, 300, 0)
 
 				self:saveGuiPosition()
+				self.log("Icons position restored to default and saved.")
 			end
 		},
 		[4] = {
-			type = "checkbox",
-			name = "Locked items filter",
-			tooltip = "hides locked items from inventory window",
-			getFunc = function() return self.savedVariables.lockedEnabled end,
-			setFunc = function(value) 
-				self.savedVariables.lockedEnabled = value 
-				self:toggleLocked()
-				self:toggleLocked()
+			type = "button",
+			name = "Save new position",
+			func = function()
+				self.movableIcon = false
+				HideInventoryClutter_ConsumablesButton:SetMovable(false)
+				HideInventoryClutter_LockedButton:SetMovable(false)
+				HideInventoryClutter_LockedButton:SetAlpha(self.lockedVisible and 1 or 0.3)
+				HideInventoryClutter_LockedButton:SetHidden(true)
+				HideInventoryClutter_ConsumablesButton:SetAlpha(self.lockedVisible and 1 or 0.3)
+				HideInventoryClutter_ConsumablesButton:SetHidden(true)
+
+				self:saveGuiPosition()
+				self.log("Icons locked, new position saved.")
 			end
 		},
 		[5] = {
 			type = "checkbox",
+			name = "Locked items filter",
+			tooltip = "hides locked items from inventory window",
+			getFunc = function() return self.savedVariables.lockedEnabled end,
+			setFunc = function(value) self.savedVariables.lockedEnabled = value end
+		},
+		[6] = {
+			type = "checkbox",
 			name = "Consumables filter",
 			tooltip = "hides common consumables from inventory and merchant sell window",
 			getFunc = function() return self.savedVariables.consumablesEnabled end,
-			setFunc = function(value) 
-				self.savedVariables.consumablesEnabled = value
-				self:toggleConsumables()
-				self:toggleConsumables()
-			end
+			setFunc = function(value) self.savedVariables.consumablesEnabled = value end
 		},
-		[6] = {
+		[7] = {
 			type = "checkbox",
 			name = "Materials filter",
 			tooltip = "hides materials from merchant sell window",
 			getFunc = function() return self.savedVariables.materialsEnabled end,
 			setFunc = function(value) self.savedVariables.materialsEnabled = value end
 		},
-		[7] = {
+		[8] = {
 			type = "checkbox",
 			name = "Deconstruction filter",
 			tooltip = "hides items not worth deconstructing from deconstruction window and items worth deconstucting from merchant window",

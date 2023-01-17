@@ -13,7 +13,7 @@
 					</OnClicked>
 					<OnMouseEnter>
 						InitializeTooltip(InformationTooltip, self, TOP, 0, 0)
-						SetTooltipText(InformationTooltip, HideInventoryClutter:getTooltipTextClutter())
+						SetTooltipText(InformationTooltip, HideInventoryClutter:getTooltipTextConsumables())
 					</OnMouseEnter>
 					<OnMouseExit>
 						ClearTooltip(InformationTooltip)

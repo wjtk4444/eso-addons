@@ -12,8 +12,6 @@ If you don't like one or more of the filters, they can all be disabled individua
 
 Most players cary multiple gear sets in their inventories, and obviously, they are aware of the fact. Now you can toggle visibility of locked items with just one click. 
 
-_This filter is currently being unintentionally applied to bank/chest withdraw window as well. I am yet to find a workaround for this issue. Apologies for the inconvenience._
-
 # Consumables
 
 Items that everyone carries at all times, seeing them is unnecessary except for restocking or selling excess amounts. Toggle applies to:
@@ -25,8 +23,6 @@ Items that everyone carries at all times, seeing them is unnecessary except for 
 - buff food and drinks
 - potions
 - poisons
-
-_This filter is currently being unintentionally applied to bank/chest withdraw window as well. I am yet to find a workaround for this issue. Apologies for the inconvenience._
 
 # Deconstruction filters
 
@@ -42,9 +38,5 @@ To toggle visibility in deconstruction menu use the **Lock** icon (that otherwis
 
 Items considered worth deconstructing, ie., purple gear (see full criteria above) will be hidden from the merchant sell window. Additionally, crafting materials are also hidden. This filter is targeted at people who decided to play the game without ESO+ membership and therefore carry materials in their inventory (before depositing them in bank. Once again my recommendation for automating all that goes to [Personal Assistant](https://www.esoui.com/downloads/info381-PersonalAssistantBankingJunkLootRepair.html). To toggle visibility in merchant sell window use the **Lock** icon (that otherwise has no effect as locked items cannot be sold before unlocking them first).
 
-
-# Known bugs
-
-As mentioned before, inventory (locked items and consumables) filters are currently being applied to (house) bank withdrawal panel. This is unintentional and hopefully will be fixed in the future. If you want to withdraw locked/consumable items, you need to toggle the filter first.
 
 ![](../_screenshots/HideInventoryClutter/HideInventoryClutter.png)
