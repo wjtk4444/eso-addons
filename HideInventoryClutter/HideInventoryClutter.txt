@@ -7,10 +7,17 @@
 ## Title: HideInventoryClutter
 ## Description: toggle visibility of various items in inventory
 ## Author: Schrodi
-## Version: 3.0
+## Version: 2.0
 ## APIVersion: 100034
 ## DependsOn: LibFilters-3.0 LibAddonMenu-2.0
 ## SavedVariables: HideInventoryClutterPosition
 
-HideInventoryClutter.lua
 HideInventoryClutter.xml
+
+HideInventoryClutter.lua
+Settings.lua
+UI.lua
+Filters.lua
+
+
+
