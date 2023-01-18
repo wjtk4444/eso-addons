@@ -1,6 +1,5 @@
 HideInventoryClutter = { 
 	ADDON_NAME = "HideInventoryClutter",
-	activeMenu = LF_INVENTORY,
 	log = true  and function(msg) d("[HideInventoryClutter]: "        .. msg) end or function() end,
 	dbg = false and function(msg) d("[HideInventoryClutter][DEBUG]: " .. msg) end or function() end,
 	err = true  and function(msg) d("[HideInventoryClutter][ERROR]: " .. msg) end or function() end,
@@ -12,7 +11,7 @@ function HideInventoryClutter:toggleConsumables()
 		return
 	end
 	self.consumablesVisible = not self.consumablesVisible
-	self.libFilters:RequestUpdate(self.activeMenu)
+	self.libFilters:RequestUpdate(self.lastActiveMenu)
 	HideInventoryClutter_ConsumablesButton:SetAlpha(self.consumablesVisible and 1 or 0.3)
 	self.dbg("toggle consumables -> " .. tostring(self.consumablesVisible))
 end
@@ -24,7 +23,7 @@ function HideInventoryClutter:toggleLocked(filter)
 	end
 	
 	self.lockedVisible = not self.lockedVisible
-	self.libFilters:RequestUpdate(self.activeMenu)
+	self.libFilters:RequestUpdate(self.lastActiveMenu)
 	HideInventoryClutter_LockedButton:SetAlpha(self.lockedVisible and 1 or 0.3)
 	self.dbg("toggle locked -> " .. tostring(self.lockedVisible))
 end
@@ -34,6 +33,7 @@ function HideInventoryClutter:initalize()
 	self.lockedVisible = false
 	self.movableIcon = false
 	self.buttonsVisible = false
+	self.lastActiveMenu = nil
 	self.libFilters = LibFilters3
 	self.libFilters:InitializeLibFilters()
 	self:setupSavedVars()
@@ -97,8 +97,8 @@ function HideInventoryClutter:SetupFilters(filters, name)
 				self.libFilters:RegisterFilter(self.ADDON_NAME .. name .. menu, menu, filters[menu])
 				self.libFilters:RequestUpdate(menu)
 			end
-			self.activeMenu = menu
-			self.dbg("activeMenu -> " .. tostring(self.activeMenu))
+			self.lastActiveMenu = menu
+			self.dbg("lastActiveMenu -> " .. tostring(self.lastActiveMenu))
 			self:showButtons()
 			self.dbg("shown -> " .. tostring(name))
 		end
@@ -123,8 +123,8 @@ function HideInventoryClutter:SetupDeconFilter(menu, scope, filter)
 				self.libFilters:RegisterFilter(self.ADDON_NAME .. "decon" .. scope, menu, filter)
 				self.libFilters:RequestUpdate(menu)
 			end
-			self.activeMenu = menu
-			self.dbg("activeMenu -> " .. tostring(self.activeMenu))
+			self.lastActiveMenu = menu
+			self.dbg("lastActiveMenu -> " .. tostring(self.lastActiveMenu))
 			self:showButtons()
 			self.dbg("shown -> decon " .. tostring(scope))
 		end)

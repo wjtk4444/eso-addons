@@ -19,7 +19,9 @@ function HideInventoryClutter:initializeUI()
 end
 
 function HideInventoryClutter:getTooltipTextConsumables()
-	if self.activeMenu == LF_SMITHING_DECONSTRUCT or self.activeMenu == LF_JEWELRY_DECONSTRUCT or self.activeMenu == LF_ENCHANTING_EXTRACTION then
+	if self.lastActiveMenu == LF_SMITHING_DECONSTRUCT 
+	or self.lastActiveMenu == LF_JEWELRY_DECONSTRUCT 
+	or self.lastActiveMenu == LF_ENCHANTING_EXTRACTION then
 		return "This filter doesn't affect deconstruction menu"
 	end
 
@@ -27,11 +29,13 @@ function HideInventoryClutter:getTooltipTextConsumables()
 end
 
 function HideInventoryClutter:getTooltipTextLocked()
-	if self.activeMenu == LF_INVENTORY or self.activeMenu == LF_BANK_DEPOSIT or self.activeMenu == LF_HOUSE_BANK_DEPOSIT then
+	if self.lastActiveMenu == LF_INVENTORY 
+	or self.lastActiveMenu == LF_BANK_DEPOSIT 
+	or self.lastActiveMenu == LF_HOUSE_BANK_DEPOSIT then
 		return "Locked items " .. (self.lockedVisible and "visible" or "hidden")
-	elseif self.activeMenu == LF_VENDOR_SELL then
+	elseif self.lastActiveMenu == LF_VENDOR_SELL then
 		return "Items not worth selling " .. (self.lockedVisible and "visible" or "hidden")
-	elseif self.activeMenu == LF_SMITHING_DECONSTRUCT or self.activeMenu == LF_JEWELRY_DECONSTRUCT or self.activeMenu == LF_ENCHANTING_EXTRACTION then
+	elseif self.lastActiveMenu == LF_SMITHING_DECONSTRUCT or self.lastActiveMenu == LF_JEWELRY_DECONSTRUCT or self.lastActiveMenu == LF_ENCHANTING_EXTRACTION then
 		return "Items not worth deconstructing " .. (self.lockedVisible and "visible" or "hidden")
 	end
 end
