@@ -38,5 +38,6 @@ To toggle visibility in deconstruction menu use the **Lock** icon (that otherwis
 
 Items considered worth deconstructing, ie., purple gear (see full criteria above) will be hidden from the merchant sell window. Additionally, crafting materials are also hidden. This filter is targeted at people who decided to play the game without ESO+ membership and therefore carry materials in their inventory (before depositing them in bank. Once again my recommendation for automating all that goes to [Personal Assistant](https://www.esoui.com/downloads/info381-PersonalAssistantBankingJunkLootRepair.html). To toggle visibility in merchant sell window use the **Lock** icon (that otherwise has no effect as locked items cannot be sold before unlocking them first).
 
+# Example - player inventory
 
 ![](../_screenshots/HideInventoryClutter/HideInventoryClutter.png)
