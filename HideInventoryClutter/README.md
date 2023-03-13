@@ -28,6 +28,13 @@ By default you'll only see items that meet the following criteria at a deconstru
 
 Remaining items are usually better off sold to a merchant (depends on the style material price, which this addon currently disregards). I highly recommend [DoItAll](https://www.esoui.com/downloads/info690-DoItAllMassExtractDeconstructMoveMailattach....html) to deconstruct items in one click. For use with caution ;)
 
+# items "worth" selling
+
+By default you'll only see items that meet the following criteria in the vendor panel. You can toggle the remaining items with the lock button.
+
+- Items that are worth deconstructing (see above)
+- crafting materials
+
 # Usage
 
 To move icons to the desired location on your screen go to addon settings and unlock button positions, move them around and lock them again to save new position.
