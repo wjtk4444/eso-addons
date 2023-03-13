@@ -1,8 +1,8 @@
 ### 1.0.16
 - added Bal Sunnar and Scrivener's Hall
-- added a new feature - travel to zones based on survey/treasure maps in your inventory
-- `/tp surveymaps`
+- removed some old, unused aliases
 - changed addAlias, delAlias and lstAlias commands to --add, --remove and --list
+- changed SurveyMaps command to surveymaps
 - updated readme
 
 ### 1.0.15
