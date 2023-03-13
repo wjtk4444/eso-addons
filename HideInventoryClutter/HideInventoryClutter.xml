@@ -1,54 +1,54 @@
 <GuiXml>
-	<Controls>	
-	<TopLevelControl name="HideInventoryClutterContainer">
-			<Controls>
-				<Button name="HideInventoryClutter_ConsumablesButton" inherits="ZO_ButtonBehaviorClickSound" mouseEnabled="true" hidden="true" movable="false">
-					<Dimensions x="50" y="50" />
-					<Anchor point="BOTTOM" relativePoint="CENTER" relativeTo="GuiRoot" />
-					<OnMoveStop>
-						HideInventoryClutter:saveGuiPosition()
-					</OnMoveStop>
-					<OnClicked>
-						HideInventoryClutter:toggleConsumables()
-					</OnClicked>
-					<OnMouseEnter>
-						InitializeTooltip(InformationTooltip, self, TOP, 0, 0)
-						SetTooltipText(InformationTooltip, HideInventoryClutter:getTooltipTextConsumables())
-					</OnMouseEnter>
-					<OnMouseExit>
-						ClearTooltip(InformationTooltip)
-					</OnMouseExit>
-					<Textures
-						normal="esoui/art/inventory/inventory_tabicon_consumables_up.dds"
-						pressed="esoui/artinventory/inventory_tabicon_consumables_up.dds"
-						mouseOver="esoui/inventory/inventory_tabicon_consumables_up.dds"
-					/>
-					<Anchor point="CENTER" relativePoint="CENTER" relativeTo="$(parent)" />
-				</Button>
-				<Button name="HideInventoryClutter_LockedButton" inherits="ZO_ButtonBehaviorClickSound" mouseEnabled="true" hidden="true" movable="false">
-					<Dimensions x="32" y="32" />
-					<Anchor point="BOTTOM" relativePoint="CENTER" relativeTo="GuiRoot" />
-					<OnMoveStop>
-						HideInventoryClutter:saveGuiPosition()
-					</OnMoveStop>
-					<OnClicked>
-						HideInventoryClutter:toggleLocked()
-					</OnClicked>
-					<OnMouseEnter>
-						InitializeTooltip(InformationTooltip, self, TOP, 0, 0)
-						SetTooltipText(InformationTooltip, HideInventoryClutter:getTooltipTextLocked())
-					</OnMouseEnter>
-					<OnMouseExit>
-						ClearTooltip(InformationTooltip)
-					</OnMouseExit>
-					<Textures
-						normal="esoui/art/miscellaneous/locked_up.dds"
-						pressed="esoui/art/miscellaneous/locked_up.dds"
-						mouseOver="esoui/art/miscellaneous/locked_up.dds"
-					/>
-					<Anchor point="CENTER" relativePoint="CENTER" relativeTo="$(parent)" />
-				</Button>
-			</Controls>
-		</TopLevelControl>
-	</Controls>
+    <Controls>    
+    <TopLevelControl name="HideInventoryClutterContainer">
+            <Controls>
+                <Button name="HideInventoryClutter_ConsumablesButton" inherits="ZO_ButtonBehaviorClickSound" mouseEnabled="true" hidden="true" movable="false">
+                    <Dimensions x="50" y="50" />
+                    <Anchor point="BOTTOM" relativePoint="CENTER" relativeTo="GuiRoot" />
+                    <OnMoveStop>
+                        HideInventoryClutter:saveGuiPosition()
+                    </OnMoveStop>
+                    <OnClicked>
+                        HideInventoryClutter:toggleConsumables()
+                    </OnClicked>
+                    <OnMouseEnter>
+                        InitializeTooltip(InformationTooltip, self, TOP, 0, 0)
+                        SetTooltipText(InformationTooltip, HideInventoryClutter:getTooltipTextConsumables())
+                    </OnMouseEnter>
+                    <OnMouseExit>
+                        ClearTooltip(InformationTooltip)
+                    </OnMouseExit>
+                    <Textures
+                        normal="esoui/art/inventory/inventory_tabicon_consumables_up.dds"
+                        pressed="esoui/artinventory/inventory_tabicon_consumables_up.dds"
+                        mouseOver="esoui/inventory/inventory_tabicon_consumables_up.dds"
+                    />
+                    <Anchor point="CENTER" relativePoint="CENTER" relativeTo="$(parent)" />
+                </Button>
+                <Button name="HideInventoryClutter_LockedButton" inherits="ZO_ButtonBehaviorClickSound" mouseEnabled="true" hidden="true" movable="false">
+                    <Dimensions x="32" y="32" />
+                    <Anchor point="BOTTOM" relativePoint="CENTER" relativeTo="GuiRoot" />
+                    <OnMoveStop>
+                        HideInventoryClutter:saveGuiPosition()
+                    </OnMoveStop>
+                    <OnClicked>
+                        HideInventoryClutter:toggleLocked()
+                    </OnClicked>
+                    <OnMouseEnter>
+                        InitializeTooltip(InformationTooltip, self, TOP, 0, 0)
+                        SetTooltipText(InformationTooltip, HideInventoryClutter:getTooltipTextLocked())
+                    </OnMouseEnter>
+                    <OnMouseExit>
+                        ClearTooltip(InformationTooltip)
+                    </OnMouseExit>
+                    <Textures
+                        normal="esoui/art/miscellaneous/locked_up.dds"
+                        pressed="esoui/art/miscellaneous/locked_up.dds"
+                        mouseOver="esoui/art/miscellaneous/locked_up.dds"
+                    />
+                    <Anchor point="CENTER" relativePoint="CENTER" relativeTo="$(parent)" />
+                </Button>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
 </GuiXml>
