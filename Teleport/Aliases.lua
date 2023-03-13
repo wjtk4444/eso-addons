@@ -11,7 +11,6 @@ local PREDEFINED_ALIASES_ZONES = {
         ["Elsweyr"                     ] = "Northern Elsweyr",
         ["Skyrim"                      ] = "Western Skyrim",
         ["Deadlands"                   ] = "The Deadlands",
-        ["Isle"                        ] = "High Isle",
     }
 
 local PREDEFINED_ALIASES_DUNGEONS = {
@@ -26,21 +25,13 @@ local PREDEFINED_ALIASES_DUNGEONS = {
         ["hof" ] = "Halls of Fabrication",
         ["ka"  ] = "Kyne's Aegis",
         ["rg"  ] = "Rockgrove",
-        ["dr"  ] = "Dreadsail Reef",
         ["dsr" ] = "Dreadsail Reef",
 
         -- Arenas https://en.uesp.net/wiki/Online:Arenas
         ["ma"  ] = "Maelstrom Arena",
-        ["msa" ] = "Maelstrom Arena",
         ["dsa" ] = "Dragonstar Arena",
-        ["bp"  ] = "Blackrose Prison",
         ["brp" ] = "Blackrose Prison",
-        ["va"  ] = "Vateshran Hollows",
         ["vh"  ] = "Vateshran Hollows",
-        ["vha" ] = "Vateshran Hollows",
-        ["vsa" ] = "Vateshran Hollows",
-        ["vsh" ] = "Vateshran Hollows",
-        ["vsha"] = "Vateshran Hollows",
 
         -- Base Game Dungeons https://en.uesp.net/wiki/Online:Group_Dungeons
         ["ac"  ] = "Arx Corinium",
@@ -75,6 +66,7 @@ local PREDEFINED_ALIASES_DUNGEONS = {
         ["ti"  ] = "Tempest Island",
         ["vom" ] = "Vaults of Madness",
         ["vf"  ] = "Volenfell",        
+        ["v"   ] = "Volenfell",
         ["ws"  ] = "Wayrest Sewers I",
         ["ws1" ] = "Wayrest Sewers I",
         ["ws2" ] = "Wayrest Sewers II",
@@ -82,16 +74,13 @@ local PREDEFINED_ALIASES_DUNGEONS = {
         -- DLC Dungeons https://en.uesp.net/wiki/Online:Group_Dungeons
         ["icp" ] = "Imperial City Prison",
         ["ic"  ] = "Imperial City Prison",
-        ["ip"  ] = "Imperial City Prison",
         ["wgt" ] = "White-Gold Tower",
         ["cos" ] = "Cradle of Shadows",
+        ["cs"  ] = "Cradle of Shadows",
         ["rom" ] = "Ruins of Mazzatun",
-        ["maz" ] = "Ruins of Mazzatun",
-        ["mazz"] = "Ruins of Mazzatun",
         ["bf"  ] = "Bloodroot Forge",
         ["brf" ] = "Bloodroot Forge",
         ["fh"  ] = "Falkreath Hold",
-        ["fkh" ] = "Falkreath Hold",
         ["fl"  ] = "Fang Lair",        
         ["sp"  ] = "Scalecaller Peak",
         ["scp" ] = "Scalecaller Peak",
@@ -104,15 +93,10 @@ local PREDEFINED_ALIASES_DUNGEONS = {
         ["mf"  ] = "Moongrave Fane",
         ["mgf" ] = "Moongrave Fane",
         ["ir"  ] = "Icereach",
-        ["ice" ] = "Icereach",
         ["ug"  ] = "Unhallowed Grave",
-        ["uhg" ] = "Unhallowed Grave",
         ["ct"  ] = "Castle Thorn",
         ["sg"  ] = "Stone Garden",
         ["bdv" ] = "Black Drake Villa",
-        ["bv"  ] = "Black Drake Villa",
-        ["bd"  ] = "Black Drake Villa",
-        ["dv"  ] = "Black Drake Villa",
         ["tc"  ] = "The Cauldron",
         ["cd"  ] = "The Cauldron",
         ["c"   ] = "The Cauldron",
@@ -123,6 +107,8 @@ local PREDEFINED_ALIASES_DUNGEONS = {
         ["sr"  ] = "Shipwright's Regret",
         ["ere" ] = "Earthen Root Enclave",
         ["gd"  ] = "Graven Deep",
+        ["sh"  ] = "Scrivener's Hall",
+        ["bs"  ] = "Bal Sunnar",
     }
 
 -------------------------------------------------------------------------------    

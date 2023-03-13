@@ -81,7 +81,7 @@ function Teleport.Zones:findZone(prefix)
     return nil, nil
 end
 
-function Teleport.Zones:teleportToZone(prefix)
+function Teleport.Zones:teleportToZone(prefix, survey)
     if Teleport.Helpers:checkIsEmptyAndPrintHelp(prefix) then return true end
         
     local zoneName, zoneId = Teleport.Zones:findZone(prefix)
@@ -93,7 +93,7 @@ function Teleport.Zones:teleportToZone(prefix)
     local player = Teleport.Players:findPlayerByZoneId(zoneId)
     if not player then
         info("Failed to teleport to " .. zoneName .. ": No party members/friends/guildies in that zone.")
-        return true
+        return not survey
     end
     
     return Teleport.Players:teleportToPlayer(player)

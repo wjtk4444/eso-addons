@@ -176,8 +176,10 @@ function Teleport.Dungeons:teleportToDungeon(name, aliasOnly)
                 local unregisterAndExecute2 = function()
                         EVENT_MANAGER:UnregisterForEvent("TpSetVetDiff-" .. oppositeDifficulty, EVENT_VETERAN_DIFFICULTY_CHANGED)
                         EVENT_MANAGER:UnregisterForEvent("TpSetVetDiff-" .. oppositeDifficulty, EVENT_GEOUP_VETERAN_DIFFICULTY_CHANGED)
-                        info("Teleporting to a reset instance of: " .. nodeName .. " (cost: " .. tostring(GetRecallCost(nodeIndex)) .. "g)")
-                        FastTravelToNode(nodeIndex)
+                        zo_callLater(function() 
+                                info("Teleporting to a reset instance of: " .. nodeName .. " (cost: " .. tostring(GetRecallCost(nodeIndex)) .. "g)")
+                                FastTravelToNode(nodeIndex) 
+                            end, 1000)
                     end
 
                 EVENT_MANAGER:RegisterForEvent("TpSetVetDiff-" .. oppositeDifficulty, EVENT_VETERAN_DIFFICULTY_CHANGED, unregisterAndExecute2)

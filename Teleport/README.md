@@ -8,11 +8,13 @@ See [changelog.md on github](https://github.com/wjtk4444/eso-addons/blob/master/
 
 ## Features
 - Teleporting to zones for free (using party members / friends / guildies)
+- Teleporting to survey/treasure map zones (same as above)
 - Teleporting to houses, other player's houses included (free, duh)
 - Teleporting to dungeons/arenas/trials (free if any of the party members is already in, paid otherwise)
+- Resetting instance or just changing difficulty before teleporting in (only as the group leader)
 - Teleporting to specific wayshrines (always paid)
 
-Note that when you're not teleporting to a player or his house, you need to have the destination discovered on current character. Game won't allow you to travel to unknown wayshrine or dungeon.
+Note that when you're not teleporting to a player or his house, you need to have the destination discovered on current character. Game won't allow you to travel to unknown wayshrine or dungeon. If you have a wayshrine menu currently open, all paid teleports will not charge you any gold.
 
 ## Dependencies
 
@@ -24,11 +26,11 @@ Note that when you're not teleporting to a player or his house, you need to have
 
 There is no graphical user interface provided, everything is done using a `/tp` command. If you're not a keyboard person, this is probably where our ways part. Have fun clicking trough all the carefully designed context menus and scrolling trough long lists.
 
-`/tp help` as well as `/tp examples` commands are available, although I would recommend reading this very document instead.
+`/tp help` as well as `/tp --show-examples` commands are available, although I would recommend reading this very document instead.
 
 **If the teleportation request will cost player any amount of gold, cost will be displayed in chat. You can cancel queued teleportation request at any time by simply moving your character.**
 
-**`/tp` command arguments are separated by a single space.** Unless specified otherwise, **arguments are not case sensitive and will match the fist name that starts with given input**. For example, all of the words listed below:
+**`/tp` command arguments are separated by a single space.** Unless specified otherwise, **arguments are not case sensitive and will match the fist name that starts with given input**. For example, all of the words listed below will expand to their first match, **Deshaan**.
 
 - Deshaan
 - desh
@@ -36,17 +38,12 @@ There is no graphical user interface provided, everything is done using a `/tp` 
 - desHAan
 - dEsH
 
-will expand to their first match, **Deshaan**. However, the two examples presented below are not equal because of the additional space used in the second command.
-
-- `/tp Deshaan`
-- `/tp  Deshaan` (extra space between `/tp` and `Deshaan` is invisble, thanks github...)
-
-Possible matches of every category are sorted (separately per category) in alphabetical order, which means that ie. **Vivec** will match **Vivec's Antlers** instead of **Vivec City** which most of the players would expect. If you want to travel specifically to **Vivec City** wayshrine, you need to either specify at least "**Vivec **" (note the extra space at the end), or create an alias. If you want to target wayshrines only, you can append "** Wayshrine **" at the end to avoid collisions with other names. User-defined aliases will be explained in a [later part of this manual](#aliases).
+Possible matches of every category are sorted (separately per category) in alphabetical order, which means that ie. **Vivec** will match **Vivec's Antlers** instead of **Vivec City** which most of the players would expect. If you want to travel specifically to **Vivec City** wayshrine, you need to either specify at least "**Vivec C**", or create an alias. If you want to target wayshrines only, you can append "** Wayshrine **" at the end to avoid collisions with other names. User-defined aliases will be explained in a [later part of this manual](#aliases).
 
 The input matching order is:
 
 - User defined alias
-- Internal commands (help, leader)
+- Internal commands (help, leader, surveymaps)
 - Predefined dungeon/arena/trial alias
 - Zone name
 - Wayshrine name
@@ -70,6 +67,10 @@ For example:
 - `/tp Vvardenfell`
 - `/tp vv`
 
+**Survey maps and Treasure Maps**
+
+If you're using `/tp ZoneName` to do your crafting surveys and treasure maps in the most efficient way, first, good job. Second, you should be using `/tp surveymaps` instead, which will look trough your inventory and call `/tp Zone` for you. Third, you should probably [alias](#aliases) it to something shorter. Personally I'm using just `/tp s`. 
+
 ### Teleporting to houses
 
 Same as zones: `/tp <house name prefix>`.
@@ -92,14 +93,14 @@ There is a list of [predefined aliases available](#trials-httpsenuespnetwikionli
 - `/tp FG1`
 - `/tp CoH2`
 
-Additionally, you can prepend all of the aliases with **n**, **v** or **r** (for normal, veteran and a reset instance). In that case addon will attempt changing dungeon difficulty for you and your group.
+If for whatever reason you prefer using full(er?) name instead, you're welcome to do the usual `/tp <dungeon name prefix>`, ie. `/tp Fungal Gro`
+
+Additionally, you can prepend all of the aliases with **n**, **v** or **r** (for normal, veteran and reset). In that case addon will attempt changing dungeon difficulty for you and your group.
 
 - `/tp vHRC`
 - `/tp NDSA`
 - `/tp vcoh1`
-- `/tp rCR`
-
-If for whatever reason you prefer using full(er?) name instead, you're welcome to do the usual `/tp <dungeon name prefix>`.
+- `/tp rbrp`
 
 ### Teleporting to players
 
@@ -134,36 +135,36 @@ First - you could probably just do `/tp @pretty hakk`, but if there are name con
 
 **You can alias any valid (or invalid...) input for something shorter and easier to remember.** There are 3 commands to operate on aliases:
 
-- `/tp addAlias <alias name> <alias expansion>`
-- `/tp delAlias <alias name>`
-- `/tp lstAlias` (yes it's `lst`, not `list`)
+- `/tp --add <alias name> <alias expansion>`
+- `/tp --remove <alias name>`
+- `/tp --list` (yes it's `lst`, not `list`)
 
 As their syntax suggests, first is for adding, second for removing and third for listing saved aliases. Aliases are saved account wide, obviously. So, going back to the case of visiting your old friend with a very long name, you can do this (once):
 
 - `/tp add 1 @@prettylongnameXXX69420_GAMER_69420XXX Hakkvild's High Hall`
 
-and then just use `/tp 1` to get there. Obviously, you are not limited to using numbers. Anything works as long as it doesn't contain spaces. Just remember that aliases are **exact matches** and, unlike everything else in this addon: **case sensitive**. They are also first in the order of matching, which means you can even re-alias dungeons if that's what you desire.
+and then just use `/tp 1` to get there. Obviously, you are not limited to using numbers. Aliases are **exact matches** and, unlike everything else in this addon, they are **Case Sensitive**. You can even re-alias a built-in alias for a dungeon or a trial if that's what you desire.
 
 Important: **Alias names can not contain spaces**.
 
 As stated above, you can alias every possible command. Some examples below:
 
-- `/tp addAlias fungal2 Fungal Grotto II`
-- `/tp addAlias alkosh_farm vMoL`
-- `/tp addAlias gf @nonexistentplayer`
-- `/tp addAlias 3 @guildmaster primary`
-- `/tp addAlias 7 @friend earthtear`
-- `/tp addAlias nAA vHoF` (don't do that, it creates mustard gas)
-- `/tp addAlias TeleportAuthorHouse @@schrodingerscatgirl Snugpod`
+- `/tp --add fungal2 Fungal Grotto II`
+- `/tp --add maw vMoL`
+- `/tp --add gf @nonexistentplayer`
+- `/tp --add 3 @guildmaster primary`
+- `/tp --add 7 @friend earthtear`
+- `/tp --add nAA vHoF` (don't do that, it creates mustard gas)
+- `/tp --add TeleportAuthorsHouse @@schrodingerscatgirl Snugpod`
 
 &nbsp;
 
-- `/tp delAlias gf`
-- `/tp delAlias nAA` (revert your misdoings to normal)
+- `/tp --remove gf`
+- `/tp --remove nAA` (revert your misdoings to normal)
 
 &nbsp;
 
-- `/tp lstAlias`
+- `/tp --list`
 
 ## Maintenance
 
@@ -187,7 +188,6 @@ Pre-defined aliases in `Aliases.lua` as well as hardcoded lists of arenas (`Dung
 |Elsweyr                      | Northern Elsweyr |
 |Skyrim                       | Western Skyrim |
 |Deadlands                    | The Deadlands |
-|Isle                         | High Isle |
 
 ### Trials: ([https://en.uesp.net/wiki/Online:Trials](https://en.uesp.net/wiki/Online:Trials))
 |alias|full name|
@@ -202,23 +202,15 @@ Pre-defined aliases in `Aliases.lua` as well as hardcoded lists of arenas (`Dung
 |hof  | Halls of Fabrication |
 |ka   | Kyne's Aegis |
 |rg   | Rockgrove |
-|dr   | Dreadsail Reef |
 |dsr  | Dreadsail Reef |
 
 ### Arenas: ([https://en.uesp.net/wiki/Online:Arenas](https://en.uesp.net/wiki/Online:Arenas))
 |alias|full name|
 |-|-|
 |ma   | Maelstrom Arena |
-|msa  | Maelstrom Arena |
 |dsa  | Dragonstar Arena |
-|bp   | Blackrose Prison |
 |brp  | Blackrose Prison |
-|va   | Vateshran Hollows |
 |vh   | Vateshran Hollows |
-|vha  | Vateshran Hollows |
-|vsa  | Vateshran Hollows |
-|vsh  | Vateshran Hollows |
-|vsha | Vateshran Hollows |
 
 ### Base Game Dungeons: ([https://en.uesp.net/wiki/Online:Group_Dungeons](https://en.uesp.net/wiki/Online:Group_Dungeons))
 |alias|full name|
@@ -255,6 +247,7 @@ Pre-defined aliases in `Aliases.lua` as well as hardcoded lists of arenas (`Dung
 |ti   | Tempest Island |
 |vom  | Vaults of Madness |
 |vf   | Volenfell |
+|v    | Volenfell |
 |ws   | Wayrest Sewers I |
 |ws1  | Wayrest Sewers I |
 |ws2  | Wayrest Sewers II |
@@ -264,16 +257,13 @@ Pre-defined aliases in `Aliases.lua` as well as hardcoded lists of arenas (`Dung
 |-|-|
 |icp  | Imperial City Prison |
 |ic   | Imperial City Prison |
-|ip   | Imperial City Prison |
 |wgt  | White-Gold Tower |
 |cos  | Cradle of Shadows |
+|cs   | Cradle of Shadows |
 |rom  | Ruins of Mazzatun |
-|maz  | Ruins of Mazzatun |
-|mazz | Ruins of Mazzatun |
 |bf   | Bloodroot Forge |
 |brf  | Bloodroot Forge |
 |fh   | Falkreath Hold |
-|fkh  | Falkreath Hold |
 |fl   | Fang Lair |
 |sp   | Scalecaller Peak |
 |scp  | Scalecaller Peak |
@@ -286,15 +276,10 @@ Pre-defined aliases in `Aliases.lua` as well as hardcoded lists of arenas (`Dung
 |mf   | Moongrave Fane |
 |mgf  | Moongrave Fane |
 |ir   | Icereach |
-|ice  | Icereach |
 |ug   | Unhallowed Grave |
-|uhg  | Unhallowed Grave |
 |ct   | Castle Thorn |
 |sg   | Stone Garden |
 |bdv  | Black Drake Villa |
-|bv   | Black Drake Villa |
-|bd   | Black Drake Villa |
-|dv   | Black Drake Villa |
 |tc   | The Cauldron |
 |cd   | The Cauldron |
 |c    | The Cauldron |
@@ -305,3 +290,5 @@ Pre-defined aliases in `Aliases.lua` as well as hardcoded lists of arenas (`Dung
 |sr   | Shipwright's Regret |
 |ere  | Earthen Root Enclave |
 |gd   | Graven Deep |
+|sh   | Scrivener's Hall |
+|bs   | Bal Sunnar |

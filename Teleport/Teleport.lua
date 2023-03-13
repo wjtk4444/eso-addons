@@ -18,7 +18,7 @@ local function _printHelp()
     info("Search order for players: group, friends, guilds")
     info("Search order for places: zone, wayshrine, house, dungeon")
     info("If you want to specifically target a wayshrine, you can append ' Wayshrine' after it's name")
-    info("Available commands:         (call `/tp examples` for examples)")
+    info("Available commands: (call `/tp --show-examples` for examples)")
     info("/tp customaliasname")
     info("/tp builtinaliasname")
     info("/tp placenameprefix")
@@ -28,12 +28,13 @@ local function _printHelp()
     info("You can use 'primary' or 'main' instead of house name.")
     info("When using @@ and exact player names, they don't have to be in your group/friends/guilds.")
     info("You can add custom aliases that can expand to any valid /tp command")
-    info("/tp addAlias aliasname expansion")
-    info("/tp delAlias aliasname (removes alias)")
-    info("/tp lstAlias           (lists avaiable aliases)")
+    info("/tp --add aliasname expansion")
+    info("/tp --remove aliasname")
+    info("/tp --list             (lists avaiable aliases)")
     info("/tp leader             (same as built-in /jumptoleader, just shorter and aliasable")
+    info("/tp surveymaps         (same as calling `/tp [zone name]` for each survey/treasure map in your inventory")
     info("User defined aliases are case sensitive")
-    info("Call '/tp examples' to see command examples")
+    info("Call '/tp --show-examples' to see command examples")
     info("There's a README.md file in addon folder, check it out for more detais")
     info("A pretty-formatted online version of the manual is available here:")
     info("https://github.com/wjtk4444/eso-addons/tree/master/Teleport")
@@ -52,9 +53,10 @@ local function _printExamples()
     info("/tp @Alice                    (First party member/friend/guildie whose name starts with '@alice'")
     info("/tp @ali snug                 (@Alice's Snugpod house")
     info("/tp @@ali snug                (@ali's Snugpod house, ali does not have to be in party/friends/guilds")
-    info("/tp addAlias ali @@ali snug   (an alias to @ali's Sungpod house)")
+    info("/tp --add ali @@ali snug   (an alias to @ali's Sungpod house)")
     info("/tp ali")
-    info("/tp addAlias vivec Vivec City Wayshrine")
+    info("/tp --add vivec Vivec City Wayshrine")
+    info("/tp --remove vivec Vivec City Wayshrine")
     info("/tp vivec")
 end
 
@@ -75,21 +77,28 @@ local function _playerHelper(name)
     end
 end
 
+local function _removeExtraWhitespace(name)
+    name = string.gsub(name, "%s+", " ")
+    name = string.gsub(name, "^%s*(.-)%s*$", "%1")
+    return name
+end
+
 local function tp(name)
+    name = _removeExtraWhitespace(name)
     name = Teleport.Aliases:expandUserDefined(name)
     if Teleport.Helpers:startsWith(name, '@') then return _playerHelper(name) end
 
-    if name == 'help'       then return _printHelp()           end
-    if name == 'examples'   then return _printExamples()       end
-    if name == 'lstAlias'   then return Teleport.Aliases:listAliases()  end
-    if name == 'leader'     then return Teleport.Players:teleportToLeader() end
-    if name == 'SurveyMaps' then return Teleport.SurveyMaps:teleportToNext() end
+    if name == '--help'            then return _printHelp()                         end
+    if name == '--show-examples' then return _printExamples()                     end
+    if name == '--list'             then return Teleport.Aliases:listAliases()       end
+    if name == 'leader'          then return Teleport.Players:teleportToLeader()  end
+    if name == 'surveymaps'      then return Teleport.SurveyMaps:teleportToNext() end
 
-    if Teleport.Helpers:startsWith(name, 'addAlias ') then 
-        return Teleport.Aliases:addAlias   (string.sub(name, #'addAlias ' + 1)) 
+    if Teleport.Helpers:startsWith(name, '--add ') then 
+        return Teleport.Aliases:addAlias   (string.sub(name, #'--add ' + 1)) 
     end
-    if Teleport.Helpers:startsWith(name, 'delAlias ') then 
-        return Teleport.Aliases:removeAlias(string.sub(name, #'delAlias ' + 1)) 
+    if Teleport.Helpers:startsWith(name, '--remove ') then 
+        return Teleport.Aliases:removeAlias(string.sub(name, #'--remove ' + 1)) 
     end
 
     if Teleport.Dungeons  :teleportToDungeon  (name, true)  then return end -- alias only matches
