@@ -18,7 +18,8 @@ Note that when you're not teleporting to a player or his house, you need to have
 
 ## Dependencies
 
-- None
+- [LibTreasure](https://www.esoui.com/downloads/info3227-LibTreasure.html) [LibGPS](https://www.esoui.com/downloads/info601-LibGPS.html) - needed for paid teleport to survey maps (finding closest wayshrine)
+- [PithkaAchievementTracker](https://www.esoui.com/downloads/info2892-PithkasAchievementTracker.html) - just to resolve conflicts (override Pithka's `/tp` command)
 
 ## Usage
 
