@@ -1,6 +1,6 @@
 # Teleport
 
-**Teleport** is a general purpose teleportation addon. Its main aim is to make teleportation a quick and pleasant experience, very different to what the game offers - minutes, if not _seconds (!!!)_ of looking trough menus, icons and lists. Ugh. The only extra feature it offers over in-game menus is teleporting to a specific house of any player. I took some ideas from [BeamMeUp](https://www.esoui.com/downloads/info2143-BeamMeUp-TeleporterFastTravel.html) as well from [Travelleer](https://www.esoui.com/downloads/info1744-Traveller-FastTravelRedesigned.html), you may want to check them out before deciding on what to use. **Teleport** is not supposed to replace any of the addons mentioned above, it just takes a different approach to mostly the same problem (ok now that I look at **Traveler**'s readme it seems painfully similar, sorry not sorry).
+**Teleport** is a general purpose teleportation addon. Its main aim is to make teleportation a quick and pleasant experience, very different to what the game offers - minutes, if not _seconds (!!!)_ of looking trough menus, icons and lists. Ugh. The only extra feature it offers over in-game menus is teleporting to a specific house of any player. I took some ideas from [BeamMeUp](https://www.esoui.com/downloads/info2143-BeamMeUp-TeleporterFastTravel.html) as well from [Traveller](https://www.esoui.com/downloads/info1744-Traveller-FastTravelRedesigned.html), you may want to check them out before deciding on what to use. **Teleport** is not supposed to replace any of the addons mentioned above, it just takes a different approach to mostly the same problem (ok now that I look at **Traveller**'s readme it seems painfully similar, sorry not sorry).
 
 ## Changelog
 
@@ -8,13 +8,13 @@ See [changelog.md on github](https://github.com/wjtk4444/eso-addons/blob/master/
 
 ## Features
 - Teleporting to zones for free (using party members / friends / guildies)
-- Teleporting to survey/treasure map zones (same as above)
+- Teleporting to survey/treasure map zones (free using see above, paid otherwise)
 - Teleporting to houses, other player's houses included (free, duh)
 - Teleporting to dungeons/arenas/trials (free if any of the party members is already in, paid otherwise)
 - Resetting instance or just changing difficulty before teleporting in (only as the group leader)
 - Teleporting to specific wayshrines (always paid)
 
-Note that when you're not teleporting to a player or his house, you need to have the destination discovered on current character. Game won't allow you to travel to unknown wayshrine or dungeon. If you have a wayshrine menu currently open, all paid teleports will not charge you any gold.
+Note that when you're not teleporting to a player or his house, you need to have the destination discovered on current character. Game won't allow you to travel to unknown wayshrine or dungeon. If you have a wayshrine menu currently open, teleporting to a dungeon or wayshrine is free of charge.
 
 ## Dependencies
 
@@ -26,35 +26,44 @@ Note that when you're not teleporting to a player or his house, you need to have
 
 There is no graphical user interface provided, everything is done using a `/tp` command. If you're not a keyboard person, this is probably where our ways part. Have fun clicking trough all the carefully designed context menus and scrolling trough long lists.
 
-`/tp help` as well as `/tp --show-examples` commands are available, although I would recommend reading this very document instead.
+`/tp help` as well as `/tp --show-examples` commands are available, although I would recommend reading this document instead.
 
-**If the teleportation request will cost player any amount of gold, cost will be displayed in chat. You can cancel queued teleportation request at any time by simply moving your character.**
+**If the teleportation request will cost player any amount of gold, cost will be displayed in chat. You can cancel queued teleportation request at any time by simply moving your character, casting skills, etc.**
 
-**`/tp` command arguments are separated by a single space.** Unless specified otherwise, **arguments are not case sensitive and will match the fist name that starts with given input**. For example, all of the words listed below will expand to their first match, **Deshaan**.
+**`/tp` command arguments are not case sensitive and will match the fist name that starts with given input**. For example, all of the words listed below will expand to their first match, **Deshaan**.
 
 - Deshaan
 - desh
-- Desha
-- desHAan
-- dEsH
+- DES
 
-Possible matches of every category are sorted (separately per category) in alphabetical order, which means that ie. **Vivec** will match **Vivec's Antlers** instead of **Vivec City** which most of the players would expect. If you want to travel specifically to **Vivec City** wayshrine, you need to either specify at least "**Vivec C**", or create an alias. If you want to target wayshrines only, you can append "** Wayshrine **" at the end to avoid collisions with other names. User-defined aliases will be explained in a [later part of this manual](#aliases).
+Possible matches of every category are sorted (separately per category) in alphabetical order, which means that ie. **Vivec** will match **Vivec's Antlers** instead of **Vivec City** which most of the players would expect. If you want to travel specifically to **Vivec City** wayshrine, you need to either specify at least "**Vivec C**", or create an alias. If you want to target wayshrines only, you can append "** Wayshrine **" at the end of the name to avoid collisions with other names. User-defined aliases will be explained in a [later part of this manual](#aliases).
 
 The input matching order is:
 
 - User defined alias
-- Internal commands (help, leader, surveymaps)
-- Predefined dungeon/arena/trial alias
-- Zone name
-- Wayshrine name
-- House name
-- Full dungeon/arena/trial name
+- Settings (`--help`, `--add`, `--remove`, `--list`)
+- Internal commands (`leader`, `paidsurveymaps`, `freesurveymaps`, `bothsurveymaps`)
+- Predefined dungeon/arena/trial aliases
 
-The order was chosen in a way that should generate the least amount of conflicts.
+If wayshrine menu is not open:
+
+- Zone name
+- Full dungeon/arena/trial name
+- House name
+- Wayshrine name
+
+Otherwise:
+
+- Wayshrine name
+- Full dungeon/arena/trial name
+- House name
+- Zone name
+
+The order was chosen in a way that should generate the least amount of conflicts and make the most sense given the context. If you have a wayshrine menu open, you most likely don't want to travel to a guildie in a zone or to a house, etc.
 
 ### Known bugs
 
-Once in a blue moon you will get a "**No suitable location found to jump to**" message. It may happen when the player you're attempting to teleport to changed zones and is currently in the loading screen limbo, but the game still thinks that he's in the previous location (outdated cache). There is currently no plan of fixing or working around it. Just wait ~1s and try again.
+Once in a blue moon you will get a "**No suitable location found to jump to**" message. It may happen when the player you're attempting to teleport to changed zones and is currently in the loading screen limbo, but the game still thinks that he's in the previous location. It's very rare and I have no idea how to fix it since the game itself seems to be confused, so just wait ~5s and try again if it happens.
 
 ### Teleporting to zones
 
@@ -69,7 +78,7 @@ For example:
 
 **Survey maps and Treasure Maps**
 
-If you're using `/tp ZoneName` to do your crafting surveys and treasure maps in the most efficient way, first, good job. Second, you should be using `/tp surveymaps` instead, which will look trough your inventory and call `/tp Zone` for you. Third, you should probably [alias](#aliases) it to something shorter. Personally I'm using just `/tp s`. 
+If you're using `/tp ZoneName` to do your crafting surveys and treasure maps in the most efficient way, first, good effort. Second, you should be using `/tp bothsurveymaps` instead, which will look trough your inventory and call `/tp Zone` for you. On top of that, if there's noone in the said zone, it will tp you to the nearest wayshrine. If you want to always use paid teleport and end up at the nearest shrine you can use `paidsurveymaps` instead, or `freesurveymaps` if you hate paying that much. Third, you should probably [alias](#aliases) it to something shorter. Personally I'm using `/tp s`.
 
 ### Teleporting to houses
 
@@ -131,13 +140,13 @@ At this point, if your brain hasn't melted yet from reading this huge wall of te
 
 > every time you want to visit your friends house. So simple, so elegant! I'm never using in-game menus again!
 
-First - you could probably just do `/tp @pretty hakk`, but if there are name conflicts or that player is not online and in your party / friends / guild, or you still consider it too much writing - there's aliases. 
+First - you could probably just do `/tp @pretty hakk`, but if there are name conflicts or that player is not in your party / friends / guild, or you still consider it too much writing - there's aliases.
 
 **You can alias any valid (or invalid...) input for something shorter and easier to remember.** There are 3 commands to operate on aliases:
 
 - `/tp --add <alias name> <alias expansion>`
 - `/tp --remove <alias name>`
-- `/tp --list` (yes it's `lst`, not `list`)
+- `/tp --list`
 
 As their syntax suggests, first is for adding, second for removing and third for listing saved aliases. Aliases are saved account wide, obviously. So, going back to the case of visiting your old friend with a very long name, you can do this (once):
 
@@ -151,15 +160,14 @@ As stated above, you can alias every possible command. Some examples below:
 
 - `/tp --add fungal2 Fungal Grotto II`
 - `/tp --add maw vMoL`
-- `/tp --add gf @nonexistentplayer`
 - `/tp --add 3 @guildmaster primary`
 - `/tp --add 7 @friend earthtear`
 - `/tp --add nAA vHoF` (don't do that, it creates mustard gas)
-- `/tp --add TeleportAuthorsHouse @@schrodingerscatgirl Snugpod`
+- `/tp --add BestSnugpodEU @@schrodingerscatgirl Snugpod`
 
 &nbsp;
 
-- `/tp --remove gf`
+- `/tp --remove 7`
 - `/tp --remove nAA` (revert your misdoings to normal)
 
 &nbsp;
@@ -170,7 +178,7 @@ As stated above, you can alias every possible command. Some examples below:
 
 In the case of me ceasing to keep this addon up to date, here's all you need to know:
 
-Pre-defined aliases in `Aliases.lua` as well as hardcoded lists of arenas (`Dungeons.lua`) and zones (`Zones.lua`) are required for everything to work as expected. If a new dungeon / arena / trial / zone is added, someone has to add new aliases and the lists.
+Pre-defined aliases in `Aliases.lua` are the only thing that needs to be up-to-date. If a new dungeon / arena / trial is added, someone has to figure out what are the most popular short names and add them. Ie. "se" for Sanity's Edge.
 
 > Any further instructions?
 
@@ -203,6 +211,7 @@ Pre-defined aliases in `Aliases.lua` as well as hardcoded lists of arenas (`Dung
 |ka   | Kyne's Aegis |
 |rg   | Rockgrove |
 |dsr  | Dreadsail Reef |
+|se   | Sanity's Edge |
 
 ### Arenas: ([https://en.uesp.net/wiki/Online:Arenas](https://en.uesp.net/wiki/Online:Arenas))
 |alias|full name|
@@ -247,7 +256,7 @@ Pre-defined aliases in `Aliases.lua` as well as hardcoded lists of arenas (`Dung
 |ti   | Tempest Island |
 |vom  | Vaults of Madness |
 |vf   | Volenfell |
-|v    | Volenfell |
+|vol  | Volenfell |
 |ws   | Wayrest Sewers I |
 |ws1  | Wayrest Sewers I |
 |ws2  | Wayrest Sewers II |
@@ -282,7 +291,6 @@ Pre-defined aliases in `Aliases.lua` as well as hardcoded lists of arenas (`Dung
 |bdv  | Black Drake Villa |
 |tc   | The Cauldron |
 |cd   | The Cauldron |
-|c    | The Cauldron |
 |tdc  | The Dread Cellar |
 |dc   | The Dread Cellar |
 |rpb  | Red Petal Bastion |
@@ -292,3 +300,4 @@ Pre-defined aliases in `Aliases.lua` as well as hardcoded lists of arenas (`Dung
 |gd   | Graven Deep |
 |sh   | Scrivener's Hall |
 |bs   | Bal Sunnar |
+|ea   | Endless Archive |

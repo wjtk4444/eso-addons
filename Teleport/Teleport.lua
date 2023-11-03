@@ -1,120 +1,158 @@
-Teleport = { }
+Teleport = {}
 
-Teleport.info =           function(msg) CHAT_SYSTEM:AddMessage("[Teleport]: "        .. msg) end
-Teleport.dbg  = false and function(msg) CHAT_SYSTEM:AddMessage("[Teleport][DEBUG]: " .. msg) end or function() end
+Teleport.COLORS = {
+    NONE = nil,
+    NOT_FOUND = "FF8811",
+    NOT_UNLOCKED = "FF8811",
+    
+    ALIAS = "CCCCCC",
+    
+    ZONE = "FFAA11",
+    WAYSHRINE = "FFAA11",
+    DUNGEON = "FFAA11",
+    HOUSE = "AAFFAA",
+    
+    PLAYER = "CCCCCC",
+    LEADER = "AAFFAA",
 
-local info = Teleport.info
-local dbg  = Teleport.dbg
+    SURVEY = "3A93FF",
+}
 
---------------------------------------------------------------------------------
+Teleport.info  =           function(msg) CHAT_SYSTEM:AddMessage("[Teleport]: "        .. msg) end
+Teleport.dbg   = false and function(msg) CHAT_SYSTEM:AddMessage("[Teleport][DEBUG]: " .. msg) end or function() end
 
-local function _printHelp()
-    info("All name prefixes and predefined aliases are case insensitive, first match will always be used.")
-    info("All dungeons/trials/arenas are called by their common aliases such as HRC, SS, FG2, BC1, VoM.")
-    info("Prepending their names with N or V will attempt to switch dungeon difficulty to veteran/normal.")
-    info("Teleporting to players, zones and houses is free of cost.")
-    info("Teleporting to dungeons is free of cost if any of the party members is inside,")
-    info("otherwise it falls back to paid teleport.")
-    info("Search order for players: group, friends, guilds")
-    info("Search order for places: zone, wayshrine, house, dungeon")
-    info("If you want to specifically target a wayshrine, you can append ' Wayshrine' after it's name")
-    info("Available commands: (call `/tp --show-examples` for examples)")
-    info("/tp customaliasname")
-    info("/tp builtinaliasname")
-    info("/tp placenameprefix")
-    info("/tp @playernameprefix                 (teleport to online player)")
-    info("/tp @playernameprefix housenameprefix (teleport to player's house)")
-    info("/tp @@exactplayername housenameprefix (teleport to player's house)")
-    info("You can use 'primary' or 'main' instead of house name.")
-    info("When using @@ and exact player names, they don't have to be in your group/friends/guilds.")
-    info("You can add custom aliases that can expand to any valid /tp command")
-    info("/tp --add aliasname expansion")
-    info("/tp --remove aliasname")
-    info("/tp --list             (lists avaiable aliases)")
-    info("/tp leader             (same as built-in /jumptoleader, just shorter and aliasable")
-    info("/tp surveymaps         (same as calling `/tp [zone name]` for each survey/treasure map in your inventory")
-    info("User defined aliases are case sensitive")
-    info("Call '/tp --show-examples' to see command examples")
-    info("There's a README.md file in addon folder, check it out for more detais")
-    info("A pretty-formatted online version of the manual is available here:")
-    info("https://github.com/wjtk4444/eso-addons/tree/master/Teleport")
-end
+Teleport.color = function(msg, color) if color then return "|c" .. color .. msg .. "|r" end return msg end
 
-local function _printExamples()
-    info("All name prefixes and built-in aliases are case insensitive, first match will always be used.")
-    info("User defined aliases are case sensitive")
-    info("/tp vv                        (Vvardenfell zone")
-    info("/tp Vvardenfell               (Vvardenfell zone")
-    info("/tp MoL                       (Maw Of Lorkhaj)")
-    info("/tp nMoL                      (Maw Of Lorkhaj (will attempt to set dungeon difficulty to normal)")
-    info("/tp fg2                       (Fungal Grotto II")
-    info("/tp vFG2                      (Fungal Grotto II (will attempt to set dungeon difficulty to veteran)")
-    info("/tp mourn                     (Mournhold Wayshrine")
-    info("/tp @Alice                    (First party member/friend/guildie whose name starts with '@alice'")
-    info("/tp @ali snug                 (@Alice's Snugpod house")
-    info("/tp @@ali snug                (@ali's Snugpod house, ali does not have to be in party/friends/guilds")
-    info("/tp --add ali @@ali snug   (an alias to @ali's Sungpod house)")
-    info("/tp ali")
-    info("/tp --add vivec Vivec City Wayshrine")
-    info("/tp --remove vivec Vivec City Wayshrine")
-    info("/tp vivec")
-end
+local info  = Teleport.info
+local dbg   = Teleport.dbg
+local color = Teleport.color
+local C     = Teleport.COLORS
 
 --------------------------------------------------------------------------------
 
-local function _playerHelper(name)
-    local player, house = Teleport.Helpers:splitInTwo(name, ' ')
-    if player and house then
-        return Teleport.Houses:teleportToPlayersHouse(player, house)
-    else
-        player = Teleport.Players:findPlayerByName(name)
-        if not player then
-            info("Failed to teleport to " .. name .. ": Player not found.")
-            return true
+local function printHelp()
+    info([[ Teleport tl;dr manual:
+The full manual is available in the addon folder (README.md) or at:
+https://github.com/wjtk4444/eso-addons/tree/master/Teleport
+
+1. There is only one command - /tp
+2. All arguments to it are case-insensitive
+3. You pretty much type:
+/tp <prefix of the english name of the place where you want to end up>
+4. That's it.
+5. Not really, so here's some examples to loook at:
+
+Zones:
+    /tp Deshaan
+    /tp crag
+
+Dungeons, Trials and Arenas
+(you can find the full list of short names in the full manual):
+    /tp vmol (will set difficulty to veteran)
+    /tp nfg1 (will set difficulty to normal)
+    /tp rbrp (will reset the instance before tping)
+    /tp ka
+    /tp crypt of hea
+
+Homes:
+    /tp Snugpod
+    /tp outside snugpod
+    /tp antiq
+    /tp @frindorguildienameprefix housenameprefix
+    /tp @fren snug
+    /tp @@fullaccountname housenameprefix
+    /tp @@schrodingerscatgirl Snugpod <- try this one
+
+Players:
+    /tp leader
+    /tp @fren
+
+Crafting Surveys and Treasure Maps:
+    /tp bothsurveymaps
+
+Adding and removing Aliases:
+    /tp --add s bothsurveymaps
+    /tp --add l leader
+    /tp --add snuggy @@schrodingerscatgirl snugpod
+    /tp --list
+    /tp snuggy
+    /tp --remove snuggy (i cri everytiem)
+    ]])
+end
+
+--------------------------------------------------------------------------------
+
+local function removeExtraWhitespace(args)
+    if not args then return nil end
+    args = string.gsub(args, "%s+", " ")
+    args = string.gsub(args, "^%s*(.-)%s*$", "%1")
+    return args
+end
+
+local function tp(args)
+    args = removeExtraWhitespace(args)
+    if not args then
+        info("No input specified, see " .. color("`/tp help`", C.NOT_FOUND) .. " for help")
+        return
+    end
+
+    args = Teleport.Aliases:expandUserDefined(args)
+   
+    if args == '--help'          then return printHelp() end
+
+    if Teleport.Helpers:startsWith(args, '--list') then
+        return Teleport.Aliases:listAliases()
+    end
+    if Teleport.Helpers:startsWith(args, '--add') then
+        return Teleport.Aliases:addAlias(string.sub(args, 7))
+    end
+    if Teleport.Helpers:startsWith(args, '--remove') then
+        return Teleport.Aliases:removeAlias(string.sub(args, 10))
+    end
+
+    if args == 'leader'          then return Teleport.Players:teleportToLeader()             end
+    if args == 'freesurveymaps'  then return Teleport.SurveyMaps:teleportToSurveyMap()     end
+    if args == 'paidsurveymaps'  then return Teleport.SurveyMaps:paidTeleportToSurveyMap() end
+    if args == 'bothsurveymaps'  then return Teleport.SurveyMaps:teleportToSurveyMap(true) end
+
+    if Teleport.Helpers:startsWith(args, '@') then 
+        local playerNamePrefix, houseNamePrefix = Teleport.Helpers:splitOnSpace(args)
+        if playerNamePrefix and houseNamePrefix then
+            return Teleport.Houses:teleportToPlayersHouse(playerNamePrefix, houseNamePrefix)
+        else
+            local player = Teleport.Players:findPlayerByNamePrefix(args, true)
+            if not player then
+                info("Failed to teleport to " .. color(args, C.NOT_FOUND) .. ": Player not found.")
+                return
+            end
+            return Teleport.Players:teleportToPlayer(player)
         end
-
-        return Teleport.Players:teleportToPlayer(player) 
-    end
-end
-
-local function _removeExtraWhitespace(name)
-    name = string.gsub(name, "%s+", " ")
-    name = string.gsub(name, "^%s*(.-)%s*$", "%1")
-    return name
-end
-
-local function tp(name)
-    name = _removeExtraWhitespace(name)
-    name = Teleport.Aliases:expandUserDefined(name)
-    if Teleport.Helpers:startsWith(name, '@') then return _playerHelper(name) end
-
-    if name == '--help'            then return _printHelp()                         end
-    if name == '--show-examples' then return _printExamples()                     end
-    if name == '--list'             then return Teleport.Aliases:listAliases()       end
-    if name == 'leader'          then return Teleport.Players:teleportToLeader()  end
-    if name == 'surveymaps'      then return Teleport.SurveyMaps:teleportToNext() end
-
-    if Teleport.Helpers:startsWith(name, '--add ') then 
-        return Teleport.Aliases:addAlias   (string.sub(name, #'--add ' + 1)) 
-    end
-    if Teleport.Helpers:startsWith(name, '--remove ') then 
-        return Teleport.Aliases:removeAlias(string.sub(name, #'--remove ' + 1)) 
     end
 
-    if Teleport.Dungeons  :teleportToDungeon  (name, true)  then return end -- alias only matches
-    if Teleport.Zones     :teleportToZone     (name) then return end
-    if Teleport.Wayshrines:teleportToWayshrine(name) then return end
-    if Teleport.Houses    :teleportToHouse    (name) then return end
-    if Teleport.Dungeons  :teleportToDungeon  (name, false) then return end -- all matches
+    -- check dungeon alias-only matches first - they can start with n, v or r for [n]ormal, [v]eteran or [r]eset instances
+    if Teleport.Dungeons:teleportToDungeon(args, true) then return end
 
-    info("Failed to teleport to " .. name .. ": No dungeon/zone/wayshrine/house found")
+    -- prioritize direct node travel when wayshrine menu is open
+    if Teleport.Helpers:isAtWayshrine() then
+        if Teleport.Wayshrines:teleportToWayshrine(args) then return end
+        if Teleport.Dungeons  :teleportToDungeon  (args) then return end
+        if Teleport.Houses    :teleportToHouse    (args) then return end
+        if Teleport.Zones     :teleportToZone     (args) then return end
+    else
+        if Teleport.Zones     :teleportToZone     (args) then return end
+        if Teleport.Dungeons  :teleportToDungeon  (args) then return end
+        if Teleport.Houses    :teleportToHouse    (args) then return end
+        if Teleport.Wayshrines:teleportToWayshrine(args) then return end
+    end
+
+    info("Failed to teleport to " .. color(args, C.NOT_FOUND) .. ": No dungeon/zone/house/wayshrine found")
 end
 
-SLASH_COMMANDS['/tp'] = tp
-
-EVENT_MANAGER:RegisterForEvent('Teleport', EVENT_ADD_ON_LOADED, function() 
+EVENT_MANAGER:RegisterForEvent('Teleport', EVENT_ADD_ON_LOADED, function(_, addonName) 
+        if addonName ~= 'Teleport' then return end
+        
         EVENT_MANAGER:UnregisterForEvent('Teleport', EVENT_ADD_ON_LOADED)
+        SLASH_COMMANDS['/tp'] = tp
         local SAVED_VARS = ZO_SavedVars:NewAccountWide('TeleportAliases', 1, nil, { ALIASES = { } })
         Teleport.Aliases:setSavedVars(SAVED_VARS.ALIASES)
     end)
-

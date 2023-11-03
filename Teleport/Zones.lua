@@ -1,99 +1,53 @@
-Teleport.Zones = { }
+Teleport.Zones = {}
 
-local info = Teleport.info
-local dbg  = Teleport.dbg
+local info  = Teleport.info
+local dbg   = Teleport.dbg
+local color = Teleport.color
+local C     = Teleport.COLORS
 
--- similarly to arenas, there seems to be no separate POI type for those
--- so a Zone Name => Zone ID lookup table is the only option
--- https://en.uesp.net/wiki/Online:Zones#Overworld_Zones
--- https://wiki.esoui.com/Zones
-local ZONES = {
-        -- Aldmeri Dominion
-        ["Auridon"                     ] = 381,
-        ["Grahtwood"                   ] = 383,
-        ["Greenshade"                  ] = 108,
-        ["Khenarthi's Roost"           ] = 537,
-        ["Malabal Tor"                 ] = 58,
-        ["Reaper's March"              ] = 382,
+--------------------------------------------------------------------------------
 
-        -- Daggerfall Covenant
-        ["Alik'r Desert"               ] = 104,
-        ["Bangkorai"                   ] = 92,
-        ["Betnikh"                     ] = 535,
-        ["Glenumbra"                   ] = 3,
-        ["Rivenspire"                  ] = 20,
-        ["Stormhaven"                  ] = 19,
-        ["Stros M'Kai"                 ] = 534,
-
-        -- Ebonheart Pact
-        ["Bal Foyen"                   ] = 281,
-        ["Bleakrock Isle"              ] = 280,
-        ["Deshaan"                     ] = 57,
-        ["Eastmarch"                   ] = 101,
-        ["The Rift"                    ] = 103,
-        ["Shadowfen"                   ] = 117,
-        ["Stonefalls"                  ] = 41,
-
-        -- Neutral and Disputed
-        ["Coldharbour"                 ] = 347,
-        ["Craglorn"                    ] = 888,
-        ["Cyrodiil"                    ] = 181,
-
-        -- Chapter Zones
-        ["Artaeum"                     ] = 1027,
-        ["Blackreach: Greymoor Caverns"] = 1161,
-        ["Blackwood"                   ] = 1261,
-        ["Northern Elsweyr"            ] = 1086,
-        ["Summerset"                   ] = 1011,
-        ["Vvardenfell"                 ] = 849,
-        ["Western Skyrim"              ] = 1160,
-        ["High Isle"                   ] = 1318,
-
-        -- Story DLC Zones
-        ["Blackreach: Arkthzand Cavern"] = 1208,
-        ["Clockwork City"              ] = 980,
-        ["Gold Coast"                  ] = 823,
-        ["Hew's Bane"                  ] = 816,
-        ["Murkmire"                    ] = 726,
-        ["The Reach"                   ] = 1207,
-        ["Southern Elsweyr"            ] = 1133,
-        ["Wrothgar"                    ] = 684,
-        ["The Deadlands"               ] = 1286,
-        ["Fargrave"                    ] = 1282,
-        ["Galen"                       ] = 1383,
-    }
-
--------------------------------------------------------------------------------    
-
-function Teleport.Zones:findZone(prefix)
-    for alias, zoneName in pairs(Teleport.Aliases:getZoneAliases()) do
-        if Teleport.Helpers:startsWithCaseInsensitive(alias, prefix) then
-            return zoneName, ZONES[zoneName]
+local zones
+local zoneNames
+function Teleport.Zones:findZoneByNamePrefix(prefix)
+    if not zones then
+        zones = {}
+        zoneNames = {}
+        for i = 1, GetNumMaps() do
+            if GetCyrodiilMapIndex() ~= i and GetImperialCityMapIndex() ~= i then
+                local _, mapType, mapContentType, zoneIndex = GetMapInfoByIndex(i)
+                if mapType == MAPTYPE_ZONE and mapContentType == MAP_CONTENT_NONE then
+                    local zoneName = GetZoneNameByIndex(zoneIndex)
+                    zones[zoneName] = GetZoneId(zoneIndex)
+                    table.insert(zoneNames, zoneName)
+                end
+            end
         end
     end
 
-    for zoneName, zoneId in pairs(ZONES) do
-        if Teleport.Helpers:startsWithCaseInsensitive(zoneName, prefix) then
-            return zoneName, zoneId
-        end
-    end
+    local expansion = Teleport.Aliases:getZoneByShortNamePrefix(prefix)
+    if expansion then return expansion end
     
-    return nil, nil
+    for _, zoneName in pairs(zoneNames) do
+        if Teleport.Helpers:startsWithCaseInsensitive(zoneName, prefix) then
+            return zoneName, zones[zoneName]
+        end
+    end
+
+    return nil
 end
 
-function Teleport.Zones:teleportToZone(prefix, survey)
-    if Teleport.Helpers:checkIsEmptyAndPrintHelp(prefix) then return true end
-        
-    local zoneName, zoneId = Teleport.Zones:findZone(prefix)
+function Teleport.Zones:teleportToZone(prefix)
+    local zoneName, zoneId = Teleport.Zones:findZoneByNamePrefix(prefix)
     if not zoneName then
-        dbg("Failed to teleport to " .. prefix .. ": No such zone found.")
+        dbg("Failed to teleport to " .. color(prefix, C.NOT_FOUND) .. ": No such zone found.")
         return false
     end
         
     local player = Teleport.Players:findPlayerByZoneId(zoneId)
     if not player then
-        info("Failed to teleport to " .. zoneName .. ": No party members/friends/guildies in that zone.")
-        return not survey
+        info("Failed to teleport to " .. color(zoneName, C.ZONE) .. ": No party members/friends/guildies in that zone.")
+        return true
     end
     
     return Teleport.Players:teleportToPlayer(player)

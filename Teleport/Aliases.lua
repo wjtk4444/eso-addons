@@ -1,8 +1,12 @@
-Teleport.Aliases = { }
+Teleport.Aliases = {}
 
-local info = Teleport.info
+local info  = Teleport.info
+local color = Teleport.color
+local C     = Teleport.COLORS
 
-local PREDEFINED_ALIASES_ZONES = {
+--------------------------------------------------------------------------------
+
+local PREDEFINED_ZONE_SHORT_NAMES = {
         -- Zones https://en.uesp.net/wiki/Online:Zones#Overworld_Zones
         ["Reach"                       ] = "The Reach",
         ["Rift"                        ] = "The Rift",
@@ -13,7 +17,7 @@ local PREDEFINED_ALIASES_ZONES = {
         ["Deadlands"                   ] = "The Deadlands",
     }
 
-local PREDEFINED_ALIASES_DUNGEONS = {
+local PREDEFINED_DUNGEON_ALIASES = {
         -- Trials https://en.uesp.net/wiki/Online:Trials
         ["as"  ] = "Asylum Sanctorium",
         ["aa"  ] = "Aetherian Archive",
@@ -26,6 +30,7 @@ local PREDEFINED_ALIASES_DUNGEONS = {
         ["ka"  ] = "Kyne's Aegis",
         ["rg"  ] = "Rockgrove",
         ["dsr" ] = "Dreadsail Reef",
+        ["se"  ] = "Sanity's Edge",
 
         -- Arenas https://en.uesp.net/wiki/Online:Arenas
         ["ma"  ] = "Maelstrom Arena",
@@ -46,7 +51,7 @@ local PREDEFINED_ALIASES_DUNGEONS = {
         ["coa" ] = "City of Ash I",
         ["coa1"] = "City of Ash I",
         ["coa2"] = "City of Ash II",
-        ["coh" ] = "Crypt of Hearts I",        
+        ["coh" ] = "Crypt of Hearts I",
         ["coh1"] = "Crypt of Hearts I",
         ["coh2"] = "Crypt of Hearts II",
         ["dc1" ] = "Darkshade Caverns I",
@@ -57,7 +62,7 @@ local PREDEFINED_ALIASES_DUNGEONS = {
         ["eh1" ] = "Elden Hollow I",
         ["eh2" ] = "Elden Hollow II",
         ["fg"  ] = "Fungal Grotto I",
-        ["fg1" ] = "Fungal Grotto I",    
+        ["fg1" ] = "Fungal Grotto I",
         ["fg2" ] = "Fungal Grotto II",
         ["sw"  ] = "Selene's Web",
         ["sc"  ] = "Spindleclutch I",
@@ -65,8 +70,8 @@ local PREDEFINED_ALIASES_DUNGEONS = {
         ["sc2" ] = "Spindleclutch II",
         ["ti"  ] = "Tempest Island",
         ["vom" ] = "Vaults of Madness",
-        ["vf"  ] = "Volenfell",        
-        ["v"   ] = "Volenfell",
+        ["vf"  ] = "Volenfell",
+        ["vol" ] = "Volenfell",
         ["ws"  ] = "Wayrest Sewers I",
         ["ws1" ] = "Wayrest Sewers I",
         ["ws2" ] = "Wayrest Sewers II",
@@ -81,7 +86,7 @@ local PREDEFINED_ALIASES_DUNGEONS = {
         ["bf"  ] = "Bloodroot Forge",
         ["brf" ] = "Bloodroot Forge",
         ["fh"  ] = "Falkreath Hold",
-        ["fl"  ] = "Fang Lair",        
+        ["fl"  ] = "Fang Lair",
         ["sp"  ] = "Scalecaller Peak",
         ["scp" ] = "Scalecaller Peak",
         ["mos" ] = "March of Sacrifices",
@@ -99,7 +104,6 @@ local PREDEFINED_ALIASES_DUNGEONS = {
         ["bdv" ] = "Black Drake Villa",
         ["tc"  ] = "The Cauldron",
         ["cd"  ] = "The Cauldron",
-        ["c"   ] = "The Cauldron",
         ["tdc" ] = "The Dread Cellar",
         ["dc"  ] = "The Dread Cellar",
         ["rpb" ] = "Red Petal Bastion",
@@ -109,72 +113,90 @@ local PREDEFINED_ALIASES_DUNGEONS = {
         ["gd"  ] = "Graven Deep",
         ["sh"  ] = "Scrivener's Hall",
         ["bs"  ] = "Bal Sunnar",
+
+        ["ea"  ] = "Endless Archive",
     }
 
 -------------------------------------------------------------------------------    
 
-function Teleport.Aliases:getZoneAliases()
-    return PREDEFINED_ALIASES_ZONES
+local SAVED_VARS
+function Teleport.Aliases:setSavedVars(savedVars)
+    SAVED_VARS = savedVars
+end
+
+-------------------------------------------------------------------------------    
+
+function Teleport.Aliases:getZoneByShortNamePrefix(shortNamePrefix)
+    for shortName, zoneName in pairs(PREDEFINED_ZONE_SHORT_NAMES) do
+        if Teleport.Helpers:startsWithCaseInsensitive(shortName, shortNamePrefix) then
+            return zoneName
+        end
+    end
+    
+    return nil
 end
 
 function Teleport.Aliases:getDungeonByAlias(alias)
     alias = string.lower(alias)
-    local expansion = PREDEFINED_ALIASES_DUNGEONS[alias]
+    local expansion = PREDEFINED_DUNGEON_ALIASES[alias]
     if expansion then return expansion, nil end
     local difficulty = string.sub(alias, 1, 1)
     if difficulty == 'n' or difficulty == 'v' or difficulty == 'r' then
-        return PREDEFINED_ALIASES_DUNGEONS[string.sub(alias, 2)], difficulty
+        expansion = PREDEFINED_DUNGEON_ALIASES[string.sub(alias, 2)]
+        if expansion then return expansion, difficulty end
     end
+    
     return nil, nil
-end
-
-local USER_ALIASES = nil
-function Teleport.Aliases:setSavedVars(savedVars)
-    USER_ALIASES = savedVars
 end
 
 -------------------------------------------------------------------------------    
 
 function Teleport.Aliases:expandUserDefined(alias)
-    return USER_ALIASES[alias] or alias
+    alias = string.lower(alias)
+    return SAVED_VARS[alias] or alias
 end
 
 function Teleport.Aliases:listAliases()
-    local keys = Teleport.Helpers:getSortedKeys(USER_ALIASES)
-    if #keys == 0 then
-        info("No aliases registered")
-        return
-    end
-    
-    for _, key in ipairs(keys) do
-        info(key .. ' => ' .. USER_ALIASES[key])
+    info("Registered aliases:")
+    for alias, expansion in pairs(SAVED_VARS) do
+        info(color(alias, C.ALIAS) .. ' => ' .. color(expansion, C.ALIAS))
     end
 end
 
 function Teleport.Aliases:addAlias(alias)
-    local alias, expansion = Teleport.Helpers:splitInTwo(alias, ' ')
-    if Teleport.Helpers:checkIsEmptyAndPrintHelp(alias)     then return end
-    if Teleport.Helpers:checkIsEmptyAndPrintHelp(expansion) then return end
-    if USER_ALIASES[alias] then
+    if not alias or alias == '' then
+        info("USAGE: /tp --add " .. color("<alias-name> <alias-expansion>", C.ALIAS))
+        return
+    end
+    local expansion
+    alias, expansion = Teleport.Helpers:splitOnSpace(alias, ' ')
+    if not alias or alias == '' or expansion == '' then
+        info("USAGE: /tp --add " .. color("<alias-name> <alias-expansion>", C.ALIAS))
+        return
+    end
+    if SAVED_VARS[alias] then
         info("alias " .. alias .. " already exists")
-        info(alias .. ' => ' .. USER_ALIASES[alias])
+        info(alias .. ' => ' .. SAVED_VARS[alias])
         return
     end
 
-    USER_ALIASES[alias] = expansion
+    SAVED_VARS[alias] = expansion
     info("New alias added:")
-    info(alias .. ' => ' .. expansion)
+    info(color(alias, C.ALIAS) .. ' => ' .. color(expansion, C.ALIAS))
 end
 
 function Teleport.Aliases:removeAlias(alias)
-    if Teleport.Helpers:checkIsEmptyAndPrintHelp(alias) then return end
-    if not USER_ALIASES[alias] then
-        info("alias " .. alias .. " doesn't exist")
+    if not alias or alias == '' then
+        info("USAGE: /tp --remove " .. color("<alias-name>", C.ALIAS))
+        return
+    end
+    if not SAVED_VARS[alias] then
+        info("alias " .. color(alias, C.NOT_FOUND) .. " doesn't exist")
         return
     end
 
-    local expansion = USER_ALIASES[alias]
-    USER_ALIASES[alias] = nil
+    local expansion = SAVED_VARS[alias]
+    SAVED_VARS[alias] = nil
     info("Alias removed:")
-    info(alias .. ' => ' .. expansion)
+    info(color(alias, C.ALIAS) .. ' => ' .. color(expansion, C.ALIAS))
 end

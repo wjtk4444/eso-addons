@@ -1,3 +1,15 @@
+### 1.1.1
+- added support for Endless Archive (alias: EA)
+- minor fixes and qol improvements
+- fixed command conflict with Pithka's Achievement Tracker - now Teleport's `/tp` command will always be preferred if both addons are installed
+
+### 1.1.0
+- added alias for Sanity's Edge trial (SE)
+- Zone list is no longer dependent on addon updates - as a side effect added Necrom and Telvanni Peninsula
+- expanded surveymaps feature to include paid teleport
+- minor ui rework, chat messages are now colorful, less versatile and cleaner
+- major rework of how things are handled internally
+
 ### 1.0.16
 - added Bal Sunnar and Scrivener's Hall
 - removed some old, unused aliases
