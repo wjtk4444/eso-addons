@@ -91,7 +91,7 @@ end
 
 local function tp(args)
     args = removeExtraWhitespace(args)
-    if not args then
+    if not args or args =='' then
         info("No input specified, see " .. color("`/tp help`", C.NOT_FOUND) .. " for help")
         return
     end

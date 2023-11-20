@@ -16,7 +16,7 @@ function Teleport.Zones:findZoneByNamePrefix(prefix)
         for i = 1, GetNumMaps() do
             if GetCyrodiilMapIndex() ~= i and GetImperialCityMapIndex() ~= i then
                 local _, mapType, mapContentType, zoneIndex = GetMapInfoByIndex(i)
-                if mapType == MAPTYPE_ZONE and mapContentType == MAP_CONTENT_NONE then
+                if mapContentType == MAP_CONTENT_NONE and (mapType == MAPTYPE_ZONE or mapType == MAPTYPE_SUBZONE) then
                     local zoneName = GetZoneNameByIndex(zoneIndex)
                     zones[zoneName] = GetZoneId(zoneIndex)
                     table.insert(zoneNames, zoneName)
@@ -26,7 +26,9 @@ function Teleport.Zones:findZoneByNamePrefix(prefix)
     end
 
     local expansion = Teleport.Aliases:getZoneByShortNamePrefix(prefix)
-    if expansion then return expansion end
+    if expansion then
+        prefix = expansion
+    end
     
     for _, zoneName in pairs(zoneNames) do
         if Teleport.Helpers:startsWithCaseInsensitive(zoneName, prefix) then

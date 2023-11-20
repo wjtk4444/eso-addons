@@ -1,3 +1,8 @@
+### 1.1.2
+- fixed built-in alias expansions for zone names (ie. Deadlands -> The Deadlands, etc.)
+- calling `/tp` without arguments will now tell you to use `/tp --help` instead of matching the first node on the list
+- sub-zones are now searchable as well (ie. Fargrave)
+
 ### 1.1.1
 - added support for Endless Archive (alias: EA)
 - minor fixes and qol improvements
