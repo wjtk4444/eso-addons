@@ -190,13 +190,14 @@ Pre-defined aliases in `Aliases.lua` are the only thing that needs to be up-to-d
 ### Zones: ([https://en.uesp.net/wiki/Online:Zones#Overworld_Zones](https://en.uesp.net/wiki/Online:Zones#Overworld_Zones))
 |alias|full name|
 |-|-|
-|Reach                        | The Reach |
-|Rift                         | The Rift |
-|Arkthzand Cavern             | Blackreach: Arkthzand Cavern |
-|Greymoor Caverns             | Blackreach: Greymoor Caverns |
-|Elsweyr                      | Northern Elsweyr |
-|Skyrim                       | Western Skyrim |
-|Deadlands                    | The Deadlands |
+|Reach                     | The Reach |
+|Rift                      | The Rift |
+|Arkthzand Cavern          | Blackreach: Arkthzand Cavern |
+|Greymoor Caverns          | Blackreach: Greymoor Caverns |
+|Elsweyr                   | Northern Elsweyr |
+|Skyrim                    | Western Skyrim |
+|Deadlands                 | The Deadlands |
+|Weald                     | West Weald |
 
 ### Trials: ([https://en.uesp.net/wiki/Online:Trials](https://en.uesp.net/wiki/Online:Trials))
 |alias|full name|
@@ -213,6 +214,7 @@ Pre-defined aliases in `Aliases.lua` are the only thing that needs to be up-to-d
 |rg   | Rockgrove |
 |dsr  | Dreadsail Reef |
 |se   | Sanity's Edge |
+|lc   | Lucent Citadel |
 
 ### Arenas: ([https://en.uesp.net/wiki/Online:Arenas](https://en.uesp.net/wiki/Online:Arenas))
 |alias|full name|
@@ -301,4 +303,6 @@ Pre-defined aliases in `Aliases.lua` are the only thing that needs to be up-to-d
 |gd   | Graven Deep |
 |sh   | Scrivener's Hall |
 |bs   | Bal Sunnar |
-|ea   | Endless Archive |
+|op   | Oathsworn Pit |
+|bv   | Bedlam Veil |
+|ia   | Infinite Archive |

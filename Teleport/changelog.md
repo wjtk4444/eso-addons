@@ -1,3 +1,10 @@
+### 1.1.3
+- added West Weald alias (Weald)
+- added Lucent Citadel (lc)
+- added Bedlam Veil (bv)
+- added Oathsworn Pit (op)
+- renamed Endless Archive (ea) to Infinite Archive (ia)
+
 ### 1.1.2
 - fixed built-in alias expansions for zone names (ie. Deadlands -> The Deadlands, etc.)
 - calling `/tp` without arguments will now tell you to use `/tp --help` instead of matching the first node on the list
