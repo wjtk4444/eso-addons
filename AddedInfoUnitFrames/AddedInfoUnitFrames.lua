@@ -4,7 +4,12 @@ AIUF.version = "1.3.3"
 
 AIUF.AUTOCOLORAMOUNT = 0.25
 
+STANDARD_GROUP_SIZE_THRESHOLD=12
+SMALL_GROUP_SIZE_THRESHOLD=STANDARD_GROUP_SIZE_THRESHOLD
 
+GetCompanionUnitTagByGroupUnitTag = function() return nil end
+GetNumCompanionsInGroup = function() return 0 end
+HasActiveCompanion = function() return false end
 
 AIUF.defaults = {
     showResInfo = false,
@@ -108,10 +113,10 @@ local function GetGroupFrameAnchor(groupIndex)
         return groupFrameAnchor
     else
         --Our overrides
-        column = zo_floor((groupIndex - 1) / 2)
-        row = zo_mod(groupIndex - 1, 2)
+        column = zo_floor((groupIndex - 1) / 4)
+        row = zo_mod(groupIndex - 1, 4)
     
-        groupFrameAnchor:SetTarget(ZO_SmallGroupAnchorFrame)
+        groupFrameAnchor:SetTarget(ZO_SmallGroupAnchorFrame)          -- - column*30
         groupFrameAnchor:SetOffsets(column * constants.GROUP_FRAME_SIZE_X, row * (constants.GROUP_FRAME_SIZE_Y + constants.GROUP_FRAME_PAD_Y))
         return groupFrameAnchor
     end
@@ -119,26 +124,62 @@ end
 
 function AIUF.UpdateGroupAnchors()
     -- Update all UnitFrame anchors.
+	local anchorIndex = 1
+	
     for i = 1, GetGroupSize() do
         local unitTag = GetGroupUnitTagByIndex(i)
-        if unitTag then
+        if unitTag and GetGroupMemberSelectedRole(unitTag) == LFG_ROLE_TANK then
             local unitFrame = UNIT_FRAMES:GetFrame(unitTag)
             if not unitFrame then return end
-            local anchor = GetGroupFrameAnchor(i)
+            local anchor = GetGroupFrameAnchor(anchorIndex)
             unitFrame:SetAnchor(anchor)
+			anchorIndex = anchorIndex + 1
+        end
+    end
+	
+	for i = 1, GetGroupSize() do
+        local unitTag = GetGroupUnitTagByIndex(i)
+        if unitTag and GetGroupMemberSelectedRole(unitTag) == LFG_ROLE_HEAL then
+            local unitFrame = UNIT_FRAMES:GetFrame(unitTag)
+            if not unitFrame then return end
+            local anchor = GetGroupFrameAnchor(anchorIndex)
+            unitFrame:SetAnchor(anchor)
+			anchorIndex = anchorIndex + 1
+        end
+    end
+	
+	for i = 1, GetGroupSize() do
+        local unitTag = GetGroupUnitTagByIndex(i)
+        if unitTag and GetGroupMemberSelectedRole(unitTag) == LFG_ROLE_DPS then
+            local unitFrame = UNIT_FRAMES:GetFrame(unitTag)
+            if not unitFrame then return end
+            local anchor = GetGroupFrameAnchor(anchorIndex)
+            unitFrame:SetAnchor(anchor)
+			anchorIndex = anchorIndex + 1
+        end
+    end
+	
+	for i = 1, GetGroupSize() do
+        local unitTag = GetGroupUnitTagByIndex(i)
+        if unitTag and GetGroupMemberSelectedRole(unitTag) == LFG_ROLE_INVALID then
+            local unitFrame = UNIT_FRAMES:GetFrame(unitTag)
+            if not unitFrame then return end
+            local anchor = GetGroupFrameAnchor(anchorIndex)
+            unitFrame:SetAnchor(anchor)
+			anchorIndex = anchorIndex + 1
         end
     end
 end
 
 function AIUF.UpdateUnitFrames(eventCode)  
     local frameType = "groupFrames"
-    if GetGroupSize() > 4 then frameType = "raidFrames" end    
+    if GetGroupSize() > STANDARD_GROUP_SIZE_THRESHOLD then frameType = "raidFrames" end    
 
     for i = 1, GetGroupSize() do
         if not DoesUnitExist("group"..i) then break end
         if UNIT_FRAMES[frameType]["group"..i] == nil then break end
         local role = GetGroupMemberSelectedRole("group"..i)
-    
+		--GetControl("ZO_GroupUnitFramegroup" .. i .. "Background1"):SetAlpha(0)
 
         if AIUF.SV.colorRoles then
             if GetUnitDisplayName("group"..i) == "@MrPikPik" and not (GetUnitDisplayName("player") == "@MrPikPik") then
@@ -224,6 +265,8 @@ function AIUF.UpdateUnitFrames(eventCode)
         --     end
         -- end
     end
+
+	AIUF.UpdateGroupAnchors()
 end
 
 function AIUF.UpdateAliveStatus(unitTag, status)
@@ -967,7 +1010,17 @@ function AIUF.OnAddonLoaded(event, addonName)
     EVENT_MANAGER:RegisterForEvent(AIUF.name, EVENT_PLAYER_ACTIVATED, AIUF.UpdateUnitFrames)    
     
     EVENT_MANAGER:RegisterForUpdate(AIUF.name, 100, AIUF.AliveStatusUpdate)
-    EVENT_MANAGER:RegisterForUpdate(AIUF.name.."RBG", 100, AIUF.UpdateRGB)
+    --EVENT_MANAGER:RegisterForUpdate(AIUF.name.."RBG", 100, AIUF.UpdateRGB)
+		
+	local original = ZO_UnitFrames_UpdateWindow
+	ZO_UnitFrames_UpdateWindow = function(tag, ...) 
+		original(tag, ...)
+		if tag == "reticleover" or tag == "reticleovertarget" then 
+			return
+		end
+		--d("AIUF.UpdateGroupAnchors)")
+		AIUF.UpdateGroupAnchors()
+	end
 end
 EVENT_MANAGER:RegisterForEvent(AIUF.name, EVENT_ADD_ON_LOADED, AIUF.OnAddonLoaded)
 
