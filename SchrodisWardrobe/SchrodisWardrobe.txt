@@ -7,9 +7,10 @@
 ## Title: SchrodisWardrobe
 ## Description: You're a wizard Harry!
 ## Author: Schrodi
-## Version: 1.0
-## APIVersion: 100034
-## DependsOn: WizardsWardrobe 
+## Version: 2.0
+## AddOnVersion: 200
+## APIVersion: 101048 101049
+## DependsOn: WizardsWardrobe>=1232 LibAddonMenu-2.0
 ## SavedVariables: SchrodisWardrobe
 
 SchrodisWardrobe.lua
