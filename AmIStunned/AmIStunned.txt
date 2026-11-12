@@ -1,9 +1,10 @@
-## Title: AmIStunned
-## Version: 1.0
-## AddOnVersion: 27
+## Title: Am I Stunned?
+## Description: A clear on-screen STUNNED / ROOTED / BLOCKING indicator that is actually reliable, so you know when to break free and when you are stuck in block with no resource regen.
+## Version: 1.1
+## AddOnVersion: 28
 ## Author: Schrodi
 ## DependsOn: LibAddonMenu-2.0
-## APIVersion: 100034 101031 101032
+## APIVersion: 101051
 ## SavedVariables: AmIStunnedSavedVariables
 
 AmIStunned.xml

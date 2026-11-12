@@ -1,6 +1,16 @@
 AmIStunned = {}
 
 AmIStunned.name = "AmIStunned"
+AmIStunned.author = "Schrodi"
+AmIStunned.version = "1.1"
+
+-- Active combat tip ids (EVENT_DISPLAY_ACTIVE_COMBAT_TIP / EVENT_REMOVE_ACTIVE_COMBAT_TIP)
+local TIP_STUNNED = 18
+local TIP_ROOTED  = 19
+
+-- "Active Combat Tips: Always". Stuns and roots are detected through these tips, so the
+-- addon turns them on at every load; it can't work if they get switched off.
+local COMBAT_TIPS_ALWAYS = ACT_SETTING_ALWAYS or 2
 AmIStunned.blockingUpdateInterval  = 1000/60
 AmIStunned.randomArtificialDelay   = 1000
 AmIStunned.lastStunNotification    = GetFrameTimeMilliseconds()
@@ -43,10 +53,39 @@ function AmIStunned.OnAddOnLoaded(event, addonName)
 	EVENT_MANAGER:RegisterForEvent(AmIStunned.name .. '_cs',    EVENT_PLAYER_COMBAT_STATE, AmIStunned.OnCombatStateChange)
 	EVENT_MANAGER:RegisterForEvent(AmIStunned.name .. '_eassu', EVENT_ACTION_SLOT_STATE_UPDATED, AmIStunned.OnSlotStateUpdated)	
 	
-	SetSetting(SETTING_TYPE_ACTIVE_COMBAT_TIP, 0, 2)
+	SetSetting(SETTING_TYPE_ACTIVE_COMBAT_TIP, 0, COMBAT_TIPS_ALWAYS)
 	if AmIStunned.savedVariables.hideCombatTips then
 		ZO_ActiveCombatTips:SetHidden(true)
-	end	
+	end
+
+	-- Chat isn't ready yet at load, so check once the player is in the world, and again
+	-- whenever the setting changes.
+	EVENT_MANAGER:RegisterForEvent(AmIStunned.name .. '_pa', EVENT_PLAYER_ACTIVATED, function()
+		EVENT_MANAGER:UnregisterForEvent(AmIStunned.name .. '_pa', EVENT_PLAYER_ACTIVATED)
+		AmIStunned.CheckCombatTips()
+	end)
+	EVENT_MANAGER:RegisterForEvent(AmIStunned.name .. '_isc', EVENT_INTERFACE_SETTING_CHANGED, function(_, settingType)
+		if settingType == SETTING_TYPE_ACTIVE_COMBAT_TIP then
+			AmIStunned.CheckCombatTips()
+		end
+	end)
+	AmIStunned.combatTipsWarned = false
+end
+
+function AmIStunned.AreCombatTipsAvailable()
+	return tonumber(GetSetting(SETTING_TYPE_ACTIVE_COMBAT_TIP, 0)) == COMBAT_TIPS_ALWAYS
+end
+
+-- Warns once per change: AmIStunned is blind without Active Combat Tips.
+function AmIStunned.CheckCombatTips()
+	if AmIStunned.AreCombatTipsAvailable() then
+		AmIStunned.combatTipsWarned = false
+		return
+	end
+	if AmIStunned.combatTipsWarned then return end
+	AmIStunned.combatTipsWarned = true
+	CHAT_ROUTER:AddSystemMessage("|cFF4040AmIStunned:|r Active Combat Tips are not set to \"Always\", so stuns and roots can't be detected. "
+		.. "Set Settings > Interface > Active Combat Tips to Always (use the addon's \"Hide Active Combat Tips\" option if you don't want to see them).")
 end
 
 function AmIStunned.OnSlotStateUpdated(_, slotIndex)
@@ -76,16 +115,16 @@ end
 --end
 
 function AmIStunned.OnShowCombatTip(_, tipType)
-	if tipType == 19 and not AmIStunned.rooted then 
+	if tipType == TIP_ROOTED and not AmIStunned.rooted then 
 		--log("+Rooted TIP @")
 		AmIStunned.rooted = true
 		AmIStunned.UpdateUI()
-	elseif tipType == 18 and not AmIStunned.stunned and ActionSlotHasStatusEffectFailure(1) then 
+	elseif tipType == TIP_STUNNED and not AmIStunned.stunned and ActionSlotHasStatusEffectFailure(1) then 
 		if GetFrameTimeMilliseconds() - AmIStunned.lastStunNotificationRem > 0 then
 			--AmIStunned.lastStunNotification = GetFrameTimeMilliseconds()
 			--log("+Stunned TIP @")
 			AmIStunned.stunned = true
-			if AmIStunned.inCombat or AmIStunned.showOutsideOfCombat then 
+			if AmIStunned.inCombat or AmIStunned.savedVariables.showOutsideOfCombat then 
 				PlaySound(SOUNDS.DEATH_RECAP_KILLING_BLOW_SHOWN)
 				AmIStunned.UpdateUI()				
 			end
@@ -94,11 +133,11 @@ function AmIStunned.OnShowCombatTip(_, tipType)
 end
 
 function AmIStunned.OnRemoveCombatTip(_, tipType, result)
-	if tipType == 19 and AmIStunned.rooted then
+	if tipType == TIP_ROOTED and AmIStunned.rooted then
 		--log("-Rooted TIP @")
 		AmIStunned.rooted = false
 		AmIStunned.UpdateUI()
-	elseif tipType == 18 and result == ACTIVE_COMBAT_TIP_RESULT_SUCCESS and AmIStunned.stunned then
+	elseif tipType == TIP_STUNNED and result == ACTIVE_COMBAT_TIP_RESULT_SUCCESS and AmIStunned.stunned then
 		AmIStunned.lastStunNotificationRem = GetFrameTimeMilliseconds()
 		--log("-Stunned TIP @")
 		AmIStunned.stunned = false
@@ -233,7 +272,7 @@ function AmIStunned.InitializeMenu()
 		{
 			type    = "checkbox",
 			name    = "Hide Active Combat Tips",
-			tooltip = "Active Combat Tips are required for this addon to work and enabled automatically by this addon. You can make them hidden (but still enabled) by using this setting.",
+			tooltip = "Active Combat Tips are how this addon detects stuns and roots, so it sets them to \"Always\" at every login. This option hides the tips on screen while keeping them on.",
 			getFunc = function() return AmIStunned.savedVariables.hideCombatTips end,
 			setFunc = function(newValue) 
 				AmIStunned.savedVariables.hideCombatTips = newValue
@@ -266,7 +305,7 @@ function AmIStunned.InitializeMenu()
 		},
 	}
 
-	LAM = LibAddonMenu2
+	local LAM = LibAddonMenu2
 	LAM:RegisterAddonPanel(AmIStunned.name .. "Options", menuOptions)
 	LAM:RegisterOptionControls(AmIStunned.name .. "Options", dataTable)
 end
