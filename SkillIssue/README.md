@@ -8,6 +8,8 @@ Stops chosen skills from being cast, so a misclick can't waste them:
 
 When a blocked skill is pressed, nothing happens, and you get a chat message (can be turned off).
 
+![Chat messages for blocked skills](../screenshots/SkillIssue.png)
+
 ## Settings
 
 *Settings → Addons → SkillIssue*

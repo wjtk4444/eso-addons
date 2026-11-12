@@ -8,7 +8,7 @@ More from the game's own group frames (the vanilla UI, no replacement frames):
 - **No overland difficulty icon after names** (option, on by default).
 - **Resurrection status** (option): "Being Ressed..." or "Pending..." instead of just "Dead".
 
-<!-- screenshot: 12-player grid with class icons -->
+![Group frames in the role-sorted grid](../screenshots/AddedInfoUnitFrames.png)
 
 ## Settings
 

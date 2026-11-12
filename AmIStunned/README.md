@@ -9,7 +9,7 @@ A big, unmissable label in the middle of the screen that tells you what is holdi
 | **BLOCKING** (green) | You're holding block and your stamina/magicka regen is zero because of it. Let go if you don't need it. |
 | **BLOCKING** (orange) | Both blocking and rooted. |
 
-<!-- screenshot: STUNNED label in combat -->
+![STUNNED](../screenshots/AmIStunned-stunned.png) ![BLOCKING](../screenshots/AmIStunned-blocking.png)
 
 ## Why another stun indicator?
 

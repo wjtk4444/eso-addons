@@ -7,3 +7,5 @@ The number is white above 50 free slots, yellow above 15 and red below that.
 It also recolors the latency bars to a neutral color, so they don't look like a warning.
 
 The performance meters must be turned on (*Settings → Interface → Show Framerate / Show Latency*).
+
+![Free bag space next to FPS and latency](../screenshots/BagWatcher.png)

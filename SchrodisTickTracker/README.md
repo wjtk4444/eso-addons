@@ -2,7 +2,7 @@
 
 Stamina in ESO doesn't regenerate continuously; it comes back in a tick every 2 seconds. This addon shows when the next tick will land, right on the game's own stamina bar, so you can time sprinting, dodging and blocking around it.
 
-<!-- screenshot: stamina bar with the arrow and a "+1234" tick -->
+![Stamina bar with the tick arrow and amount](../screenshots/SchrodisTickTracker.png)
 
 - **An arrow sweeps across the stamina bar** over 2 seconds. When it reaches the end, the next tick lands.
 - **The tick amount** (e.g. `+1234`) pops up above the bar for a moment.

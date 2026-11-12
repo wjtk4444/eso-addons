@@ -6,6 +6,8 @@ Fishing without the bait juggling:
 - **You know when a fish bites.** A sound plays and the interaction prompt turns green until you reel in.
 - **Out of bait?** Optionally, the prompt says "No appropriate Bait available!" instead of "Hold to Select Bait".
 
+![Green Reel In prompt when a fish bites](../screenshots/FishThief.png)
+
 ## Credits
 
 Inspired by and originally based on [Fisherman's Friend](https://www.esoui.com/downloads/info2731-FishermansFriend.html) by Zention and its update by Sem.

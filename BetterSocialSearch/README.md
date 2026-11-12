@@ -8,3 +8,5 @@ The search box of the **friends list**, **guild roster** and **ignore list** nor
 Matching is case-insensitive and finds the text anywhere in the name, note or zone.
 
 Formerly called SearchByNote. If you still have the old `SearchByNote` folder, delete it.
+
+![Guild roster search matching the location](../screenshots/BetterSocialSearch.png)

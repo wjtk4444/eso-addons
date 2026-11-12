@@ -4,6 +4,8 @@ An add-on for **Wizard's Wardrobe** that makes it work together with the game's 
 
 Wizard's Wardrobe keeps setups per zone: a page for each trial and dungeon, plus a general page. If you switch whole builds through the Armory (different class mix, different role), one general page isn't enough. This addon gives every Armory build its own page.
 
+![Armory builds as Wizard's Wardrobe pages](../screenshots/SchrodisWardrobe.png)
+
 ## What it does
 
 - **A page per Armory build.** Every unlocked Armory build gets its own Wizard's Wardrobe page (*A01*, *A02*, ...), named and iconed like the build.

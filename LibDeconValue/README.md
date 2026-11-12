@@ -2,6 +2,8 @@
 
 A library that estimates what an item is worth **deconstructed** compared to **sold to a vendor**. Item tooltips get an expected-yield line, and addons can ask for the numbers. [Hide Inventory Clutter](../HideInventoryClutter) uses it to show only items worth deconstructing (or selling).
 
+![Deconstruction value in an item tooltip](../screenshots/LibDeconValue.png)
+
 ## Credits
 
 LibDeconValue started from **[ESO-LibLootStats](https://github.com/otac0n/ESO-LibLootStats)** by **otac0n**. The item link parsing, the deconstruction model and the tooltip code come from there. LibLootStats also collected statistics on deconstruction results; that part was removed and later replaced with the learning mode described below.

@@ -19,7 +19,7 @@ It started as a patch on top of Better Scoreboard (*BetterBetterScoreboard*). Ov
 
 ## Queuing
 
-<!-- screenshot: EBS BG Queue tab -->
+![EBS BG Queue tab](../screenshots/EvenBetterScoreboard-queue.png)
 
 An **EBS BG Queue** tab in the Group & Activity Finder, right after Battlegrounds:
 

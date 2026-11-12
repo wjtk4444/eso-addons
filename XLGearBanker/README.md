@@ -2,6 +2,8 @@
 
 Keeps gear sets as lists and moves a whole set between your bags and the bank (or house storage) with one click. Useful when you keep a lot of gear in the bank and only carry what you need.
 
+![Gear set list and set contents](../screenshots/XLGearBanker.png)
+
 ## Changes in this fork
 
 - **Stackable items in sets:** potions, poisons, food, drinks, siege weapons, repair kits and recall stones can be added to a set too. They are tracked by item type rather than by the individual item, and **every** stack of them is moved (siege weapons with different durability don't stack, so they used to need one click per piece).
