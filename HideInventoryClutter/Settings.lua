@@ -6,7 +6,7 @@ function HideInventoryClutter:buildLAM2Menu()
 			type = "description",
 			width = "full",
 			text = 
-			[[An addon that hides inventory clutter, namely locked items and common consumbles.
+			[[An addon that hides inventory clutter, namely locked items and common consumables.
 			See available filters below (hover over them to get a short description).
 			Check addon's website or see README.md file in addon folder to learn the details.
 			Full list of affected consumables:
@@ -56,7 +56,7 @@ function HideInventoryClutter:buildLAM2Menu()
 				HideInventoryClutter_LockedButton:SetMovable(false)
 				HideInventoryClutter_LockedButton:SetAlpha(self.lockedVisible and 1 or 0.3)
 				HideInventoryClutter_LockedButton:SetHidden(true)
-				HideInventoryClutter_ConsumablesButton:SetAlpha(self.lockedVisible and 1 or 0.3)
+				HideInventoryClutter_ConsumablesButton:SetAlpha(self.consumablesVisible and 1 or 0.3)
 				HideInventoryClutter_ConsumablesButton:SetHidden(true)
 
 				self:saveGuiPosition()

@@ -76,7 +76,8 @@ function HideInventoryClutter:initalize()
     self:SetupFilters(lockedFilters, "locked")
     self:SetupFilters(consumableFilters, "consumable")
     self:SetupUniversalDeconFilter(universalDeconFilters, "decon", function(b, i) if self.lockedVisible then return true else return self:isWorthDeconstructing({ bagId = b, slotIndex = i }) end end)
-    
+    self:SetupButtonSafetyNets()
+
     self:initializeUI()
     self:buildLAM2Menu()
 end
@@ -133,6 +134,31 @@ function HideInventoryClutter:SetupUniversalDeconFilter(filters, name, filterFn)
         CALLBACK_MANAGER:RegisterCallback(nameShown, callbackShown)
         CALLBACK_MANAGER:RegisterCallback(nameHidden, callbackHidden)
     end
+end
+
+-- LibFilters only raises the "hidden" callback for the panel it saw shown last. Switching the
+-- inventory to the Craft Bag tab shows LF_CRAFTBAG before LF_INVENTORY hides, so LF_INVENTORY's
+-- hidden callback never fires, and closing the inventory from the Craft Bag left the buttons on
+-- screen. None of the filters apply to the Craft Bag, so hide the buttons there, and hide them
+-- whenever the plain HUD comes back as a safety net for any similar path.
+function HideInventoryClutter:SetupButtonSafetyNets()
+    local function HideButtons()
+        if not self.movableIcon and self.buttonsVisible then
+            self:hideButtons()
+        end
+    end
+
+    CALLBACK_MANAGER:RegisterCallback(self.libFilters:CreateCallbackName(LF_CRAFTBAG, true), HideButtons)
+    CALLBACK_MANAGER:RegisterCallback(self.libFilters:CreateCallbackName(LF_CRAFTBAG, false), HideButtons)
+
+    SCENE_MANAGER:RegisterCallback("SceneStateChanged", function(scene, _, newState)
+        if newState == SCENE_SHOWN then
+            local sceneName = scene:GetName()
+            if sceneName == "hud" or sceneName == "hudui" then
+                HideButtons()
+            end
+        end
+    end)
 end
 
 EVENT_MANAGER:RegisterForEvent(HideInventoryClutter.ADDON_NAME, EVENT_ADD_ON_LOADED, function(eventCode, addOnName)
