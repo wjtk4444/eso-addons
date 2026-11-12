@@ -6,7 +6,6 @@ function Teleport.Helpers:startsWith(str, start)
 end
 
 function Teleport.Helpers:startsWithCaseInsensitive(str, start)
-    if type(start) == 'table' then d(start[1], start[2]) end
     if not str or not start then return false end
     return Teleport.Helpers:startsWith(string.lower(str), string.lower(start))
 end

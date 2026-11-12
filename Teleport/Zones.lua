@@ -10,6 +10,7 @@ local C     = Teleport.COLORS
 local zones
 local zoneNames
 local zoneNamesById
+local searchList = {}
 
 function Teleport.Zones:initialize() 
 	zones = {}
@@ -28,17 +29,31 @@ function Teleport.Zones:initialize()
 	end
 	
 	Teleport.Aliases:generateZoneAliases(zoneNames)
+
+	-- Zone names and their short names in one alphabetical list, so a prefix
+	-- always finds the alphabetically first match: "gr" is Grahtwood, not
+	-- Blackreach: Greymoor Caverns; "re" is The Reach (alias "Reach"), then
+	-- Reaper's March.
+	searchList = {}
+	for _, zoneName in ipairs(zoneNames) do
+		table.insert(searchList, { key = string.lower(zoneName), zoneName = zoneName })
+	end
+	for shortName, zoneName in pairs(Teleport.Aliases:getZoneAliases()) do
+		if zones[zoneName] then
+			table.insert(searchList, { key = string.lower(shortName), zoneName = zoneName })
+		end
+	end
+	table.sort(searchList, function(a, b)
+		if a.key ~= b.key then return a.key < b.key end
+		return a.zoneName < b.zoneName
+	end)
 end
 
 function Teleport.Zones:findZoneByNamePrefix(prefix)
-    local expansion = Teleport.Aliases:getZoneByShortNamePrefix(prefix)
-    if expansion then
-        prefix = expansion
-    end
-    
-    for _, zoneName in pairs(zoneNames) do
-        if Teleport.Helpers:startsWithCaseInsensitive(zoneName, prefix) then
-            return zoneName, zones[zoneName]
+    prefix = string.lower(prefix)
+    for _, entry in ipairs(searchList) do
+        if Teleport.Helpers:startsWith(entry.key, prefix) then
+            return entry.zoneName, zones[entry.zoneName]
         end
     end
 

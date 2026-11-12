@@ -8,8 +8,7 @@ local C     = Teleport.COLORS
 
 local ZONE_ALIASES = {
         -- Zones https://en.uesp.net/wiki/Online:Zones#Overworld_Zones
-        ["Arkthzand Cavern"         ] = "Blackreach: Arkthzand Cavern",
-        ["Greymoor Caverns"         ] = "Blackreach: Greymoor Caverns",
+        -- ("The X" and "Label: X" get a short name automatically, see generateZoneAliases)
         ["Elsweyr"                  ] = "Northern Elsweyr",
         ["Skyrim"                   ] = "Western Skyrim",
         ["Weald"                    ] = "West Weald",
@@ -45,53 +44,77 @@ local DUNGEON_ALIASES = {
 	
 -------------------------------------------------------------------------------
 
-local function addDungeonAliasAux(alias, name)
-	if #alias > 1 then
+-- Generated aliases never replace a hardcoded one or an earlier generated one.
+-- Names come in alphabetical order, so on a clash the alphabetically first
+-- name keeps the alias; the hardcoded list above settles the clashes that matter.
+local function addGeneratedDungeonAlias(alias, name)
+	if #alias > 1 and not DUNGEON_ALIASES[alias] then
 		DUNGEON_ALIASES[alias] = name
 	end
 end
 
+-- Initials of the words (split on spaces and dashes), lowercase:
+--   Kyne's Aegis -> ka, White-Gold Tower -> wgt
+-- "The " can be left out:
+--   The Dread Cellar -> tdc, dc
+-- Numbered dungeons get the number as a digit; the bare alias is part I:
+--   Fungal Grotto I -> fg, fg1    Fungal Grotto II -> fg2
+--   The Banished Cells II -> tbc2, bc2
 function Teleport.Aliases:generateDungeonAliases(dungeons)
 	for _, name in ipairs(dungeons) do
-		local the = false
-		local one = false
-		local two = false
-		if Teleport.Helpers:startsWith(name, "The ") then
-			the = true
-		end
-		if Teleport.Helpers:endsWith(name, " I") then
-			one = true
-		end
+		local number
 		if Teleport.Helpers:endsWith(name, " II") then
-			two = true
+			number = "2"
+		elseif Teleport.Helpers:endsWith(name, " I") then
+			number = "1"
 		end
-		
+
 		local alias = Teleport.Helpers:initialsFromSpaceAndDash(name)
-		if one or two then
-			alias = Teleport.Helpers:removeLastChar(alias)
+		if number then
+			alias = Teleport.Helpers:removeLastChar(alias) -- the "i" of I / II
 		end
-		
-		addDungeonAliasAux(alias, name)
-		if the then
-			addDungeonAliasAux(Teleport.Helpers:removeFirstChar(alias), name)
+
+		local variants = { alias }
+		if Teleport.Helpers:startsWith(name, "The ") then
+			table.insert(variants, Teleport.Helpers:removeFirstChar(alias))
 		end
-		if one then
-			addDungeonAliasAux(alias .. "1", name)
-		end
-		if two then
-			addDungeonAliasAux(alias .. "2", name)
+
+		for _, variant in ipairs(variants) do
+			if number then
+				addGeneratedDungeonAlias(variant .. number, name)
+			end
+			if number ~= "2" then
+				addGeneratedDungeonAlias(variant, name)
+			end
 		end
 	end
 end
 
-
+-- "The Reach" -> "Reach", "Blackreach: Greymoor Caverns" -> "Greymoor Caverns"
 function Teleport.Aliases:generateZoneAliases(zones)
 	for _, name in ipairs(zones) do
-		-- remove "The " or "Blackreach: " prefix
 		if Teleport.Helpers:startsWith(name, "The ") or Teleport.Helpers:startsWithLabel(name) then
 			ZONE_ALIASES[Teleport.Helpers:removeFirstWord(name)] = name
 		end
 	end
+end
+
+function Teleport.Aliases:getZoneAliases()
+	return ZONE_ALIASES
+end
+
+-- { { alias = , name = }, ... } sorted by name, then alias
+function Teleport.Aliases:getDungeonAliases()
+	local list = {}
+	for alias, name in pairs(DUNGEON_ALIASES) do
+		table.insert(list, { alias = alias, name = name })
+	end
+	table.sort(list, function(a, b)
+		if a.name ~= b.name then return a.name < b.name end
+		if #a.alias ~= #b.alias then return #a.alias < #b.alias end
+		return a.alias < b.alias
+	end)
+	return list
 end
 
 -------------------------------------------------------------------------------    
@@ -99,19 +122,24 @@ end
 local SAVED_VARS
 function Teleport.Aliases:setSavedVars(savedVars)
     SAVED_VARS = savedVars
+    -- Input is lowercased before the lookup, so aliases saved with capital
+    -- letters by older versions could never be used. Store them lowercased.
+    local mixedCase = {}
+    for alias in pairs(savedVars) do
+        if string.lower(alias) ~= alias then
+            table.insert(mixedCase, alias)
+        end
+    end
+    for _, alias in ipairs(mixedCase) do
+        local lower = string.lower(alias)
+        if savedVars[lower] == nil then
+            savedVars[lower] = savedVars[alias]
+        end
+        savedVars[alias] = nil
+    end
 end
 
 -------------------------------------------------------------------------------    
-
-function Teleport.Aliases:getZoneByShortNamePrefix(shortNamePrefix)
-    for shortName, zoneName in pairs(ZONE_ALIASES) do
-        if Teleport.Helpers:startsWithCaseInsensitive(shortName, shortNamePrefix) then
-            return zoneName
-        end
-    end
-    
-    return nil
-end
 
 function Teleport.Aliases:getDungeonByAlias(alias)
     alias = string.lower(alias)
@@ -134,9 +162,34 @@ function Teleport.Aliases:expandUserDefined(alias)
 end
 
 function Teleport.Aliases:listAliases()
-    info("Registered aliases:")
-    for alias, expansion in pairs(SAVED_VARS) do
-        info(color(alias, C.ALIAS) .. ' => ' .. color(expansion, C.ALIAS))
+    local aliases = {}
+    for alias in pairs(SAVED_VARS) do
+        table.insert(aliases, alias)
+    end
+    if #aliases == 0 then
+        info("No aliases yet. Add one with " .. color("/tp --add <alias> <destination>", C.ALIAS))
+        return
+    end
+    table.sort(aliases)
+    info("Your aliases:")
+    for _, alias in ipairs(aliases) do
+        info(color(alias, C.ALIAS) .. ' => ' .. color(SAVED_VARS[alias], C.ALIAS))
+    end
+end
+
+-- Built-in dungeon/trial/arena aliases, one line per instance.
+function Teleport.Aliases:listDungeonAliases()
+    local lines, order = {}, {}
+    for _, entry in ipairs(self:getDungeonAliases()) do
+        if not lines[entry.name] then
+            lines[entry.name] = {}
+            table.insert(order, entry.name)
+        end
+        table.insert(lines[entry.name], entry.alias)
+    end
+    info("Dungeon, trial and arena aliases (prefix with n, v or r for normal, veteran or reset):")
+    for _, name in ipairs(order) do
+        info(color(name, C.DUNGEON) .. ': ' .. color(table.concat(lines[name], ', '), C.ALIAS))
     end
 end
 
@@ -146,14 +199,15 @@ function Teleport.Aliases:addAlias(alias)
         return
     end
     local expansion
-    alias, expansion = Teleport.Helpers:splitOnSpace(alias, ' ')
+    alias, expansion = Teleport.Helpers:splitOnSpace(alias)
+    alias = alias and string.lower(alias)
     if not alias or alias == '' or expansion == '' then
         info("USAGE: /tp --add " .. color("<alias-name> <alias-expansion>", C.ALIAS))
         return
     end
     if SAVED_VARS[alias] then
-        info("alias " .. alias .. " already exists")
-        info(alias .. ' => ' .. SAVED_VARS[alias])
+        info("Alias " .. color(alias, C.NOT_FOUND) .. " already exists, remove it first:")
+        info(color(alias, C.ALIAS) .. ' => ' .. color(SAVED_VARS[alias], C.ALIAS))
         return
     end
 
@@ -167,8 +221,9 @@ function Teleport.Aliases:removeAlias(alias)
         info("USAGE: /tp --remove " .. color("<alias-name>", C.ALIAS))
         return
     end
+    alias = string.lower(alias)
     if not SAVED_VARS[alias] then
-        info("alias " .. color(alias, C.NOT_FOUND) .. " doesn't exist")
+        info("Alias " .. color(alias, C.NOT_FOUND) .. " doesn't exist")
         return
     end
 

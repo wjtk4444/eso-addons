@@ -5,10 +5,10 @@
 ; https://account.elderscrollsonline.com/add-on-terms
 
 ## Title: Teleport
-## Description: Teleport - General purpose command line teleporting tool
+## Description: One chat command, /tp, for every kind of travel: zones, dungeons, trials, wayshrines, houses, players, survey and treasure maps and your tracked quest. Free whenever possible.
 ## Author: Schrodi
-## Version: 1.3.0
-## APIVersion: 100038
+## Version: 1.4.0
+## APIVersion: 101051
 ## SavedVariables: TeleportAliases
 ## OptionalDependsOn: LibTreasure LibGPS
 
