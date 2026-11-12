@@ -7,8 +7,8 @@
 ## Title: LootLogFishing
 ## Description: Achievement fish support for Code's LootLog
 ## Author: Schrodi
-## Version: 4.5.6
-## APIVersion: 101035 101036
+## Version: 4.5.7
+## APIVersion: 101051
 ## DependsOn: LootLog
 
 LootLogFishing.lua
