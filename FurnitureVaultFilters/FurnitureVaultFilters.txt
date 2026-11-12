@@ -1,0 +1,8 @@
+## Title: Furniture Vault Filters
+## Description: Adds the housing editor's bound state / furnishing limit type filter dropdown to the Furniture Vault (deposit and withdraw).
+## Author: Schrodi
+## Version: 1.0.0
+## AddOnVersion: 100
+## APIVersion: 101051
+
+Main.lua
