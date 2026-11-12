@@ -5,16 +5,17 @@
 ; https://account.elderscrollsonline.com/add-on-terms
 
 ## Title: LootLog Extras
-## Description: Logs what Code's LootLog can't see on its own: materials from refining and deconstruction, and notable items taken from mail (including system mail and "Take All").
+## Description: Logs what Code's LootLog can't see on its own: materials from refining and deconstruction, notable items taken from mail (one line per mail, also with "Take All"), items from trades, and gold from mail and trades.
 ## Author: Schrodi
-## Version: 2.0.0
-## AddOnVersion: 200
+## Version: 2.1.0
+## AddOnVersion: 210
 ## APIVersion: 101051
 ## SavedVariables: LootLogExtras_SV
 ## DependsOn: LootLog
-## OptionalDependsOn: LibCharacterKnowledge LibAddonMenu-2.0
+## OptionalDependsOn: LibCharacterKnowledge LibAddonMenu-2.0 LibHistoire
 
 Shared.lua
 Crafting.lua
 Mail.lua
+Trade.lua
 Main.lua

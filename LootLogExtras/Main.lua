@@ -63,10 +63,26 @@ local function CreateSettingsMenu()
         {
             type = "checkbox",
             name = "Mail attachments",
-            tooltip = "Log notable items taken from mail, including system mail (hirelings, rewards) and \"Take All\". Items that are not notable are not logged, so guild store mail does not flood the history.",
+            tooltip = "Log notable items taken from mail, with one chat line per mail, including system mail (hirelings, rewards) and \"Take All\". Items that are not notable are not logged, so routine mail does not flood the history.",
             getFunc = function() return LLE.sv.logMail end,
             setFunc = function(value) LLE.sv.logMail = value end,
             default = LLE.defaults.logMail,
+        },
+        {
+            type = "checkbox",
+            name = "Trades",
+            tooltip = "Log everything another player gives you in a completed trade, with a chat line per trade.",
+            getFunc = function() return LLE.sv.logTrade end,
+            setFunc = function(value) LLE.sv.logTrade = value end,
+            default = LLE.defaults.logTrade,
+        },
+        {
+            type = "checkbox",
+            name = "Gold from mail and trades",
+            tooltip = "Also show received gold in the chat lines for mail and trades, e.g. guild store sales: \"(Mail) Item Sold | 1x [item] | 10,000 gold\" (the sold item needs LibHistoire). LootLog's history only stores items, so gold appears in chat only.",
+            getFunc = function() return LLE.sv.logGold end,
+            setFunc = function(value) LLE.sv.logGold = value end,
+            default = LLE.defaults.logGold,
         },
         {
             type = "checkbox",
@@ -98,6 +114,7 @@ local function OnAddOnLoaded(_, addonName)
 
     LLE.InitializeCrafting()
     LLE.InitializeMail()
+    LLE.InitializeTrade()
     CreateSettingsMenu()
 end
 

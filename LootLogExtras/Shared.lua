@@ -10,6 +10,8 @@ LLE.defaults =
 {
     logCrafting = true,
     logMail = true,
+    logTrade = true,
+    logGold = true,
     unknownKnowledgeIsNotable = true,
 }
 
@@ -115,4 +117,26 @@ function LLE.DescribeNotable(gains)
         return nil
     end
     return table.concat(parts, ", ")
+end
+
+-- "10,000 gold"
+function LLE.FormatGold(amount)
+    return ZO_CommaDelimitNumber(amount) .. " gold"
+end
+
+-- "1x [Rosin]"
+function LLE.FormatItem(itemLink, quantity)
+    return string.format("%dx %s", quantity, itemLink)
+end
+
+-- Keeps the notable ones of { { itemLink, quantity }, ... } (sets .notable on every entry).
+function LLE.FilterNotable(items)
+    local notable = {}
+    for _, item in ipairs(items) do
+        item.notable = LLE.IsItemNotable(item.itemLink)
+        if item.notable then
+            notable[#notable + 1] = item
+        end
+    end
+    return notable
 end
