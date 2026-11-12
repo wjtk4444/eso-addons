@@ -6,6 +6,8 @@
 local ADDON_NAME = "UltimateRegenTimer"
 local WINDOW_MS = 8000
 local UPDATE_MS = 100
+-- Nudge from the exact middle of the action bar buttons, so the number sits on their visual center.
+local DEFAULT_OFFSET_Y = 3
 
 local OUTLINES =
 {
@@ -50,7 +52,7 @@ local function ApplyPosition()
     if sv.position then
         label:SetAnchor(CENTER, GuiRoot, TOPLEFT, sv.position.x, sv.position.y)
     else
-        label:SetAnchor(CENTER, defaultAnchor, CENTER, 0, 0)
+        label:SetAnchor(CENTER, defaultAnchor, CENTER, 0, DEFAULT_OFFSET_Y)
     end
 end
 
@@ -78,15 +80,30 @@ local function IsHudShowing()
     return HUD_SCENE:IsShowing() or HUD_UI_SCENE:IsShowing()
 end
 
--- The timer normally lives on the HUD only. While unlocked it is also shown on top of
--- the settings menu, so it can be dragged from there.
+-- Unlocking lasts until it's locked again (or /reloadui), so the timer can be moved on the
+-- HUD, next to the action bar, in cursor mode. While unlocked it also shows on top of the
+-- settings menu.
 local function SetUnlocked(value)
+    if unlocked == value then return end
     unlocked = value
+    if value then
+        -- Dragging works on a plain top-left anchor. Starting from the CENTER anchor
+        -- made the first drag jump sideways, so switch to the same spot as top-left first.
+        local left, top = label:GetLeft(), label:GetTop()
+        label:ClearAnchors()
+        label:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, left, top)
+    else
+        ApplyPosition()
+    end
     label:SetMouseEnabled(value)
     label:SetMovable(value)
-    container:GetNamedChild("Backdrop"):SetHidden(not value)
     container:SetHidden(not value and not IsHudShowing())
     Refresh()
+    if value then
+        CHAT_ROUTER:AddSystemMessage("|c00FFFFUltimate Regen Timer:|r unlocked. Close the menu, switch to cursor mode and drag the number where you want it. Lock it again with /urt or in the settings.")
+    else
+        CHAT_ROUTER:AddSystemMessage("|c00FFFFUltimate Regen Timer:|r locked.")
+    end
 end
 
 local function CreateControls()
@@ -109,18 +126,13 @@ local function CreateControls()
     label:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
     label:SetVerticalAlignment(TEXT_ALIGN_CENTER)
     label:SetClampedToScreen(true)
+    -- Saved as the center, so a different size or digit width keeps the timer in place.
+    -- While unlocked it stays on the top-left anchor the drag left it on.
     label:SetHandler("OnMoveStop", function(control)
         local x, y = control:GetCenter()
         sv.position = { x = zo_round(x), y = zo_round(y) }
-        ApplyPosition()
     end)
 
-    local backdrop = CreateControlFromVirtual(ADDON_NAME .. "ContainerBackdrop", container, "ZO_DefaultBackdrop")
-    backdrop:SetAnchor(TOPLEFT, label, TOPLEFT, -6, -2)
-    backdrop:SetAnchor(BOTTOMRIGHT, label, BOTTOMRIGHT, 6, 2)
-    backdrop:SetHidden(true)
-    backdrop:SetDrawLevel(0)
-    label:SetDrawLevel(1)
 
     -- Only on the HUD, like the action bar itself.
     local fragment = ZO_HUDFadeSceneFragment:New(container)
@@ -202,7 +214,7 @@ local function CreateSettingsMenu()
         {
             type = "checkbox",
             name = "Unlock to move",
-            tooltip = "Drag the timer where you want it, then lock it again.",
+            tooltip = "Stays unlocked after closing the menu: in cursor mode, drag the number next to your action bar, then lock it again here or with /urt.",
             getFunc = function() return unlocked end,
             setFunc = function(value) SetUnlocked(value) end,
         },
@@ -213,15 +225,16 @@ local function CreateSettingsMenu()
             func = function()
                 sv.position = nil
                 ApplyPosition()
+                if unlocked then
+                    -- back on a draggable anchor, at the default spot
+                    local left, top = label:GetLeft(), label:GetTop()
+                    label:ClearAnchors()
+                    label:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, left, top)
+                end
             end,
         },
     })
 
-    CALLBACK_MANAGER:RegisterCallback("LAM-PanelClosed", function(panel)
-        if panel and panel.data and panel.data.name == "Ultimate Regen Timer" and unlocked then
-            SetUnlocked(false)
-        end
-    end)
 end
 
 --------------------------------------------------------------------------------
@@ -272,6 +285,7 @@ local function OnAddOnLoaded(_, addonName)
     CreateSettingsMenu()
     RegisterCombatEvents()
     EVENT_MANAGER:RegisterForUpdate(ADDON_NAME, UPDATE_MS, Refresh)
+    SLASH_COMMANDS["/urt"] = function() SetUnlocked(not unlocked) end
     Refresh()
 end
 

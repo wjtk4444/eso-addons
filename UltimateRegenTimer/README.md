@@ -18,7 +18,7 @@ The number turns a warning color at 0, so you see right away that you need to we
 
 - **Show outside of combat:** when off, the timer disappears once it reaches 0 out of combat.
 - **Size**, **Color**, **Color at 0**, **Outline**.
-- **Unlock to move:** drag the timer anywhere, then lock it again. **Reset position** puts it back between the last skill and the ultimate.
+- **Unlock to move** (or `/urt`): the timer stays unlocked after you close the menu, so you can line it up with your action bar. Switch to cursor mode, drag the number, then lock it again in the settings or with `/urt`. **Reset position** puts it back between the last skill and the ultimate.
 
 The timer is only shown on the HUD, like the action bar.
 
