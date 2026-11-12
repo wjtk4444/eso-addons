@@ -11,7 +11,7 @@ function SplitAndWithdraw:onInventoryContextMenu(control, ...)
 				local count = GetSlotStackSize(bag, slot)
 				local operation = bag == BAG_BACKPACK and "Split" or "Withdraw"
 				local itemType = GetItemType(bag, slot)
-				if operation == "Withdraw" and itemType == ITEMTYPE_FOOD or itemType == ITEMTYPE_DRINK or itemType == ITEMTYPE_CROWN_ITEM or itemType == ITEMTYPE_GROUP_REPAIR then
+				if operation == "Withdraw" and (itemType == ITEMTYPE_FOOD or itemType == ITEMTYPE_DRINK or itemType == ITEMTYPE_CROWN_ITEM or itemType == ITEMTYPE_GROUP_REPAIR) then
 					AddCustomMenuItem("Withdraw and use 1",   function() self:takeOneAndNomIt(bag, slot) end, MENU_ADD_OPTION_LABEL)
 				end
 				if count > 1 then

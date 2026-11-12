@@ -1,6 +1,6 @@
-## APIVersion: 100033
-## Title: SplitAndWithdraw
-## Description: split and/or withdraw stacked items
+## APIVersion: 101051
+## Title: Split and Withdraw
+## Description: Right-click a stack to split off or withdraw 1, 2, 3, 5, 10, 25, 50 or 100 items, or to withdraw one food or drink and use it right away.
 ## Author: Schrodi
 ## DependsOn: LibCustomMenu
 ## AddOnVersion: 1
