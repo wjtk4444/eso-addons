@@ -1,0 +1,11 @@
+## Title: Schrodi's Housing Tools
+## Author: Schrodi
+## Version: 2.0.0
+## AddOnVersion: 200
+## APIVersion: 101051
+## SavedVariables: SchrodisHousingTools_SV
+## Description: Housing editor and Furniture Vault quality of life: sortable Retrieve list, "Retrieve To" in the list footer, right-click to store, bound furnishings to the vault, smarter category jumps, and bound state / limit type filters in the Furniture Vault.
+
+Core.lua
+HousingEditor.lua
+FurnitureVault.lua

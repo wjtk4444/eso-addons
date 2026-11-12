@@ -1,4 +1,4 @@
--- Furniture Vault Filters
+-- Furniture Vault filters (formerly the standalone addon FurnitureVaultFilters).
 -- Adds the housing editor's multi-select filter dropdown (Bound State + Furnishing Limit Type)
 -- to both Furniture Vault panels: Withdraw (vault list) and Deposit (backpack in the vault layout).
 --
@@ -7,7 +7,7 @@
 -- their labels are exactly the ones from the housing editor. The matching logic mirrors
 -- ZO_PlaceableFurnitureItem:GetPassesFurnitureFilters (FurnitureClasses_Shared.lua).
 
-local ADDON_NAME = "FurnitureVaultFilters"
+local SHT = SchrodisHousingTools
 
 local BOUND = ZO_HOUSING_FURNITURE_FILTER_CATEGORY.BOUND
 local LIMIT = ZO_HOUSING_FURNITURE_FILTER_CATEGORY.LIMIT
@@ -82,7 +82,7 @@ local function GetStateForInventory(inventory)
 end
 
 local function CreateDropdown(key, parent, rowAnchorControl, inventoryType)
-    local dropdown = CreateControlFromVirtual(ADDON_NAME .. "_" .. key, parent, "ZO_ComboBox")
+    local dropdown = CreateControlFromVirtual("SchrodisHousingToolsVaultFilter_" .. key, parent, "ZO_ComboBox")
     dropdown:SetWidth(DROPDOWN_WIDTH)
     -- X from the panel's left edge, Y centered on the top category tab row (empty in the vault layouts;
     -- the subcategory icon row has no free space left of its "active filter" label).
@@ -152,7 +152,7 @@ local function UpdateDepositDropdownVisibility()
     dropdown:SetHidden(not show)
 end
 
-local function Initialize()
+function SHT.InitializeFurnitureVault()
     -- Withdraw: the vault's own list.
     local withdraw = CreateDropdown("withdraw", ZO_FurnitureVault, ZO_FurnitureVaultTabs, INVENTORY_FURNITURE_VAULT)
     SetActiveLabelAvoidsDropdown(ZO_FurnitureVaultTabs, withdraw, true)
@@ -171,11 +171,3 @@ local function Initialize()
         return false
     end)
 end
-
-EVENT_MANAGER:RegisterForEvent(ADDON_NAME, EVENT_ADD_ON_LOADED, function(_, name)
-    if name ~= ADDON_NAME then
-        return
-    end
-    EVENT_MANAGER:UnregisterForEvent(ADDON_NAME, EVENT_ADD_ON_LOADED)
-    Initialize()
-end)

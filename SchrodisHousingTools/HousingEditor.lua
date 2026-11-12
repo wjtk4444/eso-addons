@@ -1,21 +1,18 @@
-local ADDON_NAME = "HousingRetrieveSort"
+-- Housing editor (keyboard): Retrieve list sort headers, right-click to store,
+-- "Retrieve To" docked in the list footer, bound furnishings to the Furnishing Vault,
+-- and keeping the category position when a category empties.
+-- Formerly the standalone addon HousingRetrieveSort.
+
+local SHT = SchrodisHousingTools
 
 local HEADER_HEIGHT = 26
-local KEY_NAME = "name"
-local KEY_DISTANCE = "distance"
+local KEY_NAME = SHT.SORT_KEY_NAME
+local KEY_DISTANCE = SHT.SORT_KEY_DISTANCE
 
 -- Row layout (ZO_RetrievableFurnitureSlot): name label starts at 32 (status icon) + 89,
 -- distance label ends 10 + 32 + 10 px before the row's right edge (direction arrow column).
 local NAME_COLUMN_X = 121
 local DISTANCE_COLUMN_RIGHT_INSET = 52
-
-local defaults =
-{
-    sortKey = KEY_DISTANCE,
-    sortOrder = ZO_SORT_ORDER_UP, -- UP = ascending (A->Z, nearest first)
-    rightClickStore = false,
-    boundToVault = false,
-}
 
 local sv
 
@@ -75,7 +72,7 @@ local function CreateSortHeaders(panel)
     list:SetAnchor(TOPLEFT, categoryList, TOPRIGHT, 0, 5 + HEADER_HEIGHT)
     list:SetAnchor(BOTTOMRIGHT, contents, BOTTOMRIGHT, -12, 0)
 
-    local baseName = contents:GetName() .. "HRS"
+    local baseName = contents:GetName() .. "SHT"
     local headers = WINDOW_MANAGER:CreateControl(baseName .. "Headers", contents, CT_CONTROL)
     headers:SetHeight(HEADER_HEIGHT)
     headers:SetAnchor(BOTTOMLEFT, list, TOPLEFT, 0, 0)
@@ -239,7 +236,7 @@ local function DockRetrieveTo(panel)
     local contents = panel.contents
     local infoBar = contents:GetNamedChild("InfoBar")
     local freeSlotsLabel = infoBar:GetNamedChild("FreeSlots")
-    local baseName = contents:GetName() .. "HRS"
+    local baseName = contents:GetName() .. "SHT"
 
     local caption = WINDOW_MANAGER:CreateControl(baseName .. "RetrieveToCaption", infoBar, CT_LABEL)
     caption:SetFont("ZoFontGameLargeBold")
@@ -285,7 +282,7 @@ end
 local function CreateTopRowToggle(panel)
     local contents = panel.contents
     local dropdown = contents:GetNamedChild("FiltersDropdown")
-    local checkbox, label = CreateLabeledCheckbox(contents:GetName() .. "HRSRightClickStore", contents,
+    local checkbox, label = CreateLabeledCheckbox(contents:GetName() .. "SHTRightClickStore", contents,
         "Right-click to store",
         "Right-click a furnishing in the list to put it away into the \"Retrieve To\" bag shown below the list (bound furnishings to the Furnishing Vault if that option is on).",
         LEFT, sv.rightClickStore, function(checked) sv.rightClickStore = checked end)
@@ -396,12 +393,8 @@ end
 
 --------------------------------------------------------------------------------
 
-local function OnAddOnLoaded(_, addonName)
-    if addonName ~= ADDON_NAME then return end
-    EVENT_MANAGER:UnregisterForEvent(ADDON_NAME, EVENT_ADD_ON_LOADED)
-
-    sv = ZO_SavedVars:NewAccountWide("HousingRetrieveSort_SV", 1, nil, defaults)
-    sv.rightClickRetrieve = nil -- leftover from 1.0.0
+function SHT.InitializeHousingEditor(savedVars)
+    sv = savedVars
 
     local browser = KEYBOARD_HOUSING_FURNITURE_BROWSER
     local panel = browser and browser.retrievalPanel
@@ -419,5 +412,3 @@ local function OnAddOnLoaded(_, addonName)
     InstallKeepCategoryPosition(browser.placeablePanel)
     InstallKeepCategoryPosition(browser.retrievalPanel)
 end
-
-EVENT_MANAGER:RegisterForEvent(ADDON_NAME, EVENT_ADD_ON_LOADED, OnAddOnLoaded)
