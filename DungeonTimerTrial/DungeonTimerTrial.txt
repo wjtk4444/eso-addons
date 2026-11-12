@@ -4,11 +4,11 @@
 ; other countries. All rights reserved.
 ; https://account.elderscrollsonline.com/add-on-terms
 
-## Title: DungeonTimerTrial
-## Description: Adds trial support to Code's DungeonTimer
+## Title: Dungeon Timer: Trials
+## Description: Adds trials and arenas to Code's Dungeon Timer, using the game's own score timer where there is one.
 ## Author: Schrodi
 ## Version: 1.1.2
-## APIVersion: 101034 101035
+## APIVersion: 101051
 ## DependsOn: DungeonTimer
 
 DungeonTimerTrial.lua

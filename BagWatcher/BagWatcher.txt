@@ -4,10 +4,10 @@
 ; other countries. All rights reserved.
 ; https://account.elderscrollsonline.com/add-on-terms
 
-## Title: BagWatcher
-## Description: i've seen a bag once
+## Title: Bag Watcher
+## Description: Shows your free bag space next to the FPS and latency meters.
 ## Author: Schrodi
 ## Version: 1.0
-## APIVersion: 100034
+## APIVersion: 101051
 
 BagWatcher.lua

@@ -10,7 +10,7 @@
 ## AddOnVersion: 120
 ## IsLibrary: true
 ## SavedVariables: LibDeconValue_Stats
-## Author: otac0n (updated)
+## Author: Schrodi (based on LibLootStats by otac0n)
 ## Description: Calculate deconstruction value and display expected material yields with accurate level/CP-aware material lookups. Learns real yields from your own deconstructions (/ldv).
 ## OptionalDependsOn: TamrielTradeCentre LibLazyCrafting AwesomeGuildStore
 ## DependsOn: LibPrice

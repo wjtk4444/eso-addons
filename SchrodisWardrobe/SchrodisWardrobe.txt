@@ -4,12 +4,12 @@
 ; other countries. All rights reserved.
 ; https://account.elderscrollsonline.com/add-on-terms
 
-## Title: SchrodisWardrobe
-## Description: You're a wizard Harry!
+## Title: Schrodi's Wardrobe
+## Description: Wizard's Wardrobe + Armory: every Armory build gets its own Wizard's Wardrobe page, and setups can buy and morph missing skills. You're a wizard, Harry!
 ## Author: Schrodi
 ## Version: 2.0
 ## AddOnVersion: 200
-## APIVersion: 101048 101049
+## APIVersion: 101051
 ## DependsOn: WizardsWardrobe>=1232 LibAddonMenu-2.0
 ## SavedVariables: SchrodisWardrobe
 

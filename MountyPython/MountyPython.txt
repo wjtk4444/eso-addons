@@ -2,9 +2,8 @@
 ## Author: Schrodin't
 ## Version: 1.18.3
 ## AddOnVersion: 1183
-## Description: Throw all your setups into the wardrobe and let the wizard equip them exactly when you need it.
-## APIVersion: 101041 101042
-## DependsOn: LibAddonMenu-2.0>=35
+## Description: One keybind to hop on the multi-rider mount of a nearby group member.
+## APIVersion: 101051
 
 Bindings.xml
 MountyPython.lua

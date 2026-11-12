@@ -1,5 +1,6 @@
-## APIVersion: 100021 100022
+## APIVersion: 101051
 ## Title: Schrodi's Tick Tracker
+## Description: Shows when your next stamina regeneration tick lands: an arrow sweeps across the stamina bar every 2 seconds, the amount pops up on each tick, and the bar turns grey while your regen is zero. Based on Miat's Tick Tracker.
 ## Author: Schrödinger
 ## Version: 1.0
 

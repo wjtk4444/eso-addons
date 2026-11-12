@@ -1,5 +1,6 @@
-## APIVersion: 101043 101044
+## APIVersion: 101051
 ## Title: Skill Issue
+## Description: Blocks chosen skills from being cast: always, only in combat or only out of combat.
 ## Author: Schrödinger
 ## Version: 1.0
 ## DependsOn: LibAddonMenu-2.0
