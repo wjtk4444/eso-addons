@@ -7,7 +7,7 @@
 ## Title: DungeonTimerTrial
 ## Description: Adds trial support to Code's DungeonTimer
 ## Author: Schrodi
-## Version: 1.0.14
+## Version: 1.1.2
 ## APIVersion: 101034 101035
 ## DependsOn: DungeonTimer
 
