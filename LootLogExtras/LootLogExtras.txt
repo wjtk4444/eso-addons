@@ -4,12 +4,17 @@
 ; other countries. All rights reserved.
 ; https://account.elderscrollsonline.com/add-on-terms
 
-## Title: LootLogCraft
-## Description: Logs notable materials from crafting-station refinement and deconstruction (including the deconstruction assistant) into Code's LootLog
+## Title: LootLog Extras
+## Description: Logs what Code's LootLog can't see on its own: materials from refining and deconstruction, and notable items taken from mail (including system mail and "Take All").
 ## Author: Schrodi
-## Version: 1.1.0
+## Version: 2.0.0
+## AddOnVersion: 200
 ## APIVersion: 101051
+## SavedVariables: LootLogExtras_SV
 ## DependsOn: LootLog
-## OptionalDependsOn: LibCharacterKnowledge
+## OptionalDependsOn: LibCharacterKnowledge LibAddonMenu-2.0
 
-LootLogCraft.lua
+Shared.lua
+Crafting.lua
+Mail.lua
+Main.lua
