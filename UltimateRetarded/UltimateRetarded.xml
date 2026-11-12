@@ -1,0 +1,15 @@
+<GuiXml>
+    <Controls>    
+    <TopLevelControl name="UltimateRetardedContainer">
+			<!--<Dimensions x="25" y="25" />
+			<Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetY="0" offsetX="0" />-->
+            <Controls>
+                <Label name="UltimateRetarded_Timer" width="25" height="25" font="ZoFontWinH1" inheritAlpha="true"
+					color="00FFFF" wrapMode="TRUNCATE" verticalAlignment="CENTER" horizontalAlignment="CENTER" text="0"
+					movable="false" mouseEnabled="false" hidden="true" >
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+                </Label>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>
