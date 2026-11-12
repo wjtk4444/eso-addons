@@ -1,0 +1,93 @@
+Version 1.1
+-----------
+- Scoreboard: the base game's own Damage, Heals and game-type score (flag) columns added in
+  12.1.5 are hidden again -- damage/heal were already shown next to Score by this addon -- and
+  the window is narrowed back to its pre-12.1.5 width.
+- Scoreboard: big lobbies (9v9, 6v6v6, 8v8) fit without a scrollbar. The team list may now grow
+  with the screen height (never shorter than the base game's own limit), and if it still doesn't
+  fit, the spacing between rows shrinks just enough for everyone to fit. With tightly packed
+  rows the damage/heal pair next to Score switches to a smaller font so it stays within its row.
+- "Queue ..." quick buttons: one button per queue on offer (e.g. "Queue 4v4 Competitive",
+  "Queue Big Team Battles"), grouping each queue's Solo and Group variants by name instead of by
+  the team-size numbers in the name (which "Big Team Battles" doesn't have). No longer capped at
+  2: up to 6 buttons, 2 per row, extra rows stacking upward; each button widens to fit its label.
+
+Version 1.0
+-----------
+Renamed from BetterBetterScoreboard to EvenBetterScoreboard (disable/remove the old
+BetterBetterScoreboard addon -- both use the same base-game hooks and would collide). Carries
+over everything from BetterBetterScoreboard 2.0, plus:
+- The queue tab is now "EBS BG Queue" (fits the Group Menu nav on one line).
+- The panel now inherits the same content-area anchors as the built-in category panels
+  (Battlegrounds, Dungeon Finder, ...), and the Join Queue / View Veterancy buttons now sit
+  flush with the bottom edge with a 30px gap between them, exactly matching the built-in
+  Battlegrounds action bar's own position and spacing (its button container is sized to fit
+  the buttons exactly, not a padded fixed height, which is what was pushing them up before).
+- The "EBS BG Queue" title text is gone. In its place, top to bottom: a veterancy rank display
+  (icon, rank number, rank name, XP bar) copied from the built-in Battlegrounds screen minus its
+  game-mode dropdown, positioned near the top of the panel; then the "Select battleground queues
+  you would like to join at once:" hint; then the queue checklist; then the buttons.
+- The Join Queue button is now greyed out whenever it wouldn't do anything: no queue ticked,
+  already searching/queued, mid ready check, the Group Finder in use, or during this addon's own
+  30s post-ready-check cooldown -- the same conditions the built-in Join Queue button checks.
+- The queue checklist itself now stays live instead of freezing at whatever was available on
+  login/reload: it refreshes on the same triggers the built-in Battlegrounds tab uses for its
+  own list (level up, campaign switch, location data changing, a holiday/weekly event starting
+  or ending), so a queue unlocking, a weekly appearing, or one disappearing mid-session shows up
+  here without a /reloadui.
+- Queue names are colored to match how they read in-game: "Competitive" gold, "Standard" green,
+  and "Weekly"/"Weekend" green as well.
+- Up to 2 "Queue <size>" shortcut buttons now sit above Join Queue / View Veterancy (e.g. "Queue
+  4 vs 4", "Queue 8 vs 8") -- built live from whatever team sizes are actually queueable, so a
+  different/new size takes their place automatically. Clicking one selects every Solo/Group
+  variant of that size and queues immediately, in one click. They grey out under the same
+  conditions as Join Queue: already queued/searching, mid ready check, the Group Finder in use,
+  or on this addon's own cooldown.
+- Added a "Requeue automatically" checkbox to the panel (off by default, and never saved -- it
+  resets on every /reloadui or relog). When on, explicitly declining a ready check requeues for
+  the same modes you were queued for once this addon's own 30s cooldown ends. Letting a ready
+  check time out, or manually leaving the queue, never triggers it.
+- Added an "Auto requeue: On/Off" row to the Group & Activity Finder's own "Status: Queued /
+  Actual:" block, so the checkbox's current state is visible from there too, cooldown or not.
+- The queue checklist's checkboxes now lock while you're already queued/searching or mid ready
+  check, same as the built-in filter list does -- they still show what you're queued for, just
+  can't be clicked until you leave the queue. The decline/timeout cooldown by itself does not
+  lock them.
+- Absorbed BattlegroundModeSaver's functionality (disable/remove that addon -- no longer needed):
+  the built-in Battlegrounds queue screen's mode dropdown now remembers your last selection across
+  UI reloads and relogs, for anyone who prefers that screen over our own "EBS BG Queue" panel but
+  still wants this addon's scoreboard columns/icons. Account-wide, like the original addon. No
+  chat messages.
+- Added an optional LibAddonMenu-2.0 settings panel (Settings -> Even Better Scoreboard):
+  - "Player name display" dropdown: Default (respect game settings, same as before), @UserID,
+    Character Name, @UserID (Character Name), or Character Name (@UserID).
+  - "Remember last battleground mode in vanilla finder" checkbox (on by default) to toggle the
+    built-in Battlegrounds screen's mode memory (ported from BattlegroundModeSaver) without
+    needing a reload -- turning it off just stops saving/restoring, it doesn't forget the mode
+    already remembered.
+  - "Show quick queue buttons" checkbox (on by default) to hide the "Queue 4 vs 4"/"Queue 8 vs 8"
+    shortcut buttons on the "EBS BG Queue" panel.
+  - Colorpickers for the Competitive queue color, the Standard queue color (shared with
+    Weekly/Weekend), the Healing Done column color, and the Damage Done column color -- each
+    defaulting to what the addon already used. All account-wide, all applied immediately. Skipped
+    entirely if LibAddonMenu-2.0 isn't installed.
+
+Previously, as BetterBetterScoreboard:
+
+Version 2.0
+-----------
+No longer depends on Better Scoreboard -- absorbed its scoreboard/multi-queue logic directly
+(disable Better Scoreboard if you have it installed, to avoid both addons hooking the same
+controls). The queue tab (renamed from "Better Scoreboard" so it fits the Group Menu nav on one
+line) was positioned right after Battlegrounds, and redesigned to match the game's own
+activity-finder lists: real checkboxes with a hover highlight, plus a Join Queue / View
+Veterancy button pair at the bottom. Ticked queues are remembered between sessions via this
+addon's own saved variables.
+
+Version 1.0
+-----------
+Initial upload. Moved out of Better Scoreboard into its own addon:
+- Row height / class icon alignment fix
+- Character name display preference
+- Ready check decline/timeout requeue cooldown timer (30s, was 15s while it lived in Better
+  Scoreboard) with the debug chat logging removed

@@ -1,0 +1,11 @@
+## Title: EvenBetterScoreboard
+## APIVersion: 101044
+## Version: 1.1
+## AddOnVersion: 2
+## Description: Battlegrounds scoreboard with damage/heal columns, class icons, a configurable name display mode, a multi-queue "EBS BG Queue" tab in the Group & Activity Finder, a requeue cooldown timer after declining (or missing) a ready check, and remembers your last selected mode on the built-in Battlegrounds queue screen. Optional LibAddonMenu-2.0 settings panel for name display, quick-queue-button visibility, and queue/scoreboard colors. Self-contained -- does not require Better Scoreboard, BetterBetterScoreboard, or BattlegroundModeSaver.
+## Author: Schrodi
+## SavedVariables: EBSVars EBSAccountVars
+## OptionalDependsOn: LibAddonMenu-2.0
+
+EvenBetterScoreboard.lua
+EvenBetterScoreboard.xml
