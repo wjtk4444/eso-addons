@@ -7,10 +7,10 @@
 ## Title: Teleport
 ## Description: Teleport - General purpose command line teleporting tool
 ## Author: Schrodi
-## Version: 1.1.3
+## Version: 1.3.0
 ## APIVersion: 100038
 ## SavedVariables: TeleportAliases
-## OptionalDependsOn: LibTreasure LibGPS PithkaAchievementTracker
+## OptionalDependsOn: LibTreasure LibGPS
 
 Teleport.txt
 Teleport.lua
@@ -19,6 +19,7 @@ Aliases.lua
 Players.lua
 Zones.lua
 SurveyMaps.lua
+Quests.lua
 Nodes.lua
 Wayshrines.lua
 Dungeons.lua

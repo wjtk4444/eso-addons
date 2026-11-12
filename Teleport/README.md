@@ -8,7 +8,8 @@ See [changelog.md on github](https://github.com/wjtk4444/eso-addons/blob/master/
 
 ## Features
 - Teleporting to zones for free (using party members / friends / guildies)
-- Teleporting to survey/treasure map zones (free using see above, paid otherwise)
+- Teleporting to survey/treasure map zones (free using see above, paid otherwise), maps in your current zone first
+- Teleporting to the tracked quest (free using see above, paid: the wayshrine closest to any of its objective markers)
 - Teleporting to houses, other player's houses included (free, duh)
 - Teleporting to dungeons/arenas/trials (free if any of the party members is already in, paid otherwise)
 - Resetting instance or just changing difficulty before teleporting in (only as the group leader)
@@ -18,7 +19,8 @@ Note that when you're not teleporting to a player or his house, you need to have
 
 ## Dependencies
 
-- [LibTreasure](https://www.esoui.com/downloads/info3227-LibTreasure.html) [LibGPS](https://www.esoui.com/downloads/info601-LibGPS.html) - needed for paid teleport to survey maps (finding closest wayshrine)
+- [LibTreasure](https://www.esoui.com/downloads/info3227-LibTreasure.html) - needed for paid teleport to survey maps (where the maps actually are)
+- [LibGPS](https://www.esoui.com/downloads/info601-LibGPS.html) - optional, exact distances in meters (and cleaner map state handling) for survey maps and quests
 - [PithkaAchievementTracker](https://www.esoui.com/downloads/info2892-PithkasAchievementTracker.html) - just to resolve conflicts (override Pithka's `/tp` command)
 
 ## Usage
@@ -43,7 +45,7 @@ The input matching order is:
 
 - User defined alias
 - Settings (`--help`, `--add`, `--remove`, `--list`)
-- Internal commands (`leader`, `paidsurveymaps`, `freesurveymaps`, `bothsurveymaps`)
+- Internal commands (`leader`, `maps`, `maps free`, `maps paid`, `quest`, `quest free`, `quest paid`)
 - Predefined dungeon/arena/trial aliases
 
 If wayshrine menu is not open:
@@ -79,7 +81,13 @@ For example:
 
 **Survey maps and Treasure Maps**
 
-If you're using `/tp ZoneName` to do your crafting surveys and treasure maps in the most efficient way, first, good effort. Second, you should be using `/tp bothsurveymaps` instead, which will look trough your inventory and call `/tp Zone` for you. On top of that, if there's noone in the said zone, it will tp you to the nearest wayshrine. If you want to always use paid teleport and end up at the nearest shrine you can use `paidsurveymaps` instead, or `freesurveymaps` if you hate paying that much. Third, you should probably [alias](#aliases) it to something shorter. Personally I'm using `/tp s`.
+If you're using `/tp ZoneName` to do your crafting surveys and treasure maps in the most efficient way, first, good effort. Second, you should be using `/tp maps` instead, which will look trough your inventory and call `/tp Zone` for you. On top of that, if there's noone in the said zone, it will tp you to the nearest wayshrine. If you want to always use paid teleport and end up at the nearest shrine you can use `/tp maps paid` instead, or `/tp maps free` if you hate paying that much. (The pre-1.3 names `bothsurveymaps`, `paidsurveymaps` and `freesurveymaps` still work.) Third, you should probably [alias](#aliases) it to something shorter. Personally I'm using `/tp s`.
+
+Maps in the zone you're currently in go first, so you don't get a zone-to-zone loading screen while there's still something to dig up nearby. After that it picks the zone you have the most maps for. A free jump to a player in any of those zones is still preferred over paying for a wayshrine (unless you're at a wayshrine, where it's free anyway). If you're already closer to a map than any wayshrine is (by at least ~150m), it won't teleport you anywhere and will tell you how far the map is instead.
+
+**Quests**
+
+`/tp quest`, `/tp quest free` and `/tp quest paid` work the same way for the quest you're currently tracking. All of its open objective markers are checked and you end up at the wayshrine closest to any of them. Everything happens in the background, the map is never opened.
 
 ### Teleporting to houses
 

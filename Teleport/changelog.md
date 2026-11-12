@@ -1,3 +1,63 @@
+### 1.3.0
+- new command names: `maps` / `maps free` / `maps paid` and `quest` / `quest free` / `quest paid` (the bare one = free if possible, paid otherwise). Old `bothsurveymaps`, `freequest` etc. still work
+- survey/treasure maps: maps in your current zone are now preferred (no more zone-to-zone loading screens when you're at a wayshrine with maps left in that zone), then the zone you have the most maps for. With `bothsurveymaps` a free jump to a player in *any* zone still wins over paying for a wayshrine in the current one
+- survey/treasure maps: paid teleport now picks the closest map/wayshrine pair instead of the first map in your bag, and skips zones with no known wayshrines instead of giving up
+- survey/treasure maps & quests: if you're already closer to the target than any wayshrine, you get told how far it is instead of a pointless loading screen
+- quests: travel to quest no longer opens / flashes the world map, everything happens in the background
+- quests: all open objective markers are taken into account (quests with multiple markers, "talk to A or B", delves, quest endings)
+- quests: objectives in your current zone go first (same rule as maps: free jumps anywhere before paid travel)
+- LibGPS is now optional (only used for exact distances)
+- survey/treasure maps: "(+N more in <zone>)" in chat messages
+- dungeons: difficulty change / instance reset rewritten - it now waits until the game actually reports the new difficulty (instead of reacting to the first difficulty event, which for groups often came from the *previous* toggle), so resets no longer occasionally teleport you in on the wrong difficulty
+- dungeons: a difficulty change that never goes through is resent once, then times out after ~6s - no more leftover event handlers teleporting you somewhere much later when difficulty changes for an unrelated reason
+- dungeons: uses the game's own checks/messages for why difficulty can't be changed (not leader, in dungeon, activity finder group, active Group Finder listing, no CP for veteran)
+- dungeons: the "group members are in a dungeon" warning for `n`/`v` aliases works now (it was never triggered due to a typo)
+- dungeons: other dungeon teleports are blocked while a reset is in progress
+
+### 1.2.0
+- paid survey teleport is automatically used (instead of the free one) when you're at a wayshrine
+- fixed an error when trying to teleport to someone elses's house that didn't exist (ie. /tp @xyz abc - there's no house name starting with "abc")
+- made logic for discovering all dungeons/trials/etc. more robust - now toons that dont have them unlocked should still be 
+    able to use `/tp` to places like fungal grotto 1 (and get an error that its not unlocked :P )
+- aliases are now automatically generated as follows:
+	"The " prefix is ignored when searching for zones, dungeons, trials, wayshrines.
+	"XYZ: " prefix (ie. Blackreach:) is also ignored but only for zones
+	Dungeon and trial names are split by spaces and dashes and first letters are used for aliases. 2 characters minimum.
+	"I" and "II" suffixes are converted to nothing, 1 and 2 respectively
+	With a couple exceptions they should be really similar to existing aliases, ie.
+	The Banished Cells I -> bc, bc1, tbc, tbc1 - all of those will work
+	Kyne's Aegis -> ka
+	Ruins of Mazzatun -> rom
+	The hardcoded exceptions are (full names still work):
+	
+	Zones:
+	Elsweyr -> Northern Elsweyr
+	Elsweyr -> Northern Elsweyr
+	Skyrim -> Western Skyrim
+	Weald -> West Weald
+	
+	Trials, dungeons, arenas:
+	ss -> Sunspire
+    cr -> Cloudrest
+	rg -> Rockgrove
+	sc -> Spindleclutch I
+	sc1 -> Spindleclutch I
+	sc2 -> Spindleclutch I
+	vf -> Volenfell
+	fv -> Frostvault
+	ir -> Icereach
+	cd -> The Cauldron
+	
+	Additional: (for entries below there's also a generated aliases, namely: da, bp, bf, sp, mhk, mf, tdc)
+	dsr -> Dreadsail Reef
+	dsa -> Dragonstar Arena 
+	brp -> Blackrose Prison 
+	brf -> Bloodroot Forge
+	scp -> Scalecaller Peak
+	mk -> Moon Hunter Keep
+	mgf -> Moongrave Fane
+	dc -> The Dread Cellar
+
 ### 1.1.3
 - added West Weald alias (Weald)
 - added Lucent Citadel (lc)

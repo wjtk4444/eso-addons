@@ -16,6 +16,7 @@ Teleport.COLORS = {
     LEADER = "AAFFAA",
 
     SURVEY = "3A93FF",
+    QUEST = "3A93FF",
 }
 
 Teleport.info  =           function(msg) CHAT_SYSTEM:AddMessage("[Teleport]: "        .. msg) end
@@ -67,11 +68,18 @@ Players:
     /tp leader
     /tp @fren
 
-Crafting Surveys and Treasure Maps:
-    /tp bothsurveymaps
+Crafting Surveys and Treasure Maps (free if possible, paid otherwise):
+    /tp maps
+    /tp maps free
+    /tp maps paid
+
+Tracked quest (same rules):
+    /tp quest
+    /tp quest free
+    /tp quest paid
 
 Adding and removing Aliases:
-    /tp --add s bothsurveymaps
+    /tp --add s maps
     /tp --add l leader
     /tp --add snuggy @@schrodingerscatgirl snugpod
     /tp --list
@@ -81,6 +89,23 @@ Adding and removing Aliases:
 end
 
 --------------------------------------------------------------------------------
+
+-- exact matches only, so prefixes like `/tp ma` / `/tp que` still search zones etc.
+local COMMANDS = {
+    ['maps']           = function() return Teleport.SurveyMaps:teleportToSurveyMap(true) end,
+    ['maps free']      = function() return Teleport.SurveyMaps:teleportToSurveyMap()     end,
+    ['maps paid']      = function() return Teleport.SurveyMaps:paidTeleportToSurveyMap() end,
+    ['quest']          = function() return Teleport.Quests:teleportToQuest(true, false)  end,
+    ['quest free']     = function() return Teleport.Quests:teleportToQuest(false, false) end,
+    ['quest paid']     = function() return Teleport.Quests:teleportToQuest(false, true)  end,
+}
+-- pre-1.3 names, kept so existing aliases keep working
+COMMANDS['bothsurveymaps'] = COMMANDS['maps']
+COMMANDS['freesurveymaps'] = COMMANDS['maps free']
+COMMANDS['paidsurveymaps'] = COMMANDS['maps paid']
+COMMANDS['bothquest']      = COMMANDS['quest']
+COMMANDS['freequest']      = COMMANDS['quest free']
+COMMANDS['paidquest']      = COMMANDS['quest paid']
 
 local function removeExtraWhitespace(args)
     if not args then return nil end
@@ -110,10 +135,9 @@ local function tp(args)
         return Teleport.Aliases:removeAlias(string.sub(args, 10))
     end
 
-    if args == 'leader'          then return Teleport.Players:teleportToLeader()             end
-    if args == 'freesurveymaps'  then return Teleport.SurveyMaps:teleportToSurveyMap()     end
-    if args == 'paidsurveymaps'  then return Teleport.SurveyMaps:paidTeleportToSurveyMap() end
-    if args == 'bothsurveymaps'  then return Teleport.SurveyMaps:teleportToSurveyMap(true) end
+    if args == 'leader'          then return Teleport.Players:teleportToLeader()           end
+    local command = COMMANDS[args]
+    if command then return command() end
 
     if Teleport.Helpers:startsWith(args, '@') then 
         local playerNamePrefix, houseNamePrefix = Teleport.Helpers:splitOnSpace(args)
@@ -155,4 +179,7 @@ EVENT_MANAGER:RegisterForEvent('Teleport', EVENT_ADD_ON_LOADED, function(_, addo
         SLASH_COMMANDS['/tp'] = tp
         local SAVED_VARS = ZO_SavedVars:NewAccountWide('TeleportAliases', 1, nil, { ALIASES = { } })
         Teleport.Aliases:setSavedVars(SAVED_VARS.ALIASES)
+		
+		Teleport.Zones:initialize()
+		Teleport.Nodes:initialize()
     end)
