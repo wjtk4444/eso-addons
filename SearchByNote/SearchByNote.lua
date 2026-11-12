@@ -12,4 +12,8 @@ function ZO_SocialManager:ProcessDisplayName(stringSearch, data, searchTerm, cac
 	if(data.note ~= nil and zo_plainstrfind(data.note:lower(), lowerSearchTerm)) then
 		return true
 	end
+	
+	if(data.formattedZone ~= nil and zo_plainstrfind(data.formattedZone:lower(), lowerSearchTerm)) then
+		return true
+	end
 end
