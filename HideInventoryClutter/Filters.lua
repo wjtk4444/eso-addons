@@ -1,92 +1,81 @@
 function HideInventoryClutter:isCraftingMaterial(slot) 
     if not self.savedVariables.materialsEnabled then return false end
-    if GetItemFilterTypeInfo(slot.bagId, slot.slotIndex) == ITEMFILTERTYPE_CRAFTING or GetItemType(slot.bagId, slot.slotIndex) == ITEMTYPE_LURE then
-        return not self.lockedVisible
-    end
-    
-    return false
+	local b, i = slot.bagId, slot.slotIndex
+    return GetItemFilterTypeInfo(b, i) == ITEMFILTERTYPE_CRAFTING or GetItemType(b, i) == ITEMTYPE_LURE 
 end
 
-function HideInventoryClutter:isWorthDeconstructing(b, i)
+function HideInventoryClutter:isWorthDeconstructing(slot)
     if not self.savedVariables.deconstructionEnabled then return true end
-
-    if GetItemType(b, i) == ITEMTYPE_TREASURE then
-        return self.lockedVisible
-    end
-
-    local itemType = GetItemType(b, i)
-    if itemType == ITEMTYPE_GLYPH_ARMOR or itemType == ITEMTYPE_GLYPH_JEWELRY or itemType == ITEMTYPE_GLYPH_WEAPON then
-        if not IsItemLinkCrafted(GetItemLink(b, i)) then
-            return true
-        else
-            return self.lockedVisible
-        end
-    end
-    
-    local quality = GetItemQuality(b, i)
-    if GetItemFilterTypeInfo(b, i) == ITEMFILTERTYPE_JEWELRY then 
-        if quality >= ITEM_QUALITY_MAGIC then
-            return true
-        else
-            return self.lockedVisible
-        end
-    end
-
-    if quality >= ITEM_QUALITY_ARTIFACT then
-        return true
-    end
-    
-    return self.lockedVisible
+	local b, i = slot.bagId, slot.slotIndex
+    --return GetItemQuality(b, i) >= ITEM_QUALITY_ARTIFACT 
+	local itemLink = GetItemLink(b, i)
+	if IsItemLinkCrafted(itemLink) then return false end
+	local deconValue = LibDeconValue:GetDeconValue(itemLink, self.savedVariables.deconstructionValueMinMatPrice)
+	local vendorValue = LibDeconValue:GetVendorValue(itemLink)
+	return deconValue > vendorValue * self.savedVariables.deconstructionValueMultiplier + self.savedVariables.deconstructionValueMinDifference
 end
 
-function HideInventoryClutter:isWorthSelling(b, i)
-    if self:isCraftingMaterial({bagId = b, slotIndex = i}) then return self.lockedVisible end
+local ITEMTYPES_NOT_FOR_SALE = {
+	[ITEMTYPE_FURNISHING			] = true,
+	[ITEMTYPE_RECIPE    			] = true,
+	[ITEMTYPE_RACIAL_STYLE_MOTIF	] = true,
+	[ITEMTYPE_FISH					] = true,
+--	[ITEMTYPE_CRAFTED_ABILITY_SCRIPT] = true,
+}
 
-    if GetItemType(b, i) == ITEMTYPE_TREASURE then
-        return true
-    end
+local SPECIALIZED_ITEMTYPES_NOT_FOR_SALE = {
+	[SPECIALIZED_ITEMTYPE_TROPHY_RUNEBOX_FRAGMENT] = true,
+}
 
-    local itemType = GetItemType(b, i)
-    if itemType == ITEMTYPE_GLYPH_ARMOR or itemType == ITEMTYPE_GLYPH_JEWELRY or itemType == ITEMTYPE_GLYPH_WEAPON then
-        return self.lockedVisible
-    end
-    
-    local quality = GetItemQuality(b, i)
-    if GetItemFilterTypeInfo(b, i) == ITEMFILTERTYPE_JEWELRY then 
-        if quality >= ITEM_QUALITY_MAGIC then
-            return self.lockedVisible
-        else
-            return true
-        end
-    end
-
-    if quality >= ITEM_QUALITY_ARTIFACT then
-        return self.lockedVisible
-    end
-    
-    return not self:isWorthDeconstructing(b, i)
+function HideInventoryClutter:isWorthSelling(slot)
+	local b, i = slot.bagId, slot.slotIndex
+	if GetItemSellInformation(b, i) == ITEM_SELL_INFORMATION_CANNOT_SELL then return false end
+	local itemType, specalizedItemType = GetItemType(b, i) 
+    if itemType == ITEMTYPE_TREASURE then return true end
+	if ITEMTYPES_NOT_FOR_SALE[itemType] then return false end
+	if SPECIALIZED_ITEMTYPES_NOT_FOR_SALE[specalizedItemType] then return false end
+	if self:isCraftingMaterial(slot) then return false end
+	if IsItemLinkCrafted(GetItemLink(b, i)) and not self:isConsumable(slot) then return false end
+	-- with the deconstruction filter off isWorthDeconstructing() returns true for everything
+	if not self.savedVariables.deconstructionEnabled then return true end
+	return not self:isWorthDeconstructing(slot)
 end
+
+local CONSUMABLE_ITEMTYPES = {
+	[ITEMTYPE_FOOD  ] = true,
+	[ITEMTYPE_DRINK ] = true,
+	[ITEMTYPE_POTION] = true,
+	[ITEMTYPE_POISON] = true,
+}
+
+local EXTRA_CONSUMABLES = {
+	[30357 ] = true, -- Lockpick
+	[44879 ] = true, -- Grand Repair Kit
+	[33271 ] = true, -- Soul Gem
+}
 
 function HideInventoryClutter:isConsumable(slot)
     if not self.savedVariables.consumablesEnabled then return false end
+	local b, i = slot.bagId, slot.slotIndex
     
-    if IsItemStolen(slot.bagId, slot.slotIndex) then return false end
+	if IsItemStolen(b, i) then return false end
 
-    if self.EXTRA_CONSUMABLES[GetItemId(slot.bagId, slot.slotIndex)] then return not self.consumablesVisible end
-    
-    local itemType = GetItemType(slot.bagId, slot.slotIndex)
-    if self.CONSUMABLE_ITEMTYPES[itemType] ~= nil then
-        return not self.consumablesVisible
-    end
-    
-    return false
+	if CONSUMABLE_ITEMTYPES[GetItemType(b, i)] then return true end
+    return EXTRA_CONSUMABLES[GetItemId(b, i)] ~= nil
 end
 
 function HideInventoryClutter:isLocked(slot)
     if not self.savedVariables.lockedEnabled then return false end
-    if CanItemBePlayerLocked(slot.bagId, slot.slotIndex) and IsItemPlayerLocked(slot.bagId, slot.slotIndex) then
-        return not self.lockedVisible
-    end
-    
-    return false
+	
+	local b, i = slot.bagId, slot.slotIndex
+	return CanItemBePlayerLocked(b, i) and IsItemPlayerLocked(b, i)
+end
+
+function HideInventoryClutter:isEitherTradeableGearOrDifferentItemType(slot)
+	local b, i = slot.bagId, slot.slotIndex
+	local itemType = GetItemType(b, i)
+	if itemType == ITEMTYPE_ARMOR or itemType == ITEMTYPE_WEAPON then
+		return IsItemBoPAndTradeable(b, i) or self:isConsumable(slot)
+	end
+	return true
 end

@@ -91,6 +91,35 @@ function HideInventoryClutter:buildLAM2Menu()
 			getFunc = function() return self.savedVariables.deconstructionEnabled end,
 			setFunc = function(value) self.savedVariables.deconstructionEnabled = value end
 		},
+		[9] = {
+			type = "slider",
+			name = "No ESO+ mode I (they can all be used in conjunction) (you can type in custom value) (1 = off)",
+			tooltip = "items are not considered worth deconstructing only if deconstruction value is at least N times the sell value",
+			min = 1,
+			max = 10,
+			getFunc = function() return self.savedVariables.deconstructionValueMultiplier end,
+			setFunc = function(value) self.savedVariables.deconstructionValueMultiplier = value end
+		},
+		[10] = {
+			type = "slider",
+			name = "No ESO+ mode II (they can all be used in conjunction) (you can type in custom value) (0 = off)",
+			tooltip = "deconstruction value used in determining if an item is worth deconstructing will skip materials with price below N gold",
+			min = 0,
+			step = 10,
+			max = 1000,
+			getFunc = function() return self.savedVariables.deconstructionValueMinMatPrice end,
+			setFunc = function(value) self.savedVariables.deconstructionValueMinMatPrice = value end
+		},
+		[11] = {
+			type = "slider",
+			name = "No ESO+ mode III (they can all be used in conjunction) (you can type in custom value) (0 = off)",
+			tooltip = "item is only considered worth deconstructing if deconstruction value is at least N gold higher than sell value",
+			min = 0,
+			step = 10,
+			max = 1000,
+			getFunc = function() return self.savedVariables.deconstructionValueMinDifference end,
+			setFunc = function(value) self.savedVariables.deconstructionValueMinDifference = value end
+		},
 	}
 	LAM2:RegisterOptionControls(self.ADDON_NAME .. "_LAM_PANEL", controls)
 end
@@ -105,12 +134,14 @@ function HideInventoryClutter:saveGuiPosition()
 end
 
 function HideInventoryClutter:setupSavedVars()
-	self.savedVariables = ZO_SavedVars:NewAccountWide("HideInventoryClutterPosition", 2, nil, { 
+	self.savedVariables = ZO_SavedVars:NewAccountWide("HideInventoryClutterPosition", 3, nil, { 
 			positionLocked     = { top = nil, left = nil },
 			positionConsumable = { top = nil, left = nil },
 			lockedEnabled = true,
 			consumablesEnabled = true,
 			materialsEnabled = true,
 			deconstructionEnabled = true,
+			deconstructionValueMultiplier = 1,
+			deconstructionValueMinDifference = 0,
 		})
 end

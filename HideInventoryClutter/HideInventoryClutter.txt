@@ -9,15 +9,11 @@
 ## Author: Schrodi
 ## Version: 2.0
 ## APIVersion: 100034
-## DependsOn: LibFilters-3.0 LibAddonMenu-2.0
+## DependsOn: LibFilters-3.0 LibAddonMenu-2.0 LibDeconValue
 ## SavedVariables: HideInventoryClutterPosition
 
 HideInventoryClutter.xml
-
 HideInventoryClutter.lua
 Settings.lua
-UI.lua
 Filters.lua
-
-
-
+UI.lua
