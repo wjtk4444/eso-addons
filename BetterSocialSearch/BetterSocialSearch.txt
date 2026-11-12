@@ -4,12 +4,12 @@
 ; other countries. All rights reserved.
 ; https://account.elderscrollsonline.com/add-on-terms
 
-## Title: SearchByNote
-## Description: Allows searching friendslist and guild roster by note contents
+## Title: Better Social Search
+## Description: The search box of the friends list and guild roster also finds notes and zones, not only names.
 ## Author: Schrodi
-## Version: 1.0
-## APIVersion: 100034
+## Version: 1.1
+## APIVersion: 101051
 
-SearchByNote.lua
+BetterSocialSearch.lua
 
 
