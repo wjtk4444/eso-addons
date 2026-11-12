@@ -53,7 +53,7 @@ ZO_CreateStringId("AIUF_OPTIONS_COLOR_CUSTOM_HIGHLIGHT_TT", "The highlight color
 
 -- Small group grid
 ZO_CreateStringId("AIUF_OPTIONS_SMALL_GROUP", "Small Group As Grid")
-ZO_CreateStringId("AIUF_OPTIONS_SMALL_GROUP_TT", "Displays small groups (4 or less) in a grid of 2x2 frames instead of one column with 4")
+ZO_CreateStringId("AIUF_OPTIONS_SMALL_GROUP_TT", "Groups of up to 12 use the large group frames, laid out in a grid of 4 rows and 3 columns and sorted by role: tanks, healers, damage dealers")
 
 -- Class icon + CP
 ZO_CreateStringId("AIUF_OPTIONS_CLASS_CP", "Show Class Icon And CP")
