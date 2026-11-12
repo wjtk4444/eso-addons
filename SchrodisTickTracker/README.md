@@ -12,7 +12,7 @@ The timing comes from the ticks themselves: the addon watches for a stamina gain
 
 ## Credits
 
-This addon is a reworked **Miat's Tick Tracker** (MiatsTickTracker). The idea and the tick detection come from it; this version has a different UI, drawn directly on the default stamina bar, and a few improvements.
+This addon is a reworked **[Miat's Tick Tracker](https://www.esoui.com/downloads/info1989-MiatsTickTracker.html)** by dorrino. The idea and the tick detection come from it; this version has a different UI, drawn directly on the default stamina bar, and a few improvements.
 
 ## Settings
 
