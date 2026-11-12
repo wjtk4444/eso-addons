@@ -16,6 +16,7 @@ Addons for The Elder Scrolls Online that I wrote or reworked. Each folder is one
 
 | Addon | |
 |---|---|
+| [AddedInfoUnitFrames](AddedInfoUnitFrames) | Role colors, large frames for groups of up to 12 in a role-sorted grid, class icon and CP. Fork of Added Info - Unit Frames. |
 | [DungeonSorter](DungeonSorter) | Sorts the dungeon list in the Activity Finder alphabetically. |
 | [DungeonTimerTrial](DungeonTimerTrial) | Adds trials and arenas to Code's Dungeon Timer. |
 | [EvenBetterScoreboard](EvenBetterScoreboard) | Battleground scoreboard with damage, healing and class icons, plus multi-queue. |
@@ -37,6 +38,13 @@ Addons for The Elder Scrolls Online that I wrote or reworked. Each folder is one
 | [SchrodisHousingTools](SchrodisHousingTools) | Housing editor and Furniture Vault quality of life. |
 | [SplitAndWithdraw](SplitAndWithdraw) | Split or withdraw 1/2/3/5/10/25/50/100 items from the right-click menu. |
 | [XLGearBanker](XLGearBanker) | Move whole gear sets (and consumables) between bags and bank. Fork of XL Gear Banker, GPLv3. |
+
+## Exploration and gathering
+
+| Addon | |
+|---|---|
+| [DeclutteredScryingLeads](DeclutteredScryingLeads) | A Show dropdown for the Antiquities leads lists: hide antiquities you've already dug up unless the reward is worth it. |
+| [FishThief](FishThief) | Picks the right bait for every fishing hole and tells you when a fish bites. |
 
 ## Social
 
