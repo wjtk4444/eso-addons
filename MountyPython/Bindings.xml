@@ -1,9 +1,0 @@
-<Bindings>
-	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
-		<Category name="Mounty Python">
-			<Action name="MP_HOTKEY_MOUNT">
-				<Down>SLASH_COMMANDS["/mountypython"]()</Down>
-			</Action>
-		</Category>
-	</Layer>
-</Bindings>

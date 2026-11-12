@@ -1,9 +1,0 @@
-## Title: Mounty Python
-## Author: Schrodin't
-## Version: 1.18.3
-## AddOnVersion: 1183
-## Description: One keybind to hop on the multi-rider mount of a nearby group member.
-## APIVersion: 101051
-
-Bindings.xml
-MountyPython.lua
