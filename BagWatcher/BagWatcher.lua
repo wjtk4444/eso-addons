@@ -34,35 +34,28 @@ EVENT_MANAGER:RegisterForEvent("BagWatcher", EVENT_ADD_ON_LOADED, function(_, ad
 		BagWatcher_BagSpace:SetText("|t16:16:/esoui/art/tooltips/icon_bag.dds|t " .. color .. free .. "|r")
 	end
 	
-	local EVENTS = {
-		EVENT_INVENTORY_SINGLE_SLOT_UPDATE,
-		EVENT_INVENTORY_SINGLE_SLOT_UPDATE,
-		EVENT_INVENTORY_ITEM_DESTROYED,
-		EVENT_INVENTORY_ITEM_USED, 
-		EVENT_INVENTORY_FULL_UPDATE,
-		EVENT_INVENTORY_SINGLE_SLOT_UPDATE,
-		EVENT_LOOT_RECEIVED,
-	}
-	
-	for _, event in ipairs(EVENTS) do
-		EVENT_MANAGER:RegisterForEvent("BagWatcher", event, OnBagSpace)
-		EVENT_MANAGER:AddFilterForEvent("BagWatcher", event, REGISTER_FILTER_BAG_ID, BAG_BACKPACK)
+	-- Bag changes often come in bursts (Take All from mail, opening a container, deconstructing
+	-- a stack), so the number is refreshed once, shortly after the last change.
+	local REFRESH_DELAY_MS = 100
+	local REFRESH_NAME = "BagWatcherRefresh"
+	local function QueueRefresh()
+		EVENT_MANAGER:UnregisterForUpdate(REFRESH_NAME)
+		EVENT_MANAGER:RegisterForUpdate(REFRESH_NAME, REFRESH_DELAY_MS, function()
+			EVENT_MANAGER:UnregisterForUpdate(REFRESH_NAME)
+			OnBagSpace()
+		end)
 	end
-	
-	--EVENT_MANAGER:RegisterForEvent("BagWatcher", EVENT_LOOT_RECEIVED,				OnBagSpace)
-	--EVENT_MANAGER:RegisterForEvent("BagWatcher", EVENT_CLOSE_BANK,					OnBagSpace)
-	--EVENT_MANAGER:RegisterForEvent("BagWatcher", EVENT_CLOSE_GUILD_BANK,			OnBagSpace)
-	--EVENT_MANAGER:RegisterForEvent("BagWatcher", EVENT_CLOSE_STORE,					OnBagSpace)
-	--EVENT_MANAGER:RegisterForEvent("BagWatcher", EVENT_INVENTORY_ITEM_USED,			OnBagSpace)
-	--EVENT_MANAGER:RegisterForEvent("BagWatcher", EVENT_INVENTORY_ITEM_DESTROYED,	OnBagSpace)
-	--EVENT_MANAGER:RegisterForEvent("BagWatcher", EVENT_INVENTORY_SINGLE_SLOT_UPDATE, OnBagSpace)
-	--EVENT_MANAGER:AddFilterForEvent("BagWatcher", EVENT_INVENTORY_SINGLE_SLOT_UPDATE, REGISTER_FILTER_BAG_ID, BAG_BACKPACK)
-	--EVENT_MANAGER:RegisterForEvent("BagWatcher", EVENT_INVENTORY_ITEM_DESTROYED, self.utils.Bind(self, self.OnInventoryItemDestroyed))
-	--EVENT_MANAGER:RegisterForEvent("BagWatcher", EVENT_INVENTORY_ITEM_USED, self.utils.Bind(self, self.OnInventoryItemUsed))
-	--EVENT_MANAGER:RegisterForEvent("BagWatcher", EVENT_INVENTORY_FULL_UPDATE, self.utils.Bind(self, self.OnInventoryFullUpdate))
-	--EVENT_MANAGER:RegisterForEvent("BagWatcher", EVENT_INVENTORY_SINGLE_SLOT_UPDATE, self.utils.Bind(self, self.OnInventorySingleSlotUpdate))
-	
-	
+
+	-- Single-slot updates are the only one of these events with a bag id, so only they get
+	-- the backpack filter. Before, every event (full inventory update, loot received, item
+	-- used) was registered with a bag filter it has no parameter for, which can keep it from
+	-- ever firing, and the number then stayed stale until the next single-slot change.
+	EVENT_MANAGER:RegisterForEvent("BagWatcherSlot", EVENT_INVENTORY_SINGLE_SLOT_UPDATE, QueueRefresh)
+	EVENT_MANAGER:AddFilterForEvent("BagWatcherSlot", EVENT_INVENTORY_SINGLE_SLOT_UPDATE, REGISTER_FILTER_BAG_ID, BAG_BACKPACK)
+	EVENT_MANAGER:RegisterForEvent("BagWatcherFull", EVENT_INVENTORY_FULL_UPDATE, QueueRefresh)
+	EVENT_MANAGER:RegisterForEvent("BagWatcherCapacity", EVENT_INVENTORY_BAG_CAPACITY_CHANGED, QueueRefresh)
+	EVENT_MANAGER:RegisterForEvent("BagWatcherActivated", EVENT_PLAYER_ACTIVATED, QueueRefresh)
+
 	local PERFORMANCE_METERS_SetLatency = PERFORMANCE_METERS.SetLatency
 	local r, g, b, a = 204/255, 204/255, 170/255, 1
 	function PERFORMANCE_METERS:SetLatency(latency)

@@ -7,7 +7,7 @@
 ## Title: Bag Watcher
 ## Description: Shows your free bag space next to the FPS and latency meters.
 ## Author: Schrodi
-## Version: 1.0
+## Version: 1.1
 ## APIVersion: 101051
 
 BagWatcher.lua
