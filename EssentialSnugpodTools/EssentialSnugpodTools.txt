@@ -5,9 +5,9 @@
 ; https://account.elderscrollsonline.com/add-on-terms
 
 ## Title: Essential Snugpod Tools
-## Description: Housing helpers: use an assistant from your quickslots to bring it to you (and send it back), /storage brings all storage chests to you. Suck it, EHT!
+## Description: The Snugpod magic: a door in the author's Snugpod that animates a piece of furniture, and /snugpod. The general housing helpers moved to Schrodi's Housing Tools.
 ## Author: Schrodi
-## Version: 1.0
+## Version: 2.0
 ## APIVersion: 101051
 
 EssentialSnugpodTools.lua

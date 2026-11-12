@@ -52,6 +52,39 @@ local function WarnAboutLegacyAddons(legacy)
     end)
 end
 
+function SHT.Msg(text)
+    CHAT_ROUTER:AddSystemMessage("|c7FD4FFHousing Tools:|r " .. text)
+end
+
+local HOUSING_RESULT_TEXT =
+{
+    [HOUSING_REQUEST_RESULT_PERMISSION_FAILED] = "Insufficient permissions.",
+    [HOUSING_REQUEST_RESULT_NO_SUCH_FURNITURE] = "Furniture not found.",
+    [HOUSING_REQUEST_RESULT_PLACE_FAILED] = "Over the furnishing limit.",
+    [HOUSING_REQUEST_RESULT_HIGH_IMPACT_COLLECTIBLE_PLACE_LIMIT] = "Over the furnishing limit.",
+    [HOUSING_REQUEST_RESULT_MOVE_FAILED] = "Move failed.",
+    [HOUSING_REQUEST_RESULT_ALREADY_BEING_MOVED] = "Already being moved.",
+    [HOUSING_REQUEST_RESULT_REQUEST_IN_PROGRESS] = "Request in progress.",
+    [HOUSING_REQUEST_RESULT_NOT_IN_HOUSE] = "Not in a house.",
+    [HOUSING_REQUEST_RESULT_IN_COMBAT] = "In combat.",
+}
+
+function SHT.FormatHousingResult(result)
+    if result == nil or result == HOUSING_REQUEST_RESULT_SUCCESS then return "" end
+    return HOUSING_RESULT_TEXT[result] or ("Error " .. tostring(result) .. ".")
+end
+
+local function IsAddOnEnabled(wantedName)
+    local manager = GetAddOnManager()
+    for i = 1, manager:GetNumAddOns() do
+        local name, _, _, _, isEnabled = manager:GetAddOnInfo(i)
+        if name == wantedName then
+            return isEnabled
+        end
+    end
+    return false
+end
+
 local function OnAddOnLoaded(_, addonName)
     if addonName ~= SHT.ADDON_NAME then return end
     EVENT_MANAGER:UnregisterForEvent(SHT.ADDON_NAME, EVENT_ADD_ON_LOADED)
@@ -67,6 +100,12 @@ local function OnAddOnLoaded(_, addonName)
     if not legacy.FurnitureVaultFilters then
         SHT.InitializeFurnitureVault()
     end
+
+    -- Essential Housing Tools has its own way to summon assistants from the quickslots.
+    if not IsAddOnEnabled("EssentialHousingTools") then
+        SHT.InitializeAssistants()
+    end
+    SHT.InitializeStorage()
 end
 
 EVENT_MANAGER:RegisterForEvent(SHT.ADDON_NAME, EVENT_ADD_ON_LOADED, OnAddOnLoaded)

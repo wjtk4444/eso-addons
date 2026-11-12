@@ -1,6 +1,6 @@
 # Schrodi's Housing Tools
 
-Small quality-of-life fixes for the keyboard housing editor and the Furniture Vault.
+Small quality-of-life fixes for houses: assistants from your quickslots, storage chests on demand, the keyboard housing editor and the Furniture Vault.
 
 ## Housing editor
 
@@ -23,6 +23,22 @@ Both the **Withdraw** and **Deposit** panels of the Furniture Vault get the same
 
 The dropdown is created by the game's own housing editor code, so the options and their names are the same. Filters reset when you reload the UI, as in the housing editor.
 
+## Assistants from your quickslots
+
+Put an assistant collectible (banker, merchant, armory assistant, deconstruction assistant, smuggler) or the **Aetherial Well** in your quickslots and use it inside a house:
+
+- If that type of assistant is already placed in the house, it is **moved in front of you**. Use it again to **send it back** to where it was.
+- If there isn't one and it's your own house, it is **placed** in front of you, and removed again on the next use.
+- In someone else's house without one placed, the game summons the assistant as usual.
+
+So you can keep assistants tucked away in a corner and still have them at hand.
+
+**Not loaded when Essential Housing Tools is enabled**, which has its own version of this.
+
+## /storage
+
+`/storage` brings every storage chest and coffer in the house in front of you, in rows of four, coffers first. Run it again to put them all back.
+
 ## Settings
 
 There is no settings menu. The two checkboxes in the housing editor and the sort order are saved account-wide.
@@ -32,6 +48,10 @@ There is no settings menu. The two checkboxes in the housing editor and the sort
 This addon replaces both of them. Disable or delete the old ones. If either is still enabled, its part of this addon is turned off and you get a reminder in chat.
 
 Settings are not carried over. Set the sort order and the two checkboxes again once.
+
+## Upgrading from EssentialSnugpodTools
+
+The quickslot assistants and `/storage` moved here from Essential Snugpod Tools 1.0. Update that addon to 2.0 (which keeps only the Snugpod magic), otherwise both would react to the same quickslot.
 
 ## Known limitations
 

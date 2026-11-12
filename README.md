@@ -30,12 +30,12 @@ Addons for The Elder Scrolls Online that I wrote or reworked. Each folder is one
 |---|---|
 | [AutoAcceptNextWrit](AutoAcceptNextWrit) | Accepts the next crafted master writ right after a turn-in. |
 | [BagWatcher](BagWatcher) | Free bag space next to the FPS / latency meters. |
-| [EssentialSnugpodTools](EssentialSnugpodTools) | Bring assistants and storage chests to you inside a house. |
+| [EssentialSnugpodTools](EssentialSnugpodTools) | The Snugpod magic: a door that animates furniture in one particular house. |
 | [ExtraTTCTooltips](ExtraTTCTooltips) | TTC prices where Tamriel Trade Centre doesn't add them: housing Retrieve list, Character Knowledge. |
 | [HideInventoryClutter](HideInventoryClutter) | Hides locked gear and consumables; shows only items worth deconstructing or selling. |
 | [LibDeconValue](LibDeconValue) | Library: deconstruction value vs. vendor price, with a learning mode. |
 | [LootLogExtras](LootLogExtras) | Logs crafting-station results and mail attachments into Code's LootLog. |
-| [SchrodisHousingTools](SchrodisHousingTools) | Housing editor and Furniture Vault quality of life. |
+| [SchrodisHousingTools](SchrodisHousingTools) | Assistants from your quickslots, /storage, housing editor and Furniture Vault quality of life. |
 | [SplitAndWithdraw](SplitAndWithdraw) | Split or withdraw 1/2/3/5/10/25/50/100 items from the right-click menu. |
 | [XLGearBanker](XLGearBanker) | Move whole gear sets (and consumables) between bags and bank. Fork of XL Gear Banker, GPLv3. |
 
