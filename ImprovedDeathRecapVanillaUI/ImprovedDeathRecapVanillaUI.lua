@@ -10,10 +10,10 @@ local function normalizeKey(key)
     -- lowercase
     key = zo_strlower(key)
 
-    -- usuń nadmiarowe spacje
+    -- strip whitespace
     key = key:gsub("%s+", "")
 
-    -- usuń ukryte/control znaki
+    -- strip control characters
     key = key:gsub("[%z\1-\31\127]", "")
 
     return key
@@ -149,7 +149,7 @@ end
 -- recap at all. Populated from LibAddonMenu once the addon's saved vars are
 -- ready (see the EVENT_ADD_ON_LOADED handler near the bottom); the constant
 -- here is both the shipped default and the fallback if that hasn't run yet.
-local DEFAULT_MIN_AMOUNT = 1000
+local DEFAULT_MIN_AMOUNT = 0
 local savedVars
 
 -- Colors the "(x/y HP)" text after each attack name green-to-red by remaining
@@ -259,7 +259,7 @@ DEATH_RECAP.attackPool:SetFactory(function(objectKey)
             control.hitTypeIcon:SetHidden(true)
         end
 
-        control.timeline = ANIMATION_MANAGER:CreateTimelineFromVirtual("ImprovedImprovedDeathRecapAttackAnimation")
+        control.timeline = ANIMATION_MANAGER:CreateTimelineFromVirtual("ImprovedDeathRecapVanillaUIAttackAnimation")
         local animationSpeed = 2 -- total length is 75ms, so the desired playback rate is desiredMS/75
 
 
@@ -391,7 +391,7 @@ local HINTS_LIST_OFFSET_Y = 3       -- Hints TOPLEFT to HintsHeader BOTTOMLEFT, 
 local HINTS_WIDTH = 700
 local HINT_GAP = 10                 -- DeathRecap:AddHint anchor spacing
 local KEYBIND_SCROLL_STEP = 2 * (ROW_MIN_HEIGHT + ROW_GAP)
-local LAYOUT_UPDATE_NAME = "ImprovedImprovedDeathRecapLayout"
+local LAYOUT_UPDATE_NAME = "ImprovedDeathRecapVanillaUILayout"
 
 local recapScrollChild = DEATH_RECAP.scrollControl
 local attacksContainer = recapScrollChild:GetNamedChild("Attacks")
@@ -401,7 +401,7 @@ local hintsContainer = recapScrollChild:GetNamedChild("HintsContainer")
 local hintsHeader = hintsContainer:GetNamedChild("HintsHeader")
 local hintsControl = hintsContainer:GetNamedChild("Hints")
 
-local attackList = WINDOW_MANAGER:CreateControlFromVirtual("ImprovedImprovedDeathRecapAttackList", recapScrollChild, "ZO_ScrollContainer")
+local attackList = WINDOW_MANAGER:CreateControlFromVirtual("ImprovedDeathRecapVanillaUIAttackList", recapScrollChild, "ZO_ScrollContainer")
 local attackListChild = attackList:GetNamedChild("ScrollChild")
 -- ZO_ScrollContainer puts its child on DL_BACKGROUND, which the rows would
 -- inherit - below the recap's own background art. Keep them on the same
@@ -565,14 +565,14 @@ end
 SLASH_COMMANDS["/iidr"] = function()
 	local _, extents = attackList.scroll:GetScrollExtents()
 	local _, offset = attackList.scroll:GetScrollOffsets()
-	d(string.format("[IIDR] GuiRoot %.0fx%.0f, top %s, above %s, below %s, rows %s (%s px), list %s, window %s",
+	d(string.format("[IDR-VanillaUI] GuiRoot %.0fx%.0f, top %s, above %s, below %s, rows %s (%s px), list %s, window %s",
 		GuiRoot:GetWidth(), GuiRoot:GetHeight(), tostring(lastLayout.topOffset), tostring(lastLayout.above), tostring(lastLayout.below),
 		tostring(lastLayout.rows), tostring(lastLayout.rowsHeight), tostring(lastLayout.listHeight), tostring(lastLayout.windowHeight)))
-	d(string.format("[IIDR] live: attacks %.0fx%.0f, list child %.0f, list %.0f, extents %.0f, offset %.0f, scrollbar hidden %s, window %.0f",
+	d(string.format("[IDR-VanillaUI] live: attacks %.0fx%.0f, list child %.0f, list %.0f, extents %.0f, offset %.0f, scrollbar hidden %s, window %.0f",
 		attacksContainer:GetWidth(), attacksContainer:GetHeight(), attackListChild:GetHeight(), attackList:GetHeight(),
 		extents, offset, tostring(attackList.scrollbar:IsHidden()), ZO_DeathRecap:GetHeight()))
 	local minX, minY, maxX, maxY = attacksContainer:GetDimensionConstraints()
-	d(string.format("[IIDR] attacks constraints %s %s %s %s", tostring(minX), tostring(minY), tostring(maxX), tostring(maxY)))
+	d(string.format("[IDR-VanillaUI] attacks constraints %s %s %s %s", tostring(minX), tostring(minY), tostring(maxX), tostring(maxY)))
 end
 
 -- Same layout again on the next frame, once resizeToFitDescendents controls
@@ -607,7 +607,7 @@ EVENT_MANAGER:RegisterForEvent(LAYOUT_UPDATE_NAME, EVENT_ALL_GUI_SCREENS_RESIZED
 -- steers the camera, so the wheel only reaches the list in cursor mode.
 ZO_CreateStringId("SI_BINDING_NAME_IIDR_SCROLL_UP", "Scroll death recap up")
 ZO_CreateStringId("SI_BINDING_NAME_IIDR_SCROLL_DOWN", "Scroll death recap down")
-function ImprovedImprovedDeathRecap_Scroll(direction)
+function ImprovedDeathRecapVanillaUI_Scroll(direction)
 	if ZO_DeathRecap:IsHidden() then return end
 	pendingScrollToBottom = false
 	ZO_Scroll_ScrollRelative(attackList, direction * KEYBIND_SCROLL_STEP)
@@ -989,23 +989,35 @@ DEATH_RECAP.SetupAttacks = function(self)
 end
 
 
-EVENT_MANAGER:RegisterForEvent("ImprovedImprovedDeathRecap", EVENT_ADD_ON_LOADED, function(eventCode, addOnName)
-    if addOnName ~= "ImprovedImprovedDeathRecap" then return end
-    EVENT_MANAGER:UnregisterForEvent("ImprovedImprovedDeathRecap", EVENT_ADD_ON_LOADED)
+EVENT_MANAGER:RegisterForEvent("ImprovedDeathRecapVanillaUI", EVENT_ADD_ON_LOADED, function(eventCode, addOnName)
+    if addOnName ~= "ImprovedDeathRecapVanillaUI" then return end
+    EVENT_MANAGER:UnregisterForEvent("ImprovedDeathRecapVanillaUI", EVENT_ADD_ON_LOADED)
 
-	savedVars = ZO_SavedVars:NewAccountWide("ImprovedImprovedDeathRecapSavedVars", 1, nil, { minAmount = DEFAULT_MIN_AMOUNT, showTips = true })
+	-- This addon used to be called ImprovedImprovedDeathRecap; both at once would hook everything twice.
+	local addOnManager = GetAddOnManager()
+	for i = 1, addOnManager:GetNumAddOns() do
+		local name, _, _, _, isEnabled = addOnManager:GetAddOnInfo(i)
+		if name == "ImprovedImprovedDeathRecap" and isEnabled then
+			EVENT_MANAGER:RegisterForEvent("ImprovedDeathRecapVanillaUIWarn", EVENT_PLAYER_ACTIVATED, function()
+				EVENT_MANAGER:UnregisterForEvent("ImprovedDeathRecapVanillaUIWarn", EVENT_PLAYER_ACTIVATED)
+				CHAT_ROUTER:AddSystemMessage("|cFFAA33Improved Death Recap: Vanilla UI:|r the old ImprovedImprovedDeathRecap is still enabled. Please disable it in the AddOns menu.")
+			end)
+		end
+	end
+
+	savedVars = ZO_SavedVars:NewAccountWide("ImprovedDeathRecapVanillaUI_SV", 1, nil, { minAmount = DEFAULT_MIN_AMOUNT, showTips = true })
 
 	if LibAddonMenu2 then
 		local panelData = {
 			type = "panel",
-			name = "Improved Improved Death Recap",
-			displayName = "Improved Improved Death Recap",
+			name = "Improved Death Recap: Vanilla UI",
+			displayName = "Improved Death Recap: Vanilla UI",
 			author = "Schrodi",
-			version = "2.20",
+			version = "3.0.0",
 			registerForRefresh = true,
 			registerForDefaults = true,
 		}
-		LibAddonMenu2:RegisterAddonPanel("ImprovedImprovedDeathRecapOptions", panelData)
+		LibAddonMenu2:RegisterAddonPanel("ImprovedDeathRecapVanillaUIOptions", panelData)
 
 		local optionsData = {
 			{
@@ -1033,7 +1045,7 @@ EVENT_MANAGER:RegisterForEvent("ImprovedImprovedDeathRecap", EVENT_ADD_ON_LOADED
 				width = "full",
 			},
 		}
-		LibAddonMenu2:RegisterOptionControls("ImprovedImprovedDeathRecapOptions", optionsData)
+		LibAddonMenu2:RegisterOptionControls("ImprovedDeathRecapVanillaUIOptions", optionsData)
 	end
 
 	local frame = UNIT_FRAMES:GetFrame("reticleover")
@@ -1072,4 +1084,4 @@ SecurePostHook(Battleground_Scoreboard_Player_Row, "UpdateRow", function(row)
 		})
 		--d(characterName ..  " -> " .. displayName)
 	end
-end)
+end)

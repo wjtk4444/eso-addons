@@ -1,6 +1,6 @@
 <GuiXml>
     <Animations>
-        <AnimationTimeline name="ImprovedImprovedDeathRecapAttackAnimation">
+        <AnimationTimeline name="ImprovedDeathRecapVanillaUIAttackAnimation">
             <Animations>
                 <AnimationTimeline>
                     <Animations>
