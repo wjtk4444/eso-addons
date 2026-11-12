@@ -1,0 +1,7 @@
+## APIVersion: 100021 100022
+## Title: Schrodi's Tick Tracker
+## Author: Schrödinger
+## Version: 1.0
+
+SchrodisTickTracker.lua
+SchrodisTickTracker.xml

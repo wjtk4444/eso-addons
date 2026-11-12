@@ -1,0 +1,24 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="SchrodisTickTrackerFrame" hidden="true">
+			<Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" />
+			<Dimensions x="1" y="1" />
+		</TopLevelControl>
+
+		<Control name="SchrodiEdgeContainer" hidden="true">
+			<Dimensions x="20" y="20" />
+			<Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" />
+			<Controls>
+				<Texture name="$(parent)SchrodiEdge1" textureFile="EsoUI/Art/UnitAttributeVisualizer/attributeBar_arrow.dds" color="FFFFFF" hidden="false">
+					<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" />
+					<Dimensions x="18" y="20" />
+				</Texture>
+			</Controls>
+		</Control>
+
+		<Label name="SchrodiTickAmount" font="$(BOLD_FONT)|$(KB_24)|thick-outline" text="" verticalAlignment="CENTER" horizontalAlignment="CENTER" hidden="true">
+			<Dimensions x="200" y="30" />
+			<Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="TOP" offsetX="0" offsetY="-25" />
+		</Label>
+	</Controls>
+</GuiXml>
