@@ -22,6 +22,8 @@ AIUF.defaults = {
     customColor = {0.0, 0.0, 0.0, 1.0},
     customHighlight = {0.2, 0.2, 0.2, 1.0},
     smallGroupGrid = false,
+    showClassAndCP = false,
+    hideDifficultyIcon = true,
 }
 
 AIUF.accountWideDefaults = {
@@ -95,11 +97,15 @@ local function GetPlatformConstants()
 end
 
 
+-- Siatka "3 male grupy": AIUF_GRID_ROWS wierszy na kolumne
+local AIUF_GRID_ROWS = 4
+local AIUF_GRID_COLUMNS = zo_ceil(STANDARD_GROUP_SIZE_THRESHOLD / AIUF_GRID_ROWS)
+
 local groupFrameAnchor = ZO_Anchor:New(TOPLEFT, GuiRoot, TOPLEFT, 0, 0)
 local function GetGroupFrameAnchor(groupIndex)
     local constants = GetPlatformConstants()
 
-    groupSize = GetGroupSize()
+    local groupSize = GetGroupSize()
     local column = zo_floor((groupIndex - 1) / constants.GROUP_FRAMES_PER_COLUMN)
     local row = zo_mod(groupIndex - 1, constants.GROUP_FRAMES_PER_COLUMN)
 
@@ -113,8 +119,8 @@ local function GetGroupFrameAnchor(groupIndex)
         return groupFrameAnchor
     else
         --Our overrides
-        column = zo_floor((groupIndex - 1) / 4)
-        row = zo_mod(groupIndex - 1, 4)
+        column = zo_floor((groupIndex - 1) / AIUF_GRID_ROWS)
+        row = zo_mod(groupIndex - 1, AIUF_GRID_ROWS)
     
         groupFrameAnchor:SetTarget(ZO_SmallGroupAnchorFrame)          -- - column*30
         groupFrameAnchor:SetOffsets(column * constants.GROUP_FRAME_SIZE_X, row * (constants.GROUP_FRAME_SIZE_Y + constants.GROUP_FRAME_PAD_Y))
@@ -122,53 +128,157 @@ local function GetGroupFrameAnchor(groupIndex)
     end
 end
 
+-- Kotwica ZO_SmallGroupAnchorFrame jest tworzona przez gre z wysokoscia
+-- STANDARD_GROUP_SIZE_THRESHOLD wierszy. Po nadpisaniu progu na 12 gra przy kazdym
+-- DoGroupUpdate (zmiana grupy, zaladowanie strefy, zmiana ustawien interfejsu)
+-- rozciaga ja do 12 wierszy (960px), a kontrolka jest clampedToScreen -> caly blok
+-- jest dopychany do krawedzi ekranu. Przywracamy rozmiar faktycznej siatki.
+function AIUF.FixSmallGroupAnchorFrame()
+    local anchorFrame = ZO_SmallGroupAnchorFrame
+    if not anchorFrame then return end
+    local constants = GetPlatformConstants()
+    local frameWidth = IsInGamepadPreferredMode() and ZO_GAMEPAD_GROUP_FRAME_WIDTH or ZO_KEYBOARD_GROUP_FRAME_WIDTH
+    local width = (AIUF_GRID_COLUMNS - 1) * constants.GROUP_FRAME_SIZE_X + frameWidth
+    local height = AIUF_GRID_ROWS * (constants.GROUP_FRAME_SIZE_Y + constants.GROUP_FRAME_PAD_Y)
+    anchorFrame:SetDimensions(width, height)
+end
+
+local AIUF_ROLE_ORDER = { LFG_ROLE_TANK, LFG_ROLE_HEAL, LFG_ROLE_DPS, LFG_ROLE_INVALID }
+
 function AIUF.UpdateGroupAnchors()
-    -- Update all UnitFrame anchors.
-	local anchorIndex = 1
-	
+    -- Update all UnitFrame anchors, sorted tank -> heal -> dps -> brak roli.
+    local groupSize = GetGroupSize()
+    local anchorIndex = 1
+
+    for _, wantedRole in ipairs(AIUF_ROLE_ORDER) do
+        for i = 1, groupSize do
+            local unitTag = GetGroupUnitTagByIndex(i)
+            if unitTag and GetGroupMemberSelectedRole(unitTag) == wantedRole then
+                -- Brak ramki (jeszcze nie utworzona) => pomijamy ja, ale NIE przerywamy
+                -- calego ukladu; slot zostaje zajety, zeby reszta nie przeskakiwala.
+                local unitFrame = UNIT_FRAMES:GetFrame(unitTag)
+                if unitFrame then
+                    unitFrame:SetAnchor(GetGroupFrameAnchor(anchorIndex))
+                end
+                anchorIndex = anchorIndex + 1
+            end
+        end
+    end
+end
+
+-- Ikona klasy + CP (albo poziom ponizej 50) za nazwa w ramkach grupy,
+-- np. "John Doe <ikona> 1234". Osobna etykieta zakotwiczona za nazwa. Nazwa
+-- zachowuje pelna szerokosc jak w grze (bez skracania pod ikone/CP); przy bardzo
+-- dlugich nazwach ikona+CP moze wejsc na lewy brzeg sasiedniej kolumny.
+local AIUF_INFO_CHILD_NAME = "AIUFInfo"
+local AIUF_INFO_GAP = 4
+
+-- Gra dokleja ikone trudnosci overlandu na koncu nazwy gracza:
+-- zo_iconTextFormatNoSpaceAlignedRight(".../ChallengeDifficulty/.../gp_challengeDifficulty_*.dds", ...)
+-- => "Nazwa|t115%:115%:EsoUI/Art/ChallengeDifficulty/...|t"
+local AIUF_DIFFICULTY_ICON_PATTERN = "|t[^|]*[Cc]hallenge[Dd]ifficulty[^|]*|t"
+
+local function StripDifficultyIcon(nameLabel)
+    local nameText = nameLabel:GetText()
+    if nameText and nameText ~= "" then
+        local stripped, count = zo_strgsub(nameText, AIUF_DIFFICULTY_ICON_PATTERN, "")
+        if count > 0 then
+            nameLabel:SetText(stripped)
+        end
+    end
+end
+
+local function IsDecoratableGroupFrame(unitFrame)
+    return unitFrame ~= nil
+        and unitFrame.style == "ZO_GroupUnitFrame"
+        and unitFrame.nameLabel ~= nil
+        and unitFrame.unitTag ~= nil
+        and ZO_Group_IsGroupUnitTag(unitFrame.unitTag)
+end
+
+-- Ograniczenia szerokosci nazwy z szablonow gry (ZO_GroupUnitFrame_*_Template / layout data)
+local function GetDefaultNameConstraints(unitFrame)
+    if IsInGamepadPreferredMode() then
+        if unitFrame.aiufIndented then
+            return 125, 190
+        end
+        return 150, 215
+    end
+    return 170, 215
+end
+
+function AIUF.DecorateGroupFrameName(unitFrame)
+    if not IsDecoratableGroupFrame(unitFrame) then return end
+
+    local nameLabel = unitFrame.nameLabel
+    if AIUF.SV and AIUF.SV.hideDifficultyIcon then
+        StripDifficultyIcon(nameLabel)
+    end
+
+    local infoLabel = unitFrame.aiufInfoLabel
+    local defaultMinX, defaultMaxX = GetDefaultNameConstraints(unitFrame)
+    local unitTag = unitFrame.unitTag
+    local enabled = AIUF.SV and AIUF.SV.showClassAndCP and DoesUnitExist(unitTag) and IsUnitPlayer(unitTag)
+
+    if not enabled then
+        if infoLabel and not infoLabel:IsHidden() then
+            infoLabel:SetHidden(true)
+            nameLabel:SetDimensionConstraints(defaultMinX, 0, defaultMaxX, 0)
+        end
+        return
+    end
+
+    if not infoLabel then
+        infoLabel = CreateControl(unitFrame.frame:GetName() .. AIUF_INFO_CHILD_NAME, unitFrame.frame, CT_LABEL)
+        infoLabel:SetVerticalAlignment(TEXT_ALIGN_CENTER)
+        infoLabel:SetAnchor(LEFT, nameLabel, RIGHT, AIUF_INFO_GAP, 0)
+        -- dzieki temu etykieta przygasa razem z nazwa poza zasiegiem / offline
+        unitFrame:AddFadeComponent(AIUF_INFO_CHILD_NAME)
+        unitFrame.aiufInfoLabel = infoLabel
+    end
+
+    local text = ""
+    local classIcon = ZO_GetClassIcon(GetUnitClassId(unitTag))
+    if classIcon then
+        text = zo_iconFormat(classIcon, "100%", "100%")
+    end
+    local level = IsUnitChampion(unitTag) and GetUnitChampionPoints(unitTag) or GetUnitLevel(unitTag)
+    if level and level > 0 then
+        text = (text ~= "") and (text .. " " .. level) or tostring(level)
+    end
+
+    infoLabel:SetFont(IsInGamepadPreferredMode() and "ZoFontGamepad34" or "ZoFontGameBold")
+    infoLabel:SetText(text)
+    infoLabel:SetColor(nameLabel:GetColor())
+    infoLabel:SetAlpha(nameLabel:GetControlAlpha())
+    infoLabel:SetHidden(text == "")
+
+    -- min 0: etykieta info ma stac zaraz za nazwa, a nie za 170px pustego pola;
+    -- max bez zmian, wiec nazwa nigdy nie jest skracana bardziej niz w samej grze
+    nameLabel:SetDimensionConstraints(0, 0, defaultMaxX, 0)
+end
+
+function AIUF.RefreshGroupFrameNames()
+    if not UNIT_FRAMES then return end
     for i = 1, GetGroupSize() do
         local unitTag = GetGroupUnitTagByIndex(i)
-        if unitTag and GetGroupMemberSelectedRole(unitTag) == LFG_ROLE_TANK then
-            local unitFrame = UNIT_FRAMES:GetFrame(unitTag)
-            if not unitFrame then return end
-            local anchor = GetGroupFrameAnchor(anchorIndex)
-            unitFrame:SetAnchor(anchor)
-			anchorIndex = anchorIndex + 1
+        local unitFrame = unitTag and UNIT_FRAMES:GetFrame(unitTag)
+        if unitFrame then
+            unitFrame:UpdateName()
+            AIUF.DecorateGroupFrameName(unitFrame)
         end
     end
-	
-	for i = 1, GetGroupSize() do
-        local unitTag = GetGroupUnitTagByIndex(i)
-        if unitTag and GetGroupMemberSelectedRole(unitTag) == LFG_ROLE_HEAL then
-            local unitFrame = UNIT_FRAMES:GetFrame(unitTag)
-            if not unitFrame then return end
-            local anchor = GetGroupFrameAnchor(anchorIndex)
-            unitFrame:SetAnchor(anchor)
-			anchorIndex = anchorIndex + 1
-        end
-    end
-	
-	for i = 1, GetGroupSize() do
-        local unitTag = GetGroupUnitTagByIndex(i)
-        if unitTag and GetGroupMemberSelectedRole(unitTag) == LFG_ROLE_DPS then
-            local unitFrame = UNIT_FRAMES:GetFrame(unitTag)
-            if not unitFrame then return end
-            local anchor = GetGroupFrameAnchor(anchorIndex)
-            unitFrame:SetAnchor(anchor)
-			anchorIndex = anchorIndex + 1
-        end
-    end
-	
-	for i = 1, GetGroupSize() do
-        local unitTag = GetGroupUnitTagByIndex(i)
-        if unitTag and GetGroupMemberSelectedRole(unitTag) == LFG_ROLE_INVALID then
-            local unitFrame = UNIT_FRAMES:GetFrame(unitTag)
-            if not unitFrame then return end
-            local anchor = GetGroupFrameAnchor(anchorIndex)
-            unitFrame:SetAnchor(anchor)
-			anchorIndex = anchorIndex + 1
-        end
-    end
+end
+
+function AIUF.InstallGroupFrameNameHooks()
+    -- Po kazdej z tych metod gra ustawia na nowo tekst/kolor/ograniczenia nazwy
+    ZO_PostHook(ZO_UnitFrameObject, "UpdateName", AIUF.DecorateGroupFrameName)
+    ZO_PostHook(ZO_UnitFrameObject, "UpdateLevel", AIUF.DecorateGroupFrameName)
+    ZO_PostHook(ZO_UnitFrameObject, "UpdateUnitReaction", AIUF.DecorateGroupFrameName)
+    ZO_PostHook(ZO_UnitFrameObject, "SetTextIndented", function(unitFrame, isIndented)
+        unitFrame.aiufIndented = isIndented
+        AIUF.DecorateGroupFrameName(unitFrame)
+    end)
 end
 
 function AIUF.UpdateUnitFrames(eventCode)  
@@ -273,14 +383,13 @@ function AIUF.UpdateAliveStatus(unitTag, status)
     if not DoesUnitExist(unitTag) then return end
     if GetGroupSize() < 2 then return end
 
-    if GetGroupSize() > 4 then
-        if UNIT_FRAMES.raidFrames[unitTag] == nil then return end
-        UNIT_FRAMES.raidFrames[unitTag].statusLabel:SetText(status)
-    else
-        if UNIT_FRAMES.groupFrames[unitTag] == nil then return end
-        UNIT_FRAMES.groupFrames[unitTag].frame:SetWidth(400)
-        UNIT_FRAMES.groupFrames[unitTag].statusLabel:SetText(status)
+    local unitFrame = UNIT_FRAMES:GetFrame(unitTag)
+    if unitFrame == nil or unitFrame.statusLabel == nil then return end
+    if GetGroupSize() <= 4 then
+        -- tylko pojedyncza kolumna; w siatce 3 kolumn szeroka ramka nachodzilaby na sasiednia
+        unitFrame.frame:SetWidth(400)
     end
+    unitFrame.statusLabel:SetText(status)
 end
 
 function AIUF.AliveStatusUpdate()
@@ -476,6 +585,32 @@ function AIUF.InitializeAddonMenu()
 		getFunc = function() return AIUF.SV.smallGroupGrid end,
 		setFunc = function(newValue)
             AIUF.SV.smallGroupGrid = newValue
+        end,
+	})
+
+    -- Class icon + CP next to the name
+    table.insert(optionsData, {
+		type = "checkbox",
+		name = GetString(AIUF_OPTIONS_CLASS_CP),
+		tooltip = GetString(AIUF_OPTIONS_CLASS_CP_TT),
+        default = AIUF.defaults.showClassAndCP,
+		getFunc = function() return AIUF.SV.showClassAndCP end,
+		setFunc = function(newValue)
+            AIUF.SV.showClassAndCP = newValue
+            AIUF.RefreshGroupFrameNames()
+        end,
+	})
+
+    -- Hide overland difficulty icon next to the name
+    table.insert(optionsData, {
+		type = "checkbox",
+		name = GetString(AIUF_OPTIONS_HIDE_DIFFICULTY),
+		tooltip = GetString(AIUF_OPTIONS_HIDE_DIFFICULTY_TT),
+        default = AIUF.defaults.hideDifficultyIcon,
+		getFunc = function() return AIUF.SV.hideDifficultyIcon end,
+		setFunc = function(newValue)
+            AIUF.SV.hideDifficultyIcon = newValue
+            AIUF.RefreshGroupFrameNames()
         end,
 	})
     
@@ -1003,6 +1138,7 @@ function AIUF.OnAddonLoaded(event, addonName)
     ZO_POWER_BAR_GRADIENT_COLORS["custom"] = {ZO_ColorDef:New(unpack(AIUF.SV.customColor)), ZO_ColorDef:New(unpack(AIUF.SV.customHighlight))}
     
     AIUF:InitializeAddonMenu()
+    AIUF.InstallGroupFrameNameHooks()
     
     
     EVENT_MANAGER:RegisterForEvent(AIUF.name, EVENT_GROUP_MEMBER_ROLE_CHANGED, AIUF.UpdateUnitFrames)
@@ -1010,6 +1146,14 @@ function AIUF.OnAddonLoaded(event, addonName)
     EVENT_MANAGER:RegisterForEvent(AIUF.name, EVENT_PLAYER_ACTIVATED, AIUF.UpdateUnitFrames)    
     
     EVENT_MANAGER:RegisterForUpdate(AIUF.name, 100, AIUF.AliveStatusUpdate)
+
+    -- Odpalane przez gre na koncu UpdateAnchorFrameVisuals (czyli kazdego DoGroupUpdate),
+    -- juz po przywroceniu pozycji z edytora HUD.
+    CALLBACK_MANAGER:RegisterCallback("OnUnitFrameAnchorsUpdated", function()
+        AIUF.FixSmallGroupAnchorFrame()
+        AIUF.UpdateGroupAnchors()
+    end)
+    AIUF.FixSmallGroupAnchorFrame()
     --EVENT_MANAGER:RegisterForUpdate(AIUF.name.."RBG", 100, AIUF.UpdateRGB)
 		
 	local original = ZO_UnitFrames_UpdateWindow

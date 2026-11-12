@@ -54,3 +54,11 @@ ZO_CreateStringId("AIUF_OPTIONS_COLOR_CUSTOM_HIGHLIGHT_TT", "The highlight color
 -- Small group grid
 ZO_CreateStringId("AIUF_OPTIONS_SMALL_GROUP", "Small Group As Grid")
 ZO_CreateStringId("AIUF_OPTIONS_SMALL_GROUP_TT", "Displays small groups (4 or less) in a grid of 2x2 frames instead of one column with 4")
+
+-- Class icon + CP
+ZO_CreateStringId("AIUF_OPTIONS_CLASS_CP", "Show Class Icon And CP")
+ZO_CreateStringId("AIUF_OPTIONS_CLASS_CP_TT", "Shows the class icon and champion points (or level below 50) after the name in the group unit frames, e.g. \"John Doe <icon> 1234\".")
+
+-- Overland difficulty icon
+ZO_CreateStringId("AIUF_OPTIONS_HIDE_DIFFICULTY", "Hide Overland Difficulty Icon")
+ZO_CreateStringId("AIUF_OPTIONS_HIDE_DIFFICULTY_TT", "Hides the overland difficulty icon the game adds after the name of group members who use a non-default difficulty.")
