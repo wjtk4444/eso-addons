@@ -1,0 +1,9 @@
+## Title: Housing Retrieve Sort
+## Author: wjtk4444
+## Version: 1.2.1
+## AddOnVersion: 121
+## APIVersion: 101051
+## SavedVariables: HousingRetrieveSort_SV
+## Description: Housing editor > Retrieve: Name / Distance sort headers, "Retrieve to" dropdown docked in the list footer, optional right-click to store, optional bound furnishings always to the Furnishing Vault. When a category empties, Place and Retrieve jump to the next (or previous) category instead of the first.
+
+Main.lua
