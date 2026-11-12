@@ -1,0 +1,19 @@
+<GuiXml>
+  <Controls>
+    <TopLevelControl name="AmIStunnedIndicator" layer="TEXT" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true">
+      <Dimensions x="200" y="25" />
+      <Anchor point="BOTTOM" relativeTo="GuiRoot" relativePoint="CENTER" offsetY="-4" />
+ 
+      <OnMoveStop>
+        AmIStunned.OnIndicatorMoveStop()
+      </OnMoveStop>
+ 
+      <Controls>
+        <Label name="AmIStunnedLabel" width="200" height="25" font="ZoFontCallout2" inheritAlpha="true" color="000000"
+            wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="ME STUNNED OR WHO?">
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" />
+        </Label>
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

@@ -1,0 +1,10 @@
+## Title: AmIStunned
+## Version: 1.0
+## AddOnVersion: 27
+## Author: Schrodi
+## DependsOn: LibAddonMenu-2.0
+## APIVersion: 100034 101031 101032
+## SavedVariables: AmIStunnedSavedVariables
+
+AmIStunned.xml
+AmIStunned.lua
