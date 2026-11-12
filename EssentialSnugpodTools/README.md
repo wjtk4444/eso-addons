@@ -6,6 +6,8 @@ Opening the round Telvanni door in the author's Snugpod animates a piece of furn
 
 It is tied to that one house: the furniture ids in the code don't exist anywhere else, so the addon does nothing in other houses.
 
+Moving furniture needs **decorating permission** in the house: you have to be the owner, or have Decorate access there. Without it nothing moves (the game refuses the request).
+
 ## Where did the rest go?
 
 The general helpers that used to be in this addon are now part of [Schrodi's Housing Tools](../SchrodisHousingTools):

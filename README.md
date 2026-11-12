@@ -30,7 +30,7 @@ Addons for The Elder Scrolls Online that I wrote or reworked. Each folder is one
 |---|---|
 | [AutoAcceptNextWrit](AutoAcceptNextWrit) | Accepts the next crafted master writ right after a turn-in. |
 | [BagWatcher](BagWatcher) | Free bag space next to the FPS / latency meters. |
-| [EssentialSnugpodTools](EssentialSnugpodTools) | The Snugpod magic: a door that animates furniture in one particular house. |
+| [EssentialSnugpodTools](EssentialSnugpodTools) | The Snugpod magic: a door that animates furniture in one particular house. Needs decorating permission there. |
 | [ExtraTTCTooltips](ExtraTTCTooltips) | TTC prices where Tamriel Trade Centre doesn't add them: housing Retrieve list, Character Knowledge. |
 | [HideInventoryClutter](HideInventoryClutter) | Hides locked gear and consumables; shows only items worth deconstructing or selling. |
 | [LibDeconValue](LibDeconValue) | Shows the average value of what you'd get from deconstructing an item in its tooltip, next to the vendor price; with a learning mode. Also a library for other addons. Started from otac0n's [ESO-LibLootStats](https://github.com/otac0n/ESO-LibLootStats). |

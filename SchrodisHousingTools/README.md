@@ -35,6 +35,8 @@ So you can keep assistants tucked away in a corner and still have them at hand.
 
 **Not loaded when Essential Housing Tools is enabled**, which has its own version of this.
 
+Moving or placing furniture needs **decorating permission** in the house: you have to be the owner, or have Decorate access there. Without it you get "Insufficient permissions." in chat (in someone else's house without a placed assistant, the game's normal summon still works). The same applies to `/storage`.
+
 ## /storage
 
 `/storage` brings every storage chest and coffer in the house in front of you, in rows of four, coffers first. Run it again to put them all back.
