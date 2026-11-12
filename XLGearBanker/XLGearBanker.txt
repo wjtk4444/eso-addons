@@ -1,6 +1,7 @@
 ## Title: XL Gear Banker
-## Author: @XL_Olsen (PC/EU)
-## APIVersion: 100031
+## Description: Move whole gear sets (and now potions, food, siege and repair kits) between your bags and the bank with one click. Fork of XL Gear Banker by @XL_Olsen.
+## Author: @XL_Olsen (PC/EU), Schrodi
+## APIVersion: 101051
 ## Version: 1.0.2
 ## SavedVariables: XLGearBankerSavedVariables
 ## DependsOn: LibCustomMenu LibDialog LibShifterBox LibAddonMenu-2.0>=28

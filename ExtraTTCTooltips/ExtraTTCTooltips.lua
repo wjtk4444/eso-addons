@@ -75,7 +75,7 @@ EVENT_MANAGER:RegisterForEvent("ExtraTTCTooltips", EVENT_ADD_ON_LOADED, function
 			type = "panel",
 			name = "Extra TTC Tooltips",
 			displayName = "Extra TTC Tooltips",
-			author = "you",
+			author = "Schrodi",
 			version = "1.1",
 			registerForRefresh = true,
 			registerForDefaults = true,
