@@ -1,0 +1,19 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+## Title: TTC Deal Filter
+## Description: Master Merchant's deal rating, deal filter and Deal Percent sort for AwesomeGuildStore, using Tamriel Trade Centre prices.
+## Author: Schrodi
+## Version: 1.0.0
+## AddOnVersion: 100
+## APIVersion: 101051
+## DependsOn: AwesomeGuildStore TamrielTradeCentre LibMediaProvider-1.0
+
+TTCDealFilter.lua
+AGS_Integration\AGS_Setup.lua
+AGS_Integration\DealFilter.lua
+AGS_Integration\DealFilterFragment.lua
+AGS_Integration\SortOrderDealPercent.lua
