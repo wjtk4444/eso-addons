@@ -20,6 +20,11 @@ The buttons appear next to the item list in the inventory, bank, mail, trade, gu
 
 - food and drinks, potions, poisons
 - lockpicks, Grand Repair Kits, soul gems
+- experience and Alliance War skill line boosters: experience scrolls, war tortes, ambrosia and the like (optional, on by default)
+- siege weapons (including forward camps, oil and battle standards) and Alliance War repair kits for keep walls, doors, bridges and siege (optional, on by default)
+- Keep Recall Stones and Sigils of Imperial Retreat (optional, on by default)
+
+Boosters are recognized by a short list of known items plus the item's "use" text: anything whose use increases experience gains counts. With the booster option off they always stay visible, even the ones that are food.
 
 Stolen items are never treated as consumables.
 
@@ -48,6 +53,9 @@ At a vendor, the sell list shows items that are better sold than deconstructed. 
 *Settings → Addons → Hide Inventory Clutter*
 
 - Turn each filter on or off: locked items, consumables, materials (vendor), deconstruction.
+- **Treat XP and Alliance War rank boosters as consumables:** whether boosters are hidden with the consumables.
+- **Treat siege weapons and Alliance War repair kits as consumables:** the same for siege and repair kits.
+- **Treat Keep Recall Stones and Sigils of Imperial Retreat as consumables:** the same for those two.
 - The three "No ESO+ mode" sliders described above.
 - **Button position:** *Unlock icon position*, drag the buttons where you want them, then *Save new position*. *Reset position* puts them back in the inventory's bottom bar.
 

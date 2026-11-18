@@ -7,7 +7,7 @@
 ## Title: Hide Inventory Clutter
 ## Description: One-click toggles that hide locked gear and everyday consumables from your inventory, bank, mail and vendor lists, and show only items worth deconstructing (or selling) at crafting stations and vendors.
 ## Author: Schrodi
-## Version: 2.1.1
+## Version: 2.2.0
 ## APIVersion: 101051
 ## DependsOn: LibFilters-3.0 LibAddonMenu-2.0 LibDeconValue
 ## SavedVariables: HideInventoryClutterPosition

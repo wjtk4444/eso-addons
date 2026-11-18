@@ -15,7 +15,10 @@ function HideInventoryClutter:buildLAM2Menu()
 			- soul gems
 			- buff food / drinks
 			- potions
-			- poisons]]
+			- poisons
+			- experience and Alliance War skill line boosters (optional)
+			- siege weapons and Alliance War repair kits (optional)
+			- Keep Recall Stones and Sigils of Imperial Retreat (optional)]]
 		},
 		[2] = {
 			type = "button",
@@ -79,19 +82,52 @@ function HideInventoryClutter:buildLAM2Menu()
 		},
 		[7] = {
 			type = "checkbox",
+			name = "Treat XP and Alliance War rank boosters as consumables",
+			tooltip = "experience scrolls, war tortes, ambrosia and other items whose use increases experience gains are hidden with the consumables; when off they always stay visible, even the ones that are food",
+			getFunc = function() return self.savedVariables.boostersAreConsumables end,
+			setFunc = function(value)
+				self.savedVariables.boostersAreConsumables = value
+				if self.lastActiveMenu then self.libFilters:RequestUpdate(self.lastActiveMenu) end
+			end,
+			disabled = function() return not self.savedVariables.consumablesEnabled end,
+		},
+		[8] = {
+			type = "checkbox",
+			name = "Treat siege weapons and Alliance War repair kits as consumables",
+			tooltip = "siege weapons, forward camps, oil, battle standards and keep / siege repair kits are hidden with the consumables",
+			getFunc = function() return self.savedVariables.siegeAreConsumables end,
+			setFunc = function(value)
+				self.savedVariables.siegeAreConsumables = value
+				if self.lastActiveMenu then self.libFilters:RequestUpdate(self.lastActiveMenu) end
+			end,
+			disabled = function() return not self.savedVariables.consumablesEnabled end,
+		},
+		[9] = {
+			type = "checkbox",
+			name = "Treat Keep Recall Stones and Sigils of Imperial Retreat as consumables",
+			tooltip = "Keep Recall Stones and Sigils of Imperial Retreat are hidden with the consumables",
+			getFunc = function() return self.savedVariables.travelItemsAreConsumables end,
+			setFunc = function(value)
+				self.savedVariables.travelItemsAreConsumables = value
+				if self.lastActiveMenu then self.libFilters:RequestUpdate(self.lastActiveMenu) end
+			end,
+			disabled = function() return not self.savedVariables.consumablesEnabled end,
+		},
+		[10] = {
+			type = "checkbox",
 			name = "Materials filter",
 			tooltip = "hides materials from merchant sell window",
 			getFunc = function() return self.savedVariables.materialsEnabled end,
 			setFunc = function(value) self.savedVariables.materialsEnabled = value end
 		},
-		[8] = {
+		[11] = {
 			type = "checkbox",
 			name = "Deconstruction filter",
 			tooltip = "hides items not worth deconstructing from deconstruction window and items worth deconstucting from merchant window",
 			getFunc = function() return self.savedVariables.deconstructionEnabled end,
 			setFunc = function(value) self.savedVariables.deconstructionEnabled = value end
 		},
-		[9] = {
+		[12] = {
 			type = "slider",
 			name = "No ESO+ mode I (they can all be used in conjunction) (you can type in custom value) (1 = off)",
 			tooltip = "items are not considered worth deconstructing only if deconstruction value is at least N times the sell value",
@@ -100,7 +136,7 @@ function HideInventoryClutter:buildLAM2Menu()
 			getFunc = function() return self.savedVariables.deconstructionValueMultiplier end,
 			setFunc = function(value) self.savedVariables.deconstructionValueMultiplier = value end
 		},
-		[10] = {
+		[13] = {
 			type = "slider",
 			name = "No ESO+ mode II (they can all be used in conjunction) (you can type in custom value) (0 = off)",
 			tooltip = "deconstruction value used in determining if an item is worth deconstructing will skip materials with price below N gold",
@@ -110,7 +146,7 @@ function HideInventoryClutter:buildLAM2Menu()
 			getFunc = function() return self.savedVariables.deconstructionValueMinMatPrice end,
 			setFunc = function(value) self.savedVariables.deconstructionValueMinMatPrice = value end
 		},
-		[11] = {
+		[14] = {
 			type = "slider",
 			name = "No ESO+ mode III (they can all be used in conjunction) (you can type in custom value) (0 = off)",
 			tooltip = "item is only considered worth deconstructing if deconstruction value is at least N gold higher than sell value",
@@ -139,6 +175,9 @@ function HideInventoryClutter:setupSavedVars()
 			positionConsumable = { top = nil, left = nil },
 			lockedEnabled = true,
 			consumablesEnabled = true,
+			boostersAreConsumables = true,
+			siegeAreConsumables = true,
+			travelItemsAreConsumables = true,
 			materialsEnabled = true,
 			deconstructionEnabled = true,
 			deconstructionValueMultiplier = 1,

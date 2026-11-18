@@ -54,13 +54,83 @@ local EXTRA_CONSUMABLES = {
 	[33271 ] = true, -- Soul Gem
 }
 
+-- Experience and Alliance War skill line boosters (scrolls, war tortes, ambrosia, ...).
+-- Known items are listed here; anything else is recognized by its "use" text mentioning
+-- experience, in the client's language.
+local BOOSTERS = {
+	[64537 ] = true, -- Crown Experience Scroll (50%)
+	[94440 ] = true, -- Major Gold Coast Experience Scroll (100%)
+	[94441 ] = true, -- Grand Gold Coast Experience Scroll (150%)
+	[171323] = true, -- Colovian War Torte (50%)
+	[171329] = true, -- Molten War Torte (100%)
+	[171432] = true, -- White-Gold War Torte (150%)
+}
+
+local EXPERIENCE_WORDS = {
+	en = "experience",
+	de = "erfahrung",
+	fr = "expérience",
+	es = "experiencia",
+	ru = "опыт",
+	jp = "経験",
+	zh = "经验",
+}
+local experienceWord = nil
+
+local NOT_BOOSTER_ITEMTYPES = {
+	[ITEMTYPE_ARMOR ] = true,
+	[ITEMTYPE_WEAPON] = true,
+}
+
+-- itemId -> true/false; an item's use text doesn't change, so each id is checked once.
+local boosterCache = {}
+
+local function IsBooster(b, i)
+	local itemId = GetItemId(b, i)
+	if BOOSTERS[itemId] then return true end
+	local cached = boosterCache[itemId]
+	if cached ~= nil then return cached end
+
+	local isBooster = false
+	if not NOT_BOOSTER_ITEMTYPES[GetItemType(b, i)] then
+		experienceWord = experienceWord or EXPERIENCE_WORDS[GetCVar("language.2")] or EXPERIENCE_WORDS.en
+		local hasAbility, _, description = GetItemLinkOnUseAbilityInfo(GetItemLink(b, i))
+		isBooster = hasAbility and description ~= nil and zo_strlower(description):find(experienceWord, 1, true) ~= nil
+	end
+	boosterCache[itemId] = isBooster
+	return isBooster
+end
+
+-- Siege weapons (including forward camps, oil, battle standards) and Alliance War repair kits
+-- for keep walls, doors, bridges and siege.
+local ALLIANCE_WAR_ITEMTYPES = {}
+for _, itemType in ipairs({ ITEMTYPE_SIEGE, ITEMTYPE_AVA_REPAIR }) do
+	ALLIANCE_WAR_ITEMTYPES[itemType] = true
+end
+
+-- Items that take you somewhere in Cyrodiil and Imperial City.
+local TRAVEL_ITEMS = {
+	[141731] = true, -- Keep Recall Stone
+	[68347 ] = true, -- Sigil of Imperial Retreat
+}
+local function IsTravelItem(b, i, itemType)
+	return TRAVEL_ITEMS[GetItemId(b, i)] or (ITEMTYPE_RECALL_STONE ~= nil and itemType == ITEMTYPE_RECALL_STONE)
+end
+
 function HideInventoryClutter:isConsumable(slot)
     if not self.savedVariables.consumablesEnabled then return false end
 	local b, i = slot.bagId, slot.slotIndex
     
 	if IsItemStolen(b, i) then return false end
 
-	if CONSUMABLE_ITEMTYPES[GetItemType(b, i)] then return true end
+	-- With the option on boosters are consumables whatever their item type; with it off they
+	-- are not, even the ones that are food.
+	if IsBooster(b, i) then return self.savedVariables.boostersAreConsumables end
+
+	local itemType = GetItemType(b, i)
+	if ALLIANCE_WAR_ITEMTYPES[itemType] then return self.savedVariables.siegeAreConsumables end
+	if IsTravelItem(b, i, itemType) then return self.savedVariables.travelItemsAreConsumables end
+	if CONSUMABLE_ITEMTYPES[itemType] then return true end
     return EXTRA_CONSUMABLES[GetItemId(b, i)] ~= nil
 end
 
