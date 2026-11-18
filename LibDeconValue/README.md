@@ -2,7 +2,7 @@
 
 A library that estimates what an item is worth **deconstructed** compared to **sold to a vendor**. Item tooltips get an expected-yield line, and addons can ask for the numbers. [Hide Inventory Clutter](../HideInventoryClutter) uses it to show only items worth deconstructing (or selling).
 
-![Deconstruction value in an item tooltip](../screenshots/LibDeconValue.png)
+![Deconstruction value in an item tooltip](../_screenshots/LibDeconValue/LibDeconValue.png)
 
 ## Credits
 

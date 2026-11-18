@@ -7,7 +7,7 @@
 
 Each can be turned off in *Settings → Addons → Extra TTC Tooltips*.
 
-![TTC price in the Character Knowledge browser](../screenshots/ExtraTTCTooltips.png)
+![TTC price in the Character Knowledge browser](../_screenshots/ExtraTTCTooltips/ExtraTTCTooltips.png)
 
 ## Requirements
 

@@ -4,7 +4,7 @@ Small quality-of-life fixes for houses: assistants from your quickslots, storage
 
 ## Housing editor
 
-![Retrieve list with sort headers, filters, right-click to store and Retrieve To in the footer](../screenshots/SchrodisHousingTools.png)
+![Retrieve list with sort headers, filters, right-click to store and Retrieve To in the footer](../_screenshots/SchrodisHousingTools/SchrodisHousingTools.png)
 
 **Sortable Retrieve list.** The Retrieve tab gets *Name* and *Distance* column headers. Click a header to sort by it; click again to reverse the order. The default is *Distance*, nearest first, the same as the game. Your choice is remembered.
 
@@ -35,7 +35,7 @@ Put an assistant collectible (banker, merchant, armory assistant, deconstruction
 
 So you can keep assistants tucked away in a corner and still have them at hand.
 
-![A banker brought in front of the player from the quickslot](../screenshots/SchrodisHousingTools-assistant.png)
+![A banker brought in front of the player from the quickslot](../_screenshots/SchrodisHousingTools/SchrodisHousingTools-assistant.png)
 
 **Not loaded when Essential Housing Tools is enabled**, which has its own version of this.
 

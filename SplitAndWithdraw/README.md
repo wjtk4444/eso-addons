@@ -10,7 +10,7 @@ Only amounts that make sense for the stack size are shown. Withdrawn items are s
 
 Based on StackMaster. Made to help players without ESO Plus manage crafting materials in the bank.
 
-![Right-click menu with withdraw amounts](../screenshots/SplitAndWithdraw.png)
+![Right-click menu with withdraw amounts](../_screenshots/SplitAndWithdraw/SplitAndWithdraw.png)
 
 ## Requirements
 

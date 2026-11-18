@@ -2,7 +2,7 @@
 
 The *Antiquities → Scryable → All Leads* list shows every antiquity you can scry, including the ones you've dug up a dozen times already that only give a furnishing you have. This addon adds a filter dropdown to that list, so it shows only what's worth digging.
 
-![All Leads with the filter dropdown open](../screenshots/DeclutteredScryingLeads.png)
+![All Leads with the filter dropdown open](../_screenshots/DeclutteredScryingLeads/DeclutteredScryingLeads.png)
 
 ## The filter dropdown
 

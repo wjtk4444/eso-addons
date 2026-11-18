@@ -2,7 +2,7 @@
 
 Keeps gear sets as lists and moves a whole set between your bags and the bank (or house storage) with one click. Useful when you keep a lot of gear in the bank and only carry what you need.
 
-![Gear set list and set contents](../screenshots/XLGearBanker.png)
+![Gear set list and set contents](../_screenshots/XLGearBanker/XLGearBanker.png)
 
 ## Changes in this fork
 

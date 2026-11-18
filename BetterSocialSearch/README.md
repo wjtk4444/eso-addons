@@ -9,4 +9,4 @@ Matching is case-insensitive and finds the text anywhere in the name, note or zo
 
 Formerly called SearchByNote. If you still have the old `SearchByNote` folder, delete it.
 
-![Guild roster search matching the location](../screenshots/BetterSocialSearch.png)
+![Guild roster search matching the location](../_screenshots/BetterSocialSearch/BetterSocialSearch.png)

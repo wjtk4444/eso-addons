@@ -6,7 +6,7 @@ IDR records much more about your death than the game does: every hit, damage ove
 
 **Improved Death Recap must be installed and enabled.** This addon does not record anything by itself.
 
-![Death recap with a long list of attacks](../screenshots/ImprovedDeathRecapVanillaUI.png)
+![Death recap with a long list of attacks](../_screenshots/ImprovedDeathRecapVanillaUI/ImprovedDeathRecapVanillaUI.png)
 
 ## What you see
 
