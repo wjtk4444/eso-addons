@@ -17,6 +17,7 @@ Addons for The Elder Scrolls Online that I wrote or reworked. Each folder is one
 | Addon | |
 |---|---|
 | [AddedInfoUnitFrames](AddedInfoUnitFrames) | Role colors, large frames for groups of up to 12 in a role-sorted grid, class icon and CP. Fork of @MrPikPik's [Added Info - Unit Frames](https://www.esoui.com/downloads/info2771-AddedInfo-UnitFrames.html). |
+| [AutoAbandonQuests](AutoAbandonQuests) | Abandons unwanted repeatable quests (Dark Brotherhood contracts, Battleground and Cyrodiil dailies, Elder Scroll missions) right after you accept them; optional auto-accept and dialogue skipping in Cyrodiil. Based on @Furious_Sniper's Auto Abandon Contracts. |
 | [DungeonSorter](DungeonSorter) | Sorts the dungeon list in the Activity Finder alphabetically. |
 | [DungeonTimerTrial](DungeonTimerTrial) | Adds trials and arenas to @code65536's [Dungeon Timer](https://www.esoui.com/downloads/info2262-DungeonTimer.html). |
 | [EvenBetterScoreboard](EvenBetterScoreboard) | Battleground scoreboard with damage, healing and class icons, plus multi-queue. Based on @M0R_Gaming's [Better Scoreboard](https://www.esoui.com/downloads/info3182-BetterScoreboard.html). |
