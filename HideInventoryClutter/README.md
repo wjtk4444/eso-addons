@@ -6,13 +6,13 @@ Most players carry a few gear sets and a stack of consumables everywhere. You kn
 
 ## The buttons
 
-The buttons appear next to the item list in the inventory, bank, mail, trade, guild store and vendor windows, and at crafting stations. A faded button means the items are hidden; click it to show them.
+The buttons appear next to the item list in the inventory, bank, mail, trade, guild store and vendor windows, and at crafting and transmutation stations. A faded button means the items are hidden; click it to show them.
 
 **Lock button:** what it hides depends on where you are.
 
 | Where | Hidden while the button is faded |
 |---|---|
-| Inventory, bank and house storage deposit, bank withdraw | Locked items |
+| Inventory, bank and house storage deposit, bank withdraw, transmutation station | Locked items |
 | Vendor (sell) | Items not worth selling (see below) |
 | Deconstruction and enchanting extraction, including the deconstruction assistant | Items not worth deconstructing (see below) |
 

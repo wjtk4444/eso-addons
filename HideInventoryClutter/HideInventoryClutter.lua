@@ -50,6 +50,7 @@ function HideInventoryClutter:initalize()
         [LF_BANK_WITHDRAW        ] = function(s) if self:isLocked(s) then return self.lockedVisible else return true end end,
         [LF_HOUSE_BANK_DEPOSIT   ] = function(s) if self:isLocked(s) then return self.lockedVisible else return true end end,
         [LF_INVENTORY            ] = function(s) if self:isLocked(s) then return self.lockedVisible else return true end end,
+        [LF_RETRAIT              ] = function(a, b) if self:isLocked(AsSlot(a, b)) then return self.lockedVisible else return true end end,
 		
         [LF_VENDOR_SELL          ] = function(s) if self.lockedVisible then return true else return self:isWorthSelling(s) end end,
         

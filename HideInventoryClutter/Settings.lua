@@ -69,7 +69,7 @@ function HideInventoryClutter:buildLAM2Menu()
 		[5] = {
 			type = "checkbox",
 			name = "Locked items filter",
-			tooltip = "hides locked items from inventory window",
+			tooltip = "hides locked items from inventory, bank and transmutation station windows",
 			getFunc = function() return self.savedVariables.lockedEnabled end,
 			setFunc = function(value) self.savedVariables.lockedEnabled = value end
 		},

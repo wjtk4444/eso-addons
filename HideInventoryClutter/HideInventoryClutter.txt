@@ -5,7 +5,7 @@
 ; https://account.elderscrollsonline.com/add-on-terms
 
 ## Title: Hide Inventory Clutter
-## Description: One-click toggles that hide locked gear and everyday consumables from your inventory, bank, mail and vendor lists, and show only items worth deconstructing (or selling) at crafting stations and vendors.
+## Description: One-click toggles that hide locked gear and everyday consumables from your inventory, bank, mail, vendor and transmutation lists, and show only items worth deconstructing (or selling) at crafting stations and vendors.
 ## Author: Schrodi
 ## Version: 2.2.0
 ## APIVersion: 101051
