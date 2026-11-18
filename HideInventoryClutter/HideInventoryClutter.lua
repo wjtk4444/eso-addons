@@ -29,6 +29,12 @@ function HideInventoryClutter:toggleLocked(filter)
     self.dbg("locked items visible: " .. tostring(self.lockedVisible))
 end
 
+-- Crafting station filters get (bagId, slotIndex), the inventory filters a slot table.
+local function AsSlot(a, b)
+    if type(a) == "table" then return a end
+    return { bagId = a, slotIndex = b }
+end
+
 function HideInventoryClutter:initalize()
     self.consumablesVisible = false
     self.lockedVisible = false
@@ -47,9 +53,9 @@ function HideInventoryClutter:initalize()
 		
         [LF_VENDOR_SELL          ] = function(s) if self.lockedVisible then return true else return self:isWorthSelling(s) end end,
         
-		[LF_SMITHING_DECONSTRUCT ] = function(s) if self.lockedVisible then return true else return self:isWorthDeconstructing(s) end end,
-        [LF_JEWELRY_DECONSTRUCT  ] = function(s) if self.lockedVisible then return true else return self:isWorthDeconstructing(s) end end,
-        [LF_ENCHANTING_EXTRACTION] = function(s) if self.lockedVisible then return true else return self:isWorthDeconstructing(s) end end,
+		[LF_SMITHING_DECONSTRUCT ] = function(a, b) if self.lockedVisible then return true else return self:isWorthDeconstructing(AsSlot(a, b)) end end,
+        [LF_JEWELRY_DECONSTRUCT  ] = function(a, b) if self.lockedVisible then return true else return self:isWorthDeconstructing(AsSlot(a, b)) end end,
+        [LF_ENCHANTING_EXTRACTION] = function(a, b) if self.lockedVisible then return true else return self:isWorthDeconstructing(AsSlot(a, b)) end end,
 		
 	--	[LF_TRADE				 ] = function(s) if self.lockedVisible then return true else return self:isEitherTradeableGearOrDifferentItemType(s) end end,
 	}
