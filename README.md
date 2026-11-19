@@ -36,6 +36,7 @@ Addons for The Elder Scrolls Online that I wrote or reworked. Each folder is one
 | [HideInventoryClutter](HideInventoryClutter) | Hides locked gear and consumables; shows only items worth deconstructing or selling. |
 | [LibDeconValue](LibDeconValue) | Shows the average value of what you'd get from deconstructing an item in its tooltip, next to the vendor price; with a learning mode. Also a library for other addons. Started from otac0n's [ESO-LibLootStats](https://github.com/otac0n/ESO-LibLootStats). |
 | [LootLogExtras](LootLogExtras) | Logs crafting-station results, mail and trades into @code65536's [LootLog](https://www.esoui.com/downloads/info1455-LootLog.html). |
+| [QuickslotProfiles](QuickslotProfiles) | Quickslot wheel profiles that load by themselves per zone type (overland, dungeons, trials, arenas, Cyrodiil, Imperial City, battlegrounds, houses...), edited right in the game's quickslot menu. Inspired by Gerrit's [CyroQuickslots](https://www.esoui.com/downloads/info3134-CyroQuickslots.html). |
 | [SchrodisHousingTools](SchrodisHousingTools) | Assistants from your quickslots, /storage, housing editor and Furniture Vault quality of life. |
 | [SplitAndWithdraw](SplitAndWithdraw) | Split or withdraw 1/2/3/5/10/25/50/100 items from the right-click menu. Based on [Stack Master](https://www.esoui.com/downloads/info2508-StackMaster.html). |
 | [TTCDealFilter](TTCDealFilter) | Master Merchant's guild store deal rating, filter and sort for AwesomeGuildStore, using Tamriel Trade Centre prices. |
