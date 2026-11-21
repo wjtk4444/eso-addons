@@ -9,8 +9,8 @@
 ## Author: Schrodi
 ## Version: 1.5
 ## AddOnVersion: 6
-## APIVersion: 101052
+## APIVersion: 101051 101052
 ## SavedVariables: AutoAbandonQuests_SV
-## DependsOn: LibAddonMenu-2.0
+## DependsOn: LibAddonMenu-2.0>=43
 
 AutoAbandonQuests.lua

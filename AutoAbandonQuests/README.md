@@ -25,4 +25,4 @@ In the daily categories the kept quests count as equal. Once every kept quest ha
 
 Limitations: quest names are matched in English, so it only works with the English client. Turn-ins are only recorded while the addon is enabled.
 
-Based on Auto Abandon Contracts by @Furious_Sniper (ESOUI).
+Based on [Auto Abandon Not Killing Spree Contracts](https://www.esoui.com/downloads/info4481-AutoAbandonNotKillingSpreeContracts.html) by @Furious_Sniper, whose idea this was and who gave it his blessing. Disable that addon when you use this one.
