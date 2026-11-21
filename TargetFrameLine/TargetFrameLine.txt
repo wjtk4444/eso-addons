@@ -9,7 +9,7 @@
 ## Author: Schrodi
 ## Version: 1.2.0
 ## AddOnVersion: 3
-## APIVersion: 101052
+## APIVersion: 101051 101052
 ## SavedVariables: TargetFrameLine_SV
 ## DependsOn: LibAddonMenu-2.0
 
