@@ -140,7 +140,7 @@ function SI.CreateSettings()
 		type = "panel",
 		name = "SkillIssue",
 		displayName = "Skill Issue",
-		author = "Schrödinger",
+		author = "Schrodi",
 		version = "1.0",
 		slashCommand = "/skillissue",
 		registerForRefresh = true,
