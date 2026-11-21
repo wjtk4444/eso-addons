@@ -167,6 +167,14 @@ function QSP.InitializeSettings()
         },
         {
             type = "checkbox",
+            name = "Save changes when leaving the quickslot menu",
+            tooltip = "Closing the inventory, leaving the Quickslots tab or picking another profile saves the profile you edited. "
+                .. "Off: unsaved changes are discarded, keep them with the Save button.\n\nFor all characters.",
+            getFunc = QSP.IsSaveOnLeaveOn,
+            setFunc = QSP.SetSaveOnLeave,
+        },
+        {
+            type = "checkbox",
             name = "Clear slots that are empty in the profile",
             tooltip = "When a profile loads, its empty slots empty the wheel's slot too. Off: those slots keep whatever was there.\n\n"
                 .. "In the quickslot menu a profile is always shown exactly, empty slots included.\n\nFor all characters.",

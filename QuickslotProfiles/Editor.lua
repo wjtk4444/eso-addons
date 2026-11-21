@@ -71,12 +71,17 @@ local function SaveZones()
     QSP.RefreshSettings()
 end
 
+-- Unsaved changes when you pick another profile or leave the tab: saved with "Save changes
+-- when leaving the quickslot menu" on, dropped otherwise. Returns true if they were dropped.
 local function DropUnsaved()
-    if QSP.GetProfile(editingId) and QSP.HasUnsavedChanges(editingId) then
-        QSP.Msg("Unsaved changes to " .. QSP.Hi(QSP.ProfileName(editingId)) .. " discarded.")
-        return true
+    if not (QSP.GetProfile(editingId) and QSP.HasUnsavedChanges(editingId)) then return false end
+    if QSP.IsSaveOnLeaveOn() then
+        QSP.Save(editingId)
+        QSP.Msg("Saved " .. QSP.Hi(QSP.ProfileName(editingId)) .. ".")
+        return false
     end
-    return false
+    QSP.Msg("Unsaved changes to " .. QSP.Hi(QSP.ProfileName(editingId)) .. " discarded.")
+    return true
 end
 
 local function ShowProfile(id)

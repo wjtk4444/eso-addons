@@ -33,7 +33,7 @@ Profiles are edited in the game's own quickslot menu, the inventory's **Quickslo
 - **Load automatically in** (right): the zone types this profile loads in. Applied when the list closes.
 - **Open settings**, **Save** (keeps the wheel as the profile) and **Discard** (puts the saved profile back). Save and Discard light up when the wheel differs from the profile.
 
-Picking another profile or leaving the tab drops unsaved changes (the chat says so), and the profile of the zone you're in goes back on the wheel. Opening the tab loads the profile again, so it also fills slots after restocking.
+Picking another profile or leaving the tab drops unsaved changes (the chat says so), or saves them with **Save changes when leaving the quickslot menu** on. Then the profile of the zone you're in goes back on the wheel. Opening the tab loads the profile again, so it also fills slots after restocking.
 
 The **Edit slots** button in the settings opens the tab with the selected profile.
 
@@ -55,7 +55,7 @@ Every slot change is a message to the server; switching profiles back and forth 
 - **Profile**, **Name**, **Slots** (what the profile holds).
 - **Edit slots**, **New profile** (starts from the wheel as it is now), **Delete profile**.
 - **Zone types**: which profile loads where.
-- **Clear slots that are empty in the profile**, **Chat message when a profile loads** (account-wide).
+- **Save changes when leaving the quickslot menu** (off by default), **Clear slots that are empty in the profile**, **Chat message when a profile loads** (account-wide).
 
 Profiles are per character.
 

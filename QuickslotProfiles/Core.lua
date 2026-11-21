@@ -10,7 +10,7 @@ local QSP = QuickslotProfiles
 
 QSP.NAME = "QuickslotProfiles"
 QSP.TITLE = "Quickslot Profiles"
-QSP.VERSION = "1.2.0"
+QSP.VERSION = "1.3.0"
 
 local CATEGORY = HOTBAR_CATEGORY_QUICKSLOT_WHEEL
 local NUM_SLOTS = ACTION_BAR_UTILITY_BAR_SIZE or 8
@@ -36,6 +36,7 @@ local accountDefaults =
 {
     chatOnLoad = true,
     clearEmpty = true,
+    saveOnLeave = false,
 }
 
 local cs -- per character
@@ -69,6 +70,8 @@ function QSP.IsChatOnLoadOn() return as.chatOnLoad end
 function QSP.SetChatOnLoad(on) as.chatOnLoad = on end
 function QSP.IsClearEmptyOn() return as.clearEmpty end
 function QSP.SetClearEmpty(on) as.clearEmpty = on end
+function QSP.IsSaveOnLeaveOn() return as.saveOnLeave end
+function QSP.SetSaveOnLeave(on) as.saveOnLeave = on end
 
 function QSP.ProfileName(id)
     local profile = QSP.GetProfile(id)
