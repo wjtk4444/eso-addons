@@ -15,14 +15,17 @@ Every material is written to the history, the same way LootLog records all loot.
 
 Items and gold you take from mail, with **one chat line per mail**. This works for a single mail and for **Take All (System)** / **Take All (Player)**:
 
-> (Mail) Woodworker Hireling: 1x [Rosin]
+> (Mail) Raw Woodworker Materials: 1x [Rosin]
 > (Mail) @friend: 3x [Dreugh Wax], 500 gold
-> (Mail) Item Sold | 1x [Perfect Roe] | 10,000 gold
+> (Mail) Item Sold 1x [Perfect Roe] for 10,000 gold
+
+System mail (hirelings, rewards, the guild store) is labeled with its subject, player mail with the sender.
 
 - Only **notable** items are written to the history and shown. A mail without notable items (and without gold, see below) gets no line, so five hireling mails with two notable items give two lines.
-- **Take All:** the game only reveals what's attached to a mail after the mail has been opened. So when you confirm Take All, the addon first opens the unread mails in that category one by one (the server allows one at a time), then takes everything. With many unread mails this takes a few seconds; above three you get a chat note. If a mail can't be read in time, its items are still logged, together under "Take All (System)".
-- **Guild store sales** ("Item Sold" mails) only contain gold. The sold item is looked up in the guild history, matched by time and amount, the same way AwesomeGuildStore does it. This needs **LibHistoire**; without it, or if the sale isn't in the history yet, the line shows just the gold.
+- **Take All:** the game only reveals what's attached to a mail after the mail has been opened. So when you confirm Take All, the addon first opens the unread mails in that category one by one (the server allows one at a time), then takes everything. With many unread mails this takes a few seconds; clicking Take All again meanwhile does nothing, and you can close the mail window right away: the mailbox stays open behind the scenes until the reading and the take are done. If a mail can't be read in time, its items are still logged, together under "Take All (System)".
+- **Guild store sales**: "Item Sold" mails only contain gold, but their text names the sold item ("An item you listed has sold. (…)"; with AwesomeGuildStore its own "You sold 1x … to @buyer for …"). The item is taken from there, so the mails are read before Take All as well. Sometimes the game fills in "(Data not available)" instead of the item, even for a mail that showed the item when you opened it. So the item is remembered as soon as a mail text names it (when the mail is read or shown in the mail window), and a mail that still says "(Data not available)" is read again a few times before Take All. If no text ever names it, the sale is looked up in the guild history (LibHistoire), matched by time and amount; if that fails too, the line has only the gold ("(Mail) Item Sold for 10,000 gold").
 - Only what actually arrived is logged. If your bags are full and part of a Take All fails, the missing items aren't logged.
+- Items and gold that arrive while a take is still running but don't come from mail (a container opened right away by AutoUnbox or Unboxer, loot picked up meanwhile) are left out. LootLog already logs those itself.
 
 ## Trades
 
@@ -34,7 +37,7 @@ Every received item is written to the history, notable or not. Cancelled trades 
 
 ## Gold
 
-Gold from mail and trades appears in the chat lines above. LootLog's history only stores items, so gold isn't in the history.
+Gold from player mail, guild store sales and trades appears in the chat lines above. Gold that comes with other system mail (quest rewards and the like) is left out. LootLog's history only stores items, so gold isn't in the history.
 
 ## What counts as notable
 
@@ -61,4 +64,4 @@ LootLogFishing is not carried over. Since LootLog 4.7.3, LootLog counts rare fis
 ## Requirements
 
 - LootLog
-- Optional: LibCharacterKnowledge (unknown recipes and motifs), LibHistoire (items sold in the guild store), LibAddonMenu-2.0 (settings)
+- Optional: LibCharacterKnowledge (unknown recipes and motifs), LibAddonMenu-2.0 (settings), LibHistoire (sold items the mail text doesn't name)

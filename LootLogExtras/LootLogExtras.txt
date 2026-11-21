@@ -7,8 +7,8 @@
 ## Title: LootLog Extras
 ## Description: Logs what Code's LootLog can't see on its own: materials from refining and deconstruction, notable items taken from mail (one line per mail, also with "Take All"), items from trades, and gold from mail and trades.
 ## Author: Schrodi
-## Version: 2.1.0
-## AddOnVersion: 210
+## Version: 2.1.4
+## AddOnVersion: 214
 ## APIVersion: 101051
 ## SavedVariables: LootLogExtras_SV
 ## DependsOn: LootLog

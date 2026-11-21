@@ -79,7 +79,7 @@ local function CreateSettingsMenu()
         {
             type = "checkbox",
             name = "Gold from mail and trades",
-            tooltip = "Also show received gold in the chat lines for mail and trades, e.g. guild store sales: \"(Mail) Item Sold | 1x [item] | 10,000 gold\" (the sold item needs LibHistoire). LootLog's history only stores items, so gold appears in chat only.",
+            tooltip = "Also show received gold in the chat lines for mail and trades, e.g. guild store sales: \"(Mail) Item Sold 1x [item] for 10,000 gold\". LootLog's history only stores items, so gold appears in chat only.",
             getFunc = function() return LLE.sv.logGold end,
             setFunc = function(value) LLE.sv.logGold = value end,
             default = LLE.defaults.logGold,

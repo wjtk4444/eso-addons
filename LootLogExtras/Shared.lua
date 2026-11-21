@@ -125,8 +125,35 @@ function LLE.FormatGold(amount)
 end
 
 -- "1x [Rosin]"
+-- The item as a bracketed chat link with no text of its own, the same form as
+-- GetItemLink(..., LINK_STYLE_BRACKETS): chat fills in the name and quality color.
+-- Links from guild history events come in another style and with a different number of
+-- fields than the client's item links, and chat then shows the raw link data instead of
+-- the name; so the link is rebuilt with the 21 fields of a regular item link.
+local ITEM_LINK_FIELDS = 21
+
+local function ChatItemLink(itemLink)
+    local data = type(itemLink) == "string" and itemLink:match("^|H%d:item:([^|]+)|h")
+    if not data then
+        return itemLink
+    end
+    local fields = {}
+    for field in data:gmatch("[^:]+") do
+        if #fields == ITEM_LINK_FIELDS then break end
+        fields[#fields + 1] = field
+    end
+    while #fields < ITEM_LINK_FIELDS do
+        fields[#fields + 1] = "0"
+    end
+    return string.format("|H1:item:%s|h|h", table.concat(fields, ":"))
+end
+
+-- "3x [item]", or just "[item]" without a quantity.
 function LLE.FormatItem(itemLink, quantity)
-    return string.format("%dx %s", quantity, itemLink)
+    if not quantity then
+        return ChatItemLink(itemLink)
+    end
+    return string.format("%dx %s", quantity, ChatItemLink(itemLink))
 end
 
 -- Keeps the notable ones of { { itemLink, quantity }, ... } (sets .notable on every entry).
