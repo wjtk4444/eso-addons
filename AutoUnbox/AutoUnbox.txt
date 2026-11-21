@@ -9,7 +9,7 @@
 ## Author: Schrodi
 ## Version: 1.0
 ## AddOnVersion: 1
-## APIVersion: 101052
+## APIVersion: 101051 101052
 ## SavedVariables: AutoUnbox_SV
 ## OptionalDependsOn: LibAddonMenu-2.0
 
