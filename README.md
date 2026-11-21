@@ -30,6 +30,7 @@ Addons for The Elder Scrolls Online that I wrote or reworked. Each folder is one
 | Addon | |
 |---|---|
 | [AutoAcceptNextWrit](AutoAcceptNextWrit) | Accepts the next crafted master writ right after a turn-in. |
+| [AutoUnbox](AutoUnbox) | Opens every container as soon as it lands in your backpack, with optional exceptions (survey reports, writs, treasure maps) and an Unbox All button. A much smaller take on Unboxer. |
 | [BagWatcher](BagWatcher) | Free bag space next to the FPS / latency meters. |
 | [EssentialSnugpodTools](EssentialSnugpodTools) | The Snugpod magic: a door that animates furniture in one particular house. Needs decorating permission there. |
 | [ExtraTTCTooltips](ExtraTTCTooltips) | TTC prices where Tamriel Trade Centre doesn't add them: housing Retrieve list, Character Knowledge. |
