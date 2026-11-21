@@ -95,9 +95,9 @@ end
 -------------------------------------------------------------------------------
 -- Map positions (LibTreasure)
 
--- Best wayshrine / walking option for the maps of one zone. Nil if
+-- Best wayshrine / house / walking option for the maps of one zone. Nil if
 -- LibTreasure doesn't know where any of them are.
-local function planForZone(zone)
+local function planForZone(zone, includeHouses)
     local byMapId = {}
     for _, map in ipairs(zone.maps) do
         if map.data then
@@ -111,7 +111,7 @@ local function planForZone(zone)
     Teleport.Helpers:pushMap()
     for mapId, targets in pairs(byMapId) do
         if SetMapToMapId(mapId) ~= SET_MAP_RESULT_FAILED then
-            table.insert(plans, Teleport.Nodes:planOnCurrentMap(targets))
+            table.insert(plans, Teleport.Nodes:planOnCurrentMap(targets, includeHouses))
         end
     end
     Teleport.Helpers:popMap()
@@ -119,13 +119,21 @@ local function planForZone(zone)
     return Teleport.Nodes:mergePlans(plans)
 end
 
-local function walkMessage(plan)
-    local suffix = Teleport.Helpers:isAtWayshrine() and " - this is the closest wayshrine." or " - closer than any wayshrine."
+local function walkMessage(plan, atWayshrine)
+    local spot = Teleport.Nodes:bestSpot(plan)
+    local suffix
+    if atWayshrine and not (spot and spot.isHouse) then
+        suffix = " - this is the closest wayshrine."
+    elseif plan.house then
+        suffix = " - closer than any wayshrine or house of yours."
+    else
+        suffix = " - closer than any wayshrine."
+    end
     info(plan.walkTarget.map.link .. " is " .. Teleport.Helpers:formatMeters(plan.walkDistance) .. " away" .. suffix)
 end
 
-local function travelToNode(zone, plan)
-    return Teleport.Nodes:travelTo(plan.node.index, " " .. describeZone(zone, plan.nodeTarget.map))
+local function travelToSpot(zone, spot, target)
+    return Teleport.Nodes:travelToSpot(spot, " " .. describeZone(zone, target.map))
 end
 
 local function jumpToPlayer(zone, player)
@@ -136,7 +144,8 @@ end
 -------------------------------------------------------------------------------
 
 local function travel(mode)
-    if Teleport.Helpers:isAtWayshrine() then
+    local atWayshrine = Teleport.Helpers:isAtWayshrine()
+    if atWayshrine then
         mode = MODE_PAID -- free anyway
     end
     local canJump = mode ~= MODE_PAID
@@ -158,47 +167,78 @@ local function travel(mode)
         canPay = false
     end
 
+    -- jumping outside your own house is free, so a house near a map is as good
+    -- as a wayshrine you're standing at (needs LibTreasure to know what's near)
+    local useHouses = LibTreasure ~= nil and CanJumpToHouseFromCurrentLocation()
+
     local currentZoneId = Teleport.Zones:getPlayerZoneId()
     local zones = groupByZone(maps, currentZoneId) -- current zone first
 
-    -- 0. already close to a map in the current zone - just walk there
     local plans = {}
+    local function getPlan(zone)
+        if plans[zone] == nil then
+            plans[zone] = planForZone(zone, useHouses) or false
+        end
+        return plans[zone] or nil
+    end
+
+    -- 0. already close to a map in the current zone - just walk there
     if zones[1].zoneId == currentZoneId then
-        plans[zones[1]] = planForZone(zones[1])
-        if Teleport.Nodes:shouldWalk(plans[zones[1]]) then
-            return walkMessage(plans[zones[1]])
+        local plan = getPlan(zones[1])
+        if Teleport.Nodes:shouldWalk(plan) then
+            return walkMessage(plan, atWayshrine)
         end
     end
 
-    -- 1. free: players in any of the zones, current zone first
+    -- paid only / at a wayshrine: the closest wayshrine or house, current zone first
+    if mode == MODE_PAID then
+        for _, zone in ipairs(zones) do
+            local spot, target = Teleport.Nodes:bestSpot(getPlan(zone))
+            if spot then
+                return travelToSpot(zone, spot, target)
+            end
+            info("Skipping " .. describeZone(zone) .. ": " .. (getPlan(zone) and "No known wayshrines in that zone." or "Unknown map location."))
+        end
+        return
+    end
+
+    -- 1. free: own houses near the maps, then players - current zone first
+    local players = {}
     if canJump then
         local zoneSet = {}
         for _, zone in ipairs(zones) do zoneSet[zone.zoneId] = true end
-        local players = Teleport.Players:findPlayersInZones(zoneSet)
-
-        for _, zone in ipairs(zones) do
-            if players[zone.zoneId] then
-                return jumpToPlayer(zone, players[zone.zoneId])
-            end
-        end
-
-        local names = {}
-        for _, zone in ipairs(zones) do
-            table.insert(names, color(GetZoneNameById(zone.zoneId), C.SURVEY))
-        end
-        local msg = "No players in the following zones: " .. table.concat(names, ", ")
-        if not canPay then
-            info(msg)
-            return
-        end
-        info(msg .. ". Falling back to paid teleport.")
+        players = Teleport.Players:findPlayersInZones(zoneSet)
     end
 
-    -- 2. paid (or free when at a wayshrine): wayshrines, current zone first
     for _, zone in ipairs(zones) do
-        local plan = plans[zone] or planForZone(zone)
+        local plan = useHouses and getPlan(zone)
+        -- a house that's farther than running there from where you stand isn't worth it
+        local houseWorthIt = plan and plan.house and not (plan.walkDistance
+            and plan.walkDistance <= plan.houseDistance + Teleport.Nodes.WALK_MARGIN_METERS)
+        if houseWorthIt then
+            return travelToSpot(zone, plan.house, plan.houseTarget)
+        end
+        if players[zone.zoneId] then
+            return jumpToPlayer(zone, players[zone.zoneId])
+        end
+    end
+
+    local names = {}
+    for _, zone in ipairs(zones) do
+        table.insert(names, color(GetZoneNameById(zone.zoneId), C.SURVEY))
+    end
+    local msg = "No players" .. (useHouses and " or houses of yours" or "") .. " in the following zones: " .. table.concat(names, ", ")
+    if not canPay then
+        info(msg)
+        return
+    end
+    info(msg .. ". Falling back to paid teleport.")
+
+    -- 2. paid: wayshrines, current zone first
+    for _, zone in ipairs(zones) do
+        local plan = getPlan(zone)
         if plan and plan.node then
-            return travelToNode(zone, plan)
+            return travelToSpot(zone, plan.node, plan.nodeTarget)
         end
         info("Skipping " .. describeZone(zone) .. ": " .. (plan and "No known wayshrines in that zone." or "Unknown map location."))
     end

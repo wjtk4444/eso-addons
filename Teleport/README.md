@@ -111,18 +111,19 @@ Feel free to visit `/tp @@schrodingerscatgirl snugpod`.
 
 ```
 /tp maps           free if possible, paid otherwise
-/tp maps free      only jump to players
-/tp maps paid      always the closest wayshrine
+/tp maps free      only free options: your houses and players
+/tp maps paid      the closest wayshrine or house of yours
 ```
 
 Teleport looks through your bags and takes you to your next map:
 
 - Maps in your current zone come first, so you don't sit through a zone-to-zone loading screen while there's still something to dig up nearby.
 - Then the zone you have the most maps for.
-- A free jump to a player in any of those zones wins over paying for a wayshrine (at a wayshrine it pays, since that's free anyway).
-- If you're already closer to a map than any wayshrine is (by at least ~150 m), you won't be teleported; Teleport tells you how far away the map is instead.
+- Free options win over paying for a wayshrine. In each zone it first tries the outside of a house you own closest to a map (jumping outside your own house is free from anywhere), then a jump to a player in that zone.
+- At a wayshrine, travel is free anyway, so it takes whichever wayshrine or house of yours is closest to a map.
+- If you're already closer to a map than any wayshrine or house of yours is (by at least ~150 m), you won't be teleported; Teleport tells you how far away the map is instead.
 
-The paid option needs **LibTreasure** to know where the maps are. Tip: make an alias, e.g. `/tp --add s maps`, then just `/tp s`.
+Wayshrines and houses need **LibTreasure** to know where the maps are. Tip: make an alias, e.g. `/tp --add s maps`, then just `/tp s`.
 
 ## Tracked quest
 

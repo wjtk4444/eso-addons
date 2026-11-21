@@ -1,3 +1,7 @@
+### 1.5.0
+- survey/treasure maps: houses you own count as free travel spots. Jumping outside your own house is free from anywhere, so a house close to a map is used before jumping to a player in that zone, and before paying for a wayshrine. With `maps paid` and at a wayshrine, the closest wayshrine *or* house wins
+- survey/treasure maps: a house is skipped if running to the map from where you stand is shorter; houses aren't used where the game doesn't allow jumping to a house (Cyrodiil, battlegrounds, dungeons, ...)
+
 ### 1.4.0
 - zones: names and short names are matched in alphabetical order (`/tp gr` is Grahtwood). Before, the order depended on the game's map list, and a short name like "Greymoor Caverns" or "Skyrim" could win over a zone that starts the same way
 - dungeons: generated short names no longer overwrite each other or the hand-picked ones. Before, `fg`, `eh`, `coh` etc. pointed to part **II**; now the bare name is part I and part II needs the `2`
