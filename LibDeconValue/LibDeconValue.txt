@@ -13,7 +13,7 @@
 ## Author: Schrodi (based on LibLootStats by otac0n)
 ## Description: Calculate deconstruction value and display expected material yields with accurate level/CP-aware material lookups. Learns real yields from your own deconstructions (/ldv).
 ## OptionalDependsOn: TamrielTradeCentre LibLazyCrafting AwesomeGuildStore
-## DependsOn: LibPrice
+## DependsOn: LibPrice>=70550
 
 LibDeconValue_Data.lua
 LibDeconValue_Stats.lua

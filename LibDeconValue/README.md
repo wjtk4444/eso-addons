@@ -52,4 +52,6 @@ local vendorValue = LibDeconValue:GetVendorValue(itemLink)
 ## Requirements
 
 - LibPrice
-- Optional: Tamriel Trade Centre (or another price source supported by LibPrice), LibLazyCrafting (glyph runes), AwesomeGuildStore (tooltips in the guild store)
+- Optional: Tamriel Trade Centre (or another price source supported by LibPrice), LibLazyCrafting (without it glyphs get no value: it knows which runes a glyph is made of)
+
+Guild store tooltips work with or without AwesomeGuildStore; with it, the tooltip hook is added after AwesomeGuildStore has set up the store.
