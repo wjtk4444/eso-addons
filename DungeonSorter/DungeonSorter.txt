@@ -9,7 +9,6 @@
 ## Author: Schrodi
 ## Version: 1.0
 ## APIVersion: 101051
-## OptionalDependsOn: pChat
 
 DungeonSorter.lua
 
