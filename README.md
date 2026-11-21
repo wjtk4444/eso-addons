@@ -23,6 +23,7 @@ Addons for The Elder Scrolls Online that I wrote or reworked. Each folder is one
 | [EvenBetterScoreboard](EvenBetterScoreboard) | Battleground scoreboard with damage, healing and class icons, plus multi-queue. Based on @M0R_Gaming's [Better Scoreboard](https://www.esoui.com/downloads/info3182-BetterScoreboard.html). |
 | [RideAlong](RideAlong) | One keybind to ride a group member's multi-rider mount. |
 | [SchrodisWardrobe](SchrodisWardrobe) | [Wizard's Wardrobe](https://www.esoui.com/downloads/info3170-WizardsWardrobe.html) pages for every Armory build. |
+| [TargetFrameLine](TargetFrameLine) | The targeted player's name line, rebuilt: name, Alliance War rank, class icon, then CP or level; target marker optional. Inspired by @MrPikPik's [AddedInfo - Targeted Unit Frame](https://www.esoui.com/downloads/info2631-AddedInfo-TargetedUnitFrame.html). |
 | [Teleport](Teleport) | `/tp` for every kind of travel: zones, dungeons, houses, players, survey maps, quests. |
 
 ## Inventory, crafting and housing
