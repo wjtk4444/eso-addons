@@ -14,4 +14,4 @@ The ideal would be a single key: ride along if there's a free seat, otherwise su
 
 ## Upgrading from Mounty Python
 
-This is the same addon under a new name. Delete the old `MountyPython` folder; the two can't run together because they share the keybind. Your key binding is kept.
+This is the same addon under a new name. Delete the old `MountyPython` folder. The keybind has a new name too, so bind it again in *Controls → Ride Along*.

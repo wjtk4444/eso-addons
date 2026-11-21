@@ -87,6 +87,6 @@ EVENT_MANAGER:RegisterForEvent(ADDON_NAME, EVENT_ADD_ON_LOADED, function(_, addo
     EVENT_MANAGER:UnregisterForEvent(ADDON_NAME, EVENT_ADD_ON_LOADED)
 
     -- The action keeps Mounty Python's name, so an existing keybind carries over.
-    ZO_CreateStringId("SI_BINDING_NAME_MP_HOTKEY_MOUNT", "Ride with a group member")
+    ZO_CreateStringId("SI_BINDING_NAME_RIDE_ALONG_HOTKEY_MOUNT", "Ride with a group member")
     SLASH_COMMANDS["/ride"] = RideAlong_Mount
 end)
