@@ -8,7 +8,7 @@ In combat you only generate ultimate passively for **8 seconds** after one of th
 
 If you only cast skills (for example as a healer or tank that never weaves light attacks), the window runs out and ultimate generation stops. This addon shows the seconds left, by default right between your last skill and your ultimate button, where your eyes already are.
 
-<!-- screenshot: action bar with the timer between slot 5 and the ultimate -->
+![The timer between the last skill and the ultimate button](../_screenshots/UltimateRegenTimer/UltimateRegenTimer.png)
 
 The number turns a warning color at 0, so you see right away that you need to weave a light attack.
 
