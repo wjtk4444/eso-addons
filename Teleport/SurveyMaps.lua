@@ -202,24 +202,28 @@ local function travel(mode)
         return
     end
 
-    -- 1. free: own houses near the maps, then players - current zone first
-    local players = {}
+    -- 1. free: a player in any of the zones, current zone first
     if canJump then
         local zoneSet = {}
         for _, zone in ipairs(zones) do zoneSet[zone.zoneId] = true end
-        players = Teleport.Players:findPlayersInZones(zoneSet)
+        local players = Teleport.Players:findPlayersInZones(zoneSet)
+
+        for _, zone in ipairs(zones) do
+            if players[zone.zoneId] then
+                return jumpToPlayer(zone, players[zone.zoneId])
+            end
+        end
     end
 
-    for _, zone in ipairs(zones) do
-        local plan = useHouses and getPlan(zone)
-        -- a house that's farther than running there from where you stand isn't worth it
-        local houseWorthIt = plan and plan.house and not (plan.walkDistance
-            and plan.walkDistance <= plan.houseDistance + Teleport.Nodes.WALK_MARGIN_METERS)
-        if houseWorthIt then
-            return travelToSpot(zone, plan.house, plan.houseTarget)
-        end
-        if players[zone.zoneId] then
-            return jumpToPlayer(zone, players[zone.zoneId])
+    -- 2. still free: outside of a house of yours near a map, current zone first
+    if useHouses then
+        for _, zone in ipairs(zones) do
+            local plan = getPlan(zone)
+            -- a house that's farther than running there from where you stand isn't worth it
+            if plan and plan.house and not (plan.walkDistance
+                and plan.walkDistance <= plan.houseDistance + Teleport.Nodes.WALK_MARGIN_METERS) then
+                return travelToSpot(zone, plan.house, plan.houseTarget)
+            end
         end
     end
 
@@ -227,14 +231,14 @@ local function travel(mode)
     for _, zone in ipairs(zones) do
         table.insert(names, color(GetZoneNameById(zone.zoneId), C.SURVEY))
     end
-    local msg = "No players" .. (useHouses and " or houses of yours" or "") .. " in the following zones: " .. table.concat(names, ", ")
+    local msg = "No players" .. (useHouses and " or houses of yours near maps" or "") .. " in the following zones: " .. table.concat(names, ", ")
     if not canPay then
         info(msg)
         return
     end
     info(msg .. ". Falling back to paid teleport.")
 
-    -- 2. paid: wayshrines, current zone first
+    -- 3. paid: wayshrines, current zone first
     for _, zone in ipairs(zones) do
         local plan = getPlan(zone)
         if plan and plan.node then

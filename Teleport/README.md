@@ -111,7 +111,7 @@ Feel free to visit `/tp @@schrodingerscatgirl snugpod`.
 
 ```
 /tp maps           free if possible, paid otherwise
-/tp maps free      only free options: your houses and players
+/tp maps free      only free options: players, then your houses
 /tp maps paid      the closest wayshrine or house of yours
 ```
 
@@ -119,7 +119,7 @@ Teleport looks through your bags and takes you to your next map:
 
 - Maps in your current zone come first, so you don't sit through a zone-to-zone loading screen while there's still something to dig up nearby.
 - Then the zone you have the most maps for.
-- Free options win over paying for a wayshrine. In each zone it first tries the outside of a house you own closest to a map (jumping outside your own house is free from anywhere), then a jump to a player in that zone.
+- Free options win over paying for a wayshrine. First a jump to a player in any of those zones. If there's nobody, the outside of a house you own close to a map (jumping outside your own house is free from anywhere). Only then a paid wayshrine.
 - At a wayshrine, travel is free anyway, so it takes whichever wayshrine or house of yours is closest to a map.
 - If you're already closer to a map than any wayshrine or house of yours is (by at least ~150 m), you won't be teleported; Teleport tells you how far away the map is instead.
 
