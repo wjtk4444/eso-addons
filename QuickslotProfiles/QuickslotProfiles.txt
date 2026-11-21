@@ -9,7 +9,7 @@
 ## Author: Schrodi
 ## Version: 1.3.0
 ## AddOnVersion: 4
-## APIVersion: 101052
+## APIVersion: 101051 101052
 ## SavedVariables: QuickslotProfiles_SV
 ## DependsOn: LibAddonMenu-2.0
 ## OptionalDependsOn: CyroQuickslots
