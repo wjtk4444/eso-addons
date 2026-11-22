@@ -5,7 +5,7 @@
 		     the same content rectangle every built-in category panel uses (Battlegrounds, Dungeon
 		     Finder, etc.), inheriting it instead of ZO_RightPanelFootPrint is what makes our own
 		     bottom button bar line up with theirs. -->
-		<TopLevelControl name="EBS_Panel" inherits="ZO_GroupMenuKeyboard_ContentAnchors" hidden="true">
+		<TopLevelControl name="SBT_Panel" inherits="ZO_GroupMenuKeyboard_ContentAnchors" hidden="true">
 			<Controls>
 				<!-- Veterancy rank display, copied from the built-in Battlegrounds screen's own
 				     VeterancyRank control (esoui/ingame/lfg/keyboard/zo_activityfindertemplate_keyboard.xml),
@@ -42,7 +42,7 @@
 					<Anchor point="TOPLEFT" relativeTo="$(parent)VeterancyRank" relativePoint="BOTTOMLEFT" offsetX="20" offsetY="20"/>
 				</Label>
 
-				<!-- Row height is set from Lua once the queue list is known (one EBS_Row per queue).
+				<!-- Row height is set from Lua once the queue list is known (one SBT_Row per queue).
 				     No border/background here, plain rows on the panel, like Dungeon Finder's list. -->
 				<Control name="$(parent)List">
 					<Dimensions x="360" y="30"/>
@@ -70,7 +70,7 @@
 
 		<!-- One queue entry: checkbox + name, matching the game's own filter-list look
 		     (checkbox style, font, hover highlight) instead of a bare checkbox row. -->
-		<Control name="EBS_Row" virtual="true" mouseEnabled="true">
+		<Control name="SBT_Row" virtual="true" mouseEnabled="true">
 			<Dimensions x="360" y="30"/>
 			<OnInitialized>
 				self.highlight = self:GetNamedChild("Highlight")
@@ -99,28 +99,28 @@
 		</Control>
 
 		<!-- Bottom action bar, matching the built-in Join Queue / View Veterancy button pair. -->
-		<Button name="EBS_QueueButtonTemplate" inherits="ZO_DefaultButton" text="SI_LFG_JOIN_QUEUE" virtual="true">
+		<Button name="SBT_QueueButtonTemplate" inherits="ZO_DefaultButton" text="SI_LFG_JOIN_QUEUE" virtual="true">
 			<Dimensions x="200"/>
 			<OnClicked>
-				EvenBetterScoreboard.startSearch()
+				SchrodisBattlegroundTools.joinQueue()
 			</OnClicked>
 		</Button>
 
-		<Button name="EBS_ViewVeterancyButtonTemplate" inherits="ZO_DefaultButton" text="SI_LFG_VIEW_VETERANCY" virtual="true">
+		<Button name="SBT_ViewVeterancyButtonTemplate" inherits="ZO_DefaultButton" text="SI_LFG_VIEW_VETERANCY" virtual="true">
 			<Dimensions x="200"/>
 			<OnClicked>
-				EvenBetterScoreboard.viewVeterancy()
+				SchrodisBattlegroundTools.viewVeterancy()
 			</OnClicked>
 		</Button>
 
 		<!-- "Queue <name>" shortcut button: text, width and self.quickQueueKey are all set from Lua
-		     (ebs.rebuildQuickQueueButtons) since the queues on offer are queried live, not fixed.
+		     (sbt.rebuildQuickQueueButtons) since the queues on offer are queried live, not fixed.
 		     Clicking it selects every queue location that shares that key (its Solo and Group
-		     variants) and queues immediately (ebs.quickQueue). -->
-		<Button name="EBS_QuickQueueButtonTemplate" inherits="ZO_DefaultButton" virtual="true">
+		     variants) and queues immediately (sbt.quickQueue). -->
+		<Button name="SBT_QuickQueueButtonTemplate" inherits="ZO_DefaultButton" virtual="true">
 			<Dimensions x="200"/>
 			<OnClicked>
-				EvenBetterScoreboard.quickQueue(self.quickQueueKey)
+				SchrodisBattlegroundTools.quickQueue(self.quickQueueKey)
 			</OnClicked>
 		</Button>
 	</Controls>

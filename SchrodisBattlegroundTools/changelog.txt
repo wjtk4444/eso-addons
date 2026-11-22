@@ -1,3 +1,16 @@
+Version 2.0.0
+-------------
+- Renamed from Even Better Scoreboard to Schrodi's Battleground Tools. New folder, new saved
+  variables (settings and queue selections start fresh), /sbt instead of /ebs. Delete the old
+  EvenBetterScoreboard folder.
+- The scoreboard part is rewritten: no code from Better Scoreboard is left. Class icons come from
+  the game itself, so new classes get theirs automatically.
+- The separate multi-queue entry (when the Battlegrounds panel isn't replaced) is now called
+  "Battleground Queue".
+
+Even Better Scoreboard
+======================
+
 Version 1.2
 -----------
 - The multi-queue panel replaces the Group & Activity Finder's Battlegrounds panel by default:
