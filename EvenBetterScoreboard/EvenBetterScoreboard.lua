@@ -28,6 +28,7 @@ local defaultAccountSettings = {
 	saveVanillaBattlegroundMode = true,
 	nameDisplayMode = "default",
 	showQuickQueueButtons = true,
+	replaceBattlegroundsPanel = true,
 	competitiveColor = { r = 0xC5 / 255, g = 0x96 / 255, b = 0x15 / 255, a = 1 },
 	standardColor = { r = 0x00 / 255, g = 0xAA / 255, b = 0x00 / 255, a = 1 },
 	healColor = { r = 1, g = 0.85, b = 0, a = 1 },
@@ -811,11 +812,32 @@ function ebs.buildPanel()
 		ebs.refreshAutoRequeueLabel()
 	end)
 
+	-- Bonus rewards (ebs.refreshBonusInfo), under the requeue toggle.
+	local bonus = CreateControl("EBS_PanelBonus", EBS_Panel, CT_CONTROL)
+	bonus:SetAnchor(TOPLEFT, requeueToggle, BOTTOMLEFT, 10, 15)
+	bonus:SetDimensions(520, 80)
+	local function BonusLabel(name, font, anchorTo)
+		local label = CreateControl(name, bonus, CT_LABEL)
+		label:SetFont(font)
+		label:SetColor(ZO_NORMAL_TEXT:UnpackRGBA())
+		label:SetWidth(520)
+		if anchorTo then
+			label:SetAnchor(TOPLEFT, anchorTo, BOTTOMLEFT, 0, 4)
+		else
+			label:SetAnchor(TOPLEFT, bonus, TOPLEFT, 0, 0)
+		end
+		return label
+	end
+	local bonusHeader = BonusLabel("EBS_PanelBonusHeader", "ZoFontWinH4")
+	local bonusRewards = BonusLabel("EBS_PanelBonusRewards", "ZoFontGame", bonusHeader)
+	BonusLabel("EBS_PanelBonusSolo", "ZoFontGame", bonusRewards)
+
 	fragment:RegisterCallback("StateChange", function(oldState, newState)
 		if newState == SCENE_SHOWING then
 			EBS_PanelVeterancyRank:SetHidden(not IsVeterancySeasonActive())
 			ebs.veterancyRankObject:Refresh()
 			ebs.refreshVisibleState()
+			ebs.refreshBonusInfo()
 		end
 	end)
 
@@ -833,16 +855,8 @@ function ebs.buildPanel()
 	ZO_ACTIVITY_FINDER_ROOT_MANAGER:RegisterCallback("OnSelectionsChanged", ebs.refreshQueueButtonState)
 	ZO_ACTIVITY_FINDER_ROOT_MANAGER:RegisterCallback("OnActivityFinderStatusUpdate", ebs.refreshQueueButtonState)
 
-	GROUP_MENU_KEYBOARD:AddCategory({
-		name = "EBS BG Queue",
-		categoryFragment = fragment,
-		normalIcon = "esoui/art/journal/journal_tabicon_achievements_up.dds",
-		pressedIcon = "esoui/art/journal/journal_tabicon_achievements_down.dds",
-		mouseoverIcon = "esoui/art/journal/journal_tabicon_achievements_over.dds",
-		-- Right after Battlegrounds, ahead of Tales of Tribute -- see
-		-- esoui/ingame/lfg/zo_activityfinderroot_manager.lua for the full priority table.
-		priority = ZO_ACTIVITY_FINDER_SORT_PRIORITY.BATTLEGROUNDS + 10,
-	})
+	ebs.panelFragment = fragment
+	ebs.attachPanel()
 end
 
 function ebs.startSearch()
@@ -857,6 +871,103 @@ end
 function ebs.viewVeterancy()
 	VETERANCY_KEYBOARD:SetIsFromActivityFinder(true)
 	SCENE_MANAGER:Push("VeterancySceneKeyboard")
+end
+
+-- Bonus rewards under the queue list. The daily bonus belongs to the activity (all
+-- battlegrounds of your level bracket share it), not to one queue, so it's one line for the
+-- whole list, worded like the built-in Battlegrounds screen's reward header. Below it, what the
+-- reward is (same data the built-in screen lists), and the solo bonus if any Group queue offers
+-- it (the built-in screen shows that for Group queues you join alone).
+local EBS_BONUS_AVAILABLE_COLOR = "C59615"
+local EBS_BONUS_NONE_COLOR = "8F8F8F"
+local EBS_SOLO_BONUS_ICON = "EsoUI/Art/LFG/LFG_solo_bonus.dds"
+
+function ebs.refreshBonusInfo()
+	if not EBS_PanelBonus then return end
+
+	local rewardLocation, eligible, soloBonus = nil, false, false
+	for _, location in ipairs(ebs.queues) do
+		if location:HasRewardData() then
+			if location:IsEligibleForDailyReward() then
+				if not eligible then rewardLocation = location end
+				eligible = true
+			end
+			rewardLocation = rewardLocation or location
+		end
+		if location:HasSoloBonus() then soloBonus = true end
+	end
+
+	if not rewardLocation then
+		EBS_PanelBonusHeader:SetText("")
+		EBS_PanelBonusRewards:SetText("")
+	elseif eligible then
+		EBS_PanelBonusHeader:SetText(string.format("|c%s%s|r", EBS_BONUS_AVAILABLE_COLOR, "Daily bonus reward: available"))
+	else
+		EBS_PanelBonusHeader:SetText(string.format("|c%s%s|r", EBS_BONUS_NONE_COLOR, "Daily bonus reward: already earned today"))
+	end
+
+	if rewardLocation then
+		local rewardUIDataId, xpReward = rewardLocation:GetRewardData()
+		local parts = {}
+		if rewardUIDataId and rewardUIDataId ~= 0 then
+			for nodeIndex = 1, GetNumLFGActivityRewardUINodes(rewardUIDataId) do
+				local displayName, icon = GetLFGActivityRewardUINodeInfo(rewardUIDataId, nodeIndex)
+				local text = zo_strformat(SI_ACTIVITY_FINDER_REWARD_NAME_FORMAT, displayName)
+				if icon and icon ~= "" then text = zo_iconFormat(icon, 24, 24) .. " " .. text end
+				parts[#parts + 1] = text
+			end
+		end
+		if xpReward and xpReward > 0 then
+			parts[#parts + 1] = zo_strformat(SI_ACTIVITY_FINDER_REWARD_XP_FORMAT, ZO_CommaDelimitNumber(xpReward))
+		end
+		local prefix = eligible and "Bonus reward: " or "Standard reward: "
+		EBS_PanelBonusRewards:SetText(#parts > 0 and (prefix .. table.concat(parts, ", ")) or "")
+	end
+
+	if soloBonus then
+		EBS_PanelBonusSolo:SetText(zo_iconFormat(EBS_SOLO_BONUS_ICON, 24, 24) .. " "
+			.. zo_strformat("<<1>>: <<2>>", GetString(SI_ACTIVITY_FINDER_BATTLEGROUND_SOLO_BONUS_HEADER), GetString(SI_ACTIVITY_FINDER_BATTLEGROUND_SOLO_BONUS)))
+	else
+		EBS_PanelBonusSolo:SetText("")
+	end
+end
+
+-- Puts the panel into the Group & Activity Finder: either in place of the built-in
+-- Battlegrounds panel (its entry keeps the game's name, icon, position and level lock; only
+-- what it opens changes), or as its own "EBS BG Queue" entry. Needs both our panel and the
+-- built-in Battlegrounds finder, which only exists once the in-game UI is up, so this is tried
+-- from both places and only runs once. Switching between the two takes a /reloadui: the menu
+-- builds its entries once.
+function ebs.attachPanel()
+	if ebs.panelAttached or not ebs.panelFragment then return end
+
+	if ebs.accountVars.replaceBattlegroundsPanel then
+		local finder = BATTLEGROUND_FINDER_KEYBOARD
+		if not (finder and finder.categoryData and finder.fragment) then return end -- not up yet
+		local battlegroundsFragment = finder.fragment
+		finder.categoryData.categoryFragment = ebs.panelFragment
+		-- Anything else in the game that opens the Battlegrounds panel by its fragment lands on
+		-- the entry that now shows ours.
+		local menu = GROUP_MENU_KEYBOARD
+		local getNode = menu.GetTreeNodeByCategoryFragment
+		menu.GetTreeNodeByCategoryFragment = function(self, fragment)
+			if fragment == battlegroundsFragment then fragment = ebs.panelFragment end
+			return getNode(self, fragment)
+		end
+		menu:RebuildCategories()
+	else
+		GROUP_MENU_KEYBOARD:AddCategory({
+			name = "EBS BG Queue",
+			categoryFragment = ebs.panelFragment,
+			normalIcon = "esoui/art/journal/journal_tabicon_achievements_up.dds",
+			pressedIcon = "esoui/art/journal/journal_tabicon_achievements_down.dds",
+			mouseoverIcon = "esoui/art/journal/journal_tabicon_achievements_over.dds",
+			-- Right after Battlegrounds, ahead of Tales of Tribute -- see
+			-- esoui/ingame/lfg/zo_activityfinderroot_manager.lua for the full priority table.
+			priority = ZO_ACTIVITY_FINDER_SORT_PRIORITY.BATTLEGROUNDS + 10,
+		})
+	end
+	ebs.panelAttached = true
 end
 
 -------------------------------------------------------------------------------------------------
@@ -1066,14 +1177,14 @@ SecurePostHook(_G, "DeclineLFGReadyCheckNotification", ebs_onDeclinedReadyCheck)
 -- (or the defaults above).
 
 function ebs.registerSettingsPanel()
-	local LAM = LibStub("LibAddonMenu-2.0", true)
+	local LAM = LibAddonMenu2 or (LibStub and LibStub("LibAddonMenu-2.0", true))
 	if not LAM then return end
 
 	local panelData = {
 		type = "panel",
 		name = "EvenBetterScoreboard",
 		displayName = "Even Better Scoreboard",
-		version = "1.1",
+		version = "1.2",
 		registerForRefresh = true,
 		registerForDefaults = true,
 	}
@@ -1098,8 +1209,18 @@ function ebs.registerSettingsPanel()
 		},
 		{
 			type = "checkbox",
+			name = "Replace the Battlegrounds panel",
+			tooltip = "The Group & Activity Finder's Battlegrounds entry opens this addon's multi-queue panel instead of the game's own (same name and icon). Off: the game's panel stays, and the multi-queue panel is a separate \"EBS BG Queue\" entry.",
+			getFunc = function() return ebs.accountVars.replaceBattlegroundsPanel end,
+			setFunc = function(value) ebs.accountVars.replaceBattlegroundsPanel = value end,
+			default = true,
+			requiresReload = true,
+			width = "full",
+		},
+		{
+			type = "checkbox",
 			name = "Remember last battleground mode in vanilla finder",
-			tooltip = "On the built-in Battlegrounds queue screen (not the \"EBS BG Queue\" panel), remember the mode dropdown's last selection and restore it automatically across UI reloads and relogs.",
+			tooltip = "On the built-in Battlegrounds queue screen (when it isn't replaced by this addon's panel), remember the mode dropdown's last selection and restore it automatically across UI reloads and relogs.",
 			getFunc = function() return ebs.accountVars.saveVanillaBattlegroundMode end,
 			setFunc = function(value) ebs.accountVars.saveVanillaBattlegroundMode = value end,
 			default = true,
@@ -1108,7 +1229,7 @@ function ebs.registerSettingsPanel()
 		{
 			type = "checkbox",
 			name = "Show quick queue buttons",
-			tooltip = "Show the \"Queue ...\" shortcut buttons on the EBS BG Queue panel -- one per battleground queue on offer, each queueing its Solo and Group variants together.",
+			tooltip = "Show the \"Queue ...\" shortcut buttons on the multi-queue panel -- one per battleground queue on offer, each queueing its Solo and Group variants together.",
 			getFunc = function() return ebs.accountVars.showQuickQueueButtons end,
 			setFunc = function(value)
 				ebs.accountVars.showQuickQueueButtons = value
@@ -1179,7 +1300,7 @@ function ebs.registerSettingsPanel()
 		},
 	}
 
-	LAM:RegisterAddonPanel(ebs.name .. "Options", panelData)
+	ebs.settingsPanel = LAM:RegisterAddonPanel(ebs.name .. "Options", panelData)
 	LAM:RegisterOptionControls(ebs.name .. "Options", optionsTable)
 end
 
@@ -1207,6 +1328,7 @@ end
 function ebs.refreshQueues()
 	ebs.buildQueues()
 	ebs.rebuildRows()
+	if EBS_Panel and not EBS_Panel:IsHidden() then ebs.refreshBonusInfo() end
 end
 
 function ebs.OnAddOnLoaded(event, addonName)
@@ -1221,6 +1343,14 @@ function ebs:Initialize()
 	ebs.vars = ZO_SavedVars:NewCharacterIdSettings("EBSVars", 1, nil, defaultSettings)
 	ebs.accountVars = ZO_SavedVars:NewAccountWide("EBSAccountVars", 1, nil, defaultAccountSettings)
 	ebs.registerSettingsPanel()
+	SLASH_COMMANDS["/ebs"] = function()
+		local LAM = LibAddonMenu2 or (LibStub and LibStub("LibAddonMenu-2.0", true))
+		if LAM and ebs.settingsPanel then
+			LAM:OpenToPanel(ebs.settingsPanel)
+		else
+			CHAT_ROUTER:AddSystemMessage("Even Better Scoreboard: the settings need LibAddonMenu-2.0.")
+		end
+	end
 	ZO_ACTIVITY_FINDER_ROOT_MANAGER:RegisterCallback("OnUpdateLocationData", ebs.updateLocations)
 
 	-- BATTLEGROUND_FINDER_KEYBOARD doesn't exist yet at load time (same reason
@@ -1229,6 +1359,7 @@ function ebs:Initialize()
 	EVENT_MANAGER:RegisterForEvent(ebs.name, EVENT_PLAYER_ACTIVATED, function()
 		ebs_restoreBattlegroundMode()
 		ebs_hookBattlegroundModeSelection()
+		ebs.attachPanel()
 		EVENT_MANAGER:UnregisterForEvent(ebs.name, EVENT_PLAYER_ACTIVATED)
 	end)
 end

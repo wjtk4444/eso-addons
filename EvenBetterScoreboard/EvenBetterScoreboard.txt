@@ -1,7 +1,7 @@
 ## Title: Even Better Scoreboard
 ## APIVersion: 101051
-## Version: 1.1
-## AddOnVersion: 2
+## Version: 1.2
+## AddOnVersion: 3
 ## Description: Battlegrounds scoreboard with damage, healing and class icons that fits 9v9 and 6v6v6 without scrolling, plus a multi-queue tab, one-click queue buttons and a requeue cooldown timer in the Group & Activity Finder. Based on Better Scoreboard by M0R.
 ## Author: Schrodi
 ## SavedVariables: EBSVars EBSAccountVars

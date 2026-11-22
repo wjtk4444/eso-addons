@@ -21,28 +21,30 @@ It started as a patch on top of Better Scoreboard (*BetterBetterScoreboard*). Ov
 
 ![EBS BG Queue tab](../_screenshots/EvenBetterScoreboard/EvenBetterScoreboard-queue.png)
 
-An **EBS BG Queue** tab in the Group & Activity Finder, right after Battlegrounds:
+A multi-queue panel in the Group & Activity Finder. By default it **replaces the Battlegrounds panel** (the entry keeps its name and icon); with that setting off it's a separate **EBS BG Queue** entry right after Battlegrounds.
 
 - **Queue several battleground types at once** with checkboxes. Your selection is remembered between sessions. The list updates by itself when a queue unlocks or a weekly event starts or ends.
 - **Quick buttons** such as *Queue 4v4 Competitive* or *Queue Big Team Battles*: one click selects the solo and group versions of that queue and joins.
 - Your **battleground rank** and XP bar, as on the Battlegrounds screen.
+- **Bonus rewards** under the list: whether today's daily bonus reward is still available (it's shared by all battlegrounds, not tied to one queue), what the reward is, and the solo bonus for joining a Group queue alone.
 - **Requeue automatically** *(off by default, resets on every reload)*. If you decline a ready check, you are queued again for the same battlegrounds once the cooldown is over. A ready check that times out, or leaving the queue yourself, never requeues you.
 - **Cooldown timer**. After declining or missing a ready check, the Finder's "Status: Queued" text shows how long until you're allowed to queue again, and the Join Queue button stays disabled until then.
 
 The buttons and checkboxes are disabled whenever the game wouldn't let you queue anyway: already queued, mid ready check, using the Group Finder, or on cooldown.
 
-If you prefer the game's own Battlegrounds screen, it now **remembers the last selected mode** across reloads (account-wide).
+If you prefer the game's own Battlegrounds screen (turn off *Replace the Battlegrounds panel*), it **remembers the last selected mode** across reloads (account-wide).
 
 ## Settings
 
-*Settings → Addons → Even Better Scoreboard* (needs LibAddonMenu-2.0; without it everything runs with the defaults)
+*Settings → Addons → Even Better Scoreboard* or `/ebs` (needs LibAddonMenu-2.0; without it everything runs with the defaults)
 
 - **Player name display:** game setting, @account, character name, or both, in either order.
+- **Replace the Battlegrounds panel** (on). Takes effect after a reload.
 - **Remember last battleground mode in vanilla finder** (on).
 - **Show quick queue buttons** (on).
 - Colors for Competitive and Standard queues and for damage and healing numbers.
 
-All settings are account-wide and apply immediately.
+All settings are account-wide and apply immediately, except replacing the Battlegrounds panel.
 
 ## Changelog
 

@@ -1,3 +1,13 @@
+Version 1.2
+-----------
+- The multi-queue panel replaces the Group & Activity Finder's Battlegrounds panel by default:
+  the Battlegrounds entry keeps its name and icon and opens this addon's panel. The setting
+  "Replace the Battlegrounds panel" (takes effect after a reload) brings back the game's own
+  panel, with the multi-queue panel as a separate "EBS BG Queue" entry as before.
+- Bonus rewards under the queue list: whether today's daily bonus reward is still available, what
+  the reward is, and the solo bonus for joining a Group queue alone.
+- /ebs opens the settings.
+
 Version 1.1
 -----------
 - Scoreboard: the base game's own Damage, Heals and game-type score (flag) columns added in
