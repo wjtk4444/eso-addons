@@ -1,6 +1,6 @@
 ## Title: Improved Death Recap: Vanilla UI
 ## Description: Shows Improved Death Recap's data (every hit, heal and shield, with sources and timing) in the game's own death recap window instead of a separate one. Requires Improved Death Recap.
-## APIVersion: 101051
+## APIVersion: 101051 101052
 ## Author: Schrodi
 ## Version: 3.1.0
 ## AddOnVersion: 310
