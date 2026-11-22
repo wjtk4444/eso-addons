@@ -1,16 +1,21 @@
 -- Quickslot Profiles: profiles of the quickslot wheel, loaded by zone type.
 --
--- A profile is a name, the zone types it loads in, and the 8 wheel slots. Each zone type
--- belongs to at most one profile; "Everything else" catches the zone types no profile has.
--- The profile that is on the wheel right now is the "active" one. A loading screen puts the
--- zone's profile on the wheel. Profiles only change when saved in the editor (Editor.lua).
+-- A profile is a name and the 8 wheel slots. Zone types are assigned to profiles: each zone
+-- type belongs to at most one profile, and "Everything else" catches the zone types no
+-- profile has. The profile that is on the wheel right now is the "active" one. A loading
+-- screen puts the zone's profile on the wheel. Profiles only change when saved in the
+-- editor (Editor.lua).
+--
+-- Zone type assignments are kept per Armory build. Until the character restores or saves
+-- a build at the Armory there is one set, "Default". The first restore or save turns it
+-- into that build's set, and every other build starts with a copy of it.
 
 QuickslotProfiles = QuickslotProfiles or {}
 local QSP = QuickslotProfiles
 
 QSP.NAME = "QuickslotProfiles"
 QSP.TITLE = "Quickslot Profiles"
-QSP.VERSION = "1.3.0"
+QSP.VERSION = "1.4.0"
 
 local CATEGORY = HOTBAR_CATEGORY_QUICKSLOT_WHEEL
 local NUM_SLOTS = ACTION_BAR_UTILITY_BAR_SIZE or 8
@@ -20,12 +25,16 @@ QSP.CATEGORY = CATEGORY
 local LOAD_RETRY_MS = 2000
 local RETRY_KEY = QSP.NAME .. "LoadRetry"
 
--- 1: first version. 2: Battlegrounds profile, every profile has slots.
-local SCHEMA = 2
+-- 1: first version. 2: Battlegrounds profile, every profile has slots. 3: zone types are
+-- assigned per Armory build (cs.assign) instead of on the profiles.
+local SCHEMA = 3
+local DEFAULT_LAYER = "default"
 
 local charDefaults =
 {
-    profiles = {}, -- id -> { name, zones = { [zoneKey] = true }, slots = { [slot] = entry or false } }
+    profiles = {}, -- id -> { name, slots = { [slot] = entry or false } }
+    assign = {}, -- "default" or "b<build index>" -> { [zoneKey] = profile id }
+    armory = { unlocked = false, current = nil }, -- current: index of the build in use
     order = {}, -- profile ids in display order
     nextId = 1,
     active = nil, -- id of the profile on the wheel
@@ -69,9 +78,15 @@ function QSP.SetActive(id) cs.active = id end
 function QSP.IsChatOnLoadOn() return as.chatOnLoad end
 function QSP.SetChatOnLoad(on) as.chatOnLoad = on end
 function QSP.IsClearEmptyOn() return as.clearEmpty end
-function QSP.SetClearEmpty(on) as.clearEmpty = on end
+function QSP.SetClearEmpty(on)
+    as.clearEmpty = on
+    if QSP.Editor then QSP.Editor.RefreshSettingsInfo() end
+end
 function QSP.IsSaveOnLeaveOn() return as.saveOnLeave end
-function QSP.SetSaveOnLeave(on) as.saveOnLeave = on end
+function QSP.SetSaveOnLeave(on)
+    as.saveOnLeave = on
+    if QSP.Editor then QSP.Editor.RefreshSettingsInfo() end
+end
 
 function QSP.ProfileName(id)
     local profile = QSP.GetProfile(id)
@@ -121,7 +136,7 @@ function QSP.CreateProfile(name, slots)
     end
     local id = "p" .. cs.nextId
     cs.nextId = cs.nextId + 1
-    cs.profiles[id] = { name = name, zones = {}, slots = slots or QSP.CaptureWheel() }
+    cs.profiles[id] = { name = name, slots = slots or QSP.CaptureWheel() }
     table.insert(cs.order, id)
     return id
 end
@@ -144,41 +159,115 @@ function QSP.DeleteProfile(id)
             break
         end
     end
+    for _, assign in pairs(cs.assign) do
+        for zoneKey, owner in pairs(assign) do
+            if owner == id then assign[zoneKey] = nil end
+        end
+    end
     if cs.active == id then cs.active = nil end
 end
 
--- The profile a zone type loads, or nil if the wheel stays as it is there.
-function QSP.GetProfileForZoneType(zoneKey)
-    local fallback
-    for _, id in ipairs(cs.order) do
-        local zones = cs.profiles[id].zones
-        if zones[zoneKey] then return id end
-        if zones.other then fallback = id end
+--------------------------------------------------------------------------------
+-- Armory builds and zone type assignments
+--------------------------------------------------------------------------------
+
+local function BuildLayer(buildIndex) return "b" .. buildIndex end
+QSP.DEFAULT_LAYER = DEFAULT_LAYER
+
+function QSP.LayerBuildIndex(layer) return layer and tonumber(layer:match("^b(%d+)$")) end
+function QSP.IsArmoryUnlocked() return cs.armory.unlocked end
+function QSP.GetCurrentBuild() return cs.armory.unlocked and cs.armory.current or nil end
+
+-- The set of zone type assignments in use: the current build's, or "default".
+function QSP.GetCurrentLayer()
+    local build = QSP.GetCurrentBuild()
+    return build and BuildLayer(build) or DEFAULT_LAYER
+end
+
+function QSP.GetNumBuilds() return GetNumUnlockedArmoryBuilds and GetNumUnlockedArmoryBuilds() or 0 end
+
+function QSP.GetBuildLayers()
+    local layers = {}
+    for i = 1, QSP.GetNumBuilds() do layers[i] = BuildLayer(i) end
+    return layers
+end
+
+local function GetBuildData(buildIndex)
+    return ZO_ARMORY_MANAGER and ZO_ARMORY_MANAGER.GetBuildDataByIndex and ZO_ARMORY_MANAGER:GetBuildDataByIndex(buildIndex)
+end
+
+function QSP.GetBuildName(buildIndex)
+    local data = GetBuildData(buildIndex)
+    if data then return data:GetName() end
+    local name = GetArmoryBuildName and GetArmoryBuildName(buildIndex) or ""
+    return name ~= "" and name or ("Build " .. buildIndex)
+end
+
+function QSP.GetBuildIcon(buildIndex)
+    local data = GetBuildData(buildIndex)
+    return data and data:GetIcon() or nil
+end
+
+function QSP.LayerName(layer)
+    local build = QSP.LayerBuildIndex(layer)
+    return build and QSP.GetBuildName(build) or "Default"
+end
+
+-- A build seen for the first time starts with a copy of another set: the given one, the
+-- current one, or whatever set exists.
+local function GetAssign(layer, copyFrom)
+    layer = layer or QSP.GetCurrentLayer()
+    local assign = cs.assign[layer]
+    if not assign then
+        local source = cs.assign[copyFrom or QSP.GetCurrentLayer()] or cs.assign[DEFAULT_LAYER]
+        if not source then
+            local lowest
+            for key, value in pairs(cs.assign) do
+                local build = QSP.LayerBuildIndex(key)
+                if build and (not lowest or build < lowest) then lowest, source = build, value end
+            end
+        end
+        assign = source and ZO_ShallowTableCopy(source) or {}
+        cs.assign[layer] = assign
     end
-    return fallback
+    return assign
 end
 
 -- Which profile has a zone type assigned directly (not through "Everything else").
-function QSP.GetZoneTypeOwner(zoneKey)
-    for _, id in ipairs(cs.order) do
-        if cs.profiles[id].zones[zoneKey] then return id end
+function QSP.GetZoneTypeOwner(zoneKey, layer)
+    local id = GetAssign(layer)[zoneKey]
+    return cs.profiles[id] and id or nil
+end
+
+-- The profile a zone type loads, or nil if the wheel stays as it is there.
+function QSP.GetProfileForZoneType(zoneKey, layer)
+    return QSP.GetZoneTypeOwner(zoneKey, layer) or QSP.GetZoneTypeOwner("other", layer)
+end
+
+-- The zone types a profile has: { [zoneKey] = true }.
+function QSP.GetProfileZones(id, layer)
+    local zones = {}
+    for zoneKey, owner in pairs(GetAssign(layer)) do
+        if owner == id then zones[zoneKey] = true end
     end
+    return zones
 end
 
 -- Sets the zone types of a profile. A zone type belongs to one profile only, so it is taken
 -- away from any other profile; returns the list of { zone, from } that moved.
-function QSP.SetProfileZones(id, zoneKeys)
+function QSP.SetProfileZones(id, zoneKeys, layer)
+    local assign = GetAssign(layer)
     local moved = {}
-    local zones = {}
-    for _, key in ipairs(zoneKeys) do
-        zones[key] = true
-        local owner = QSP.GetZoneTypeOwner(key)
-        if owner and owner ~= id then
-            cs.profiles[owner].zones[key] = nil
-            moved[#moved + 1] = { zone = key, from = owner }
-        end
+    for zoneKey, owner in pairs(assign) do
+        if owner == id then assign[zoneKey] = nil end
     end
-    cs.profiles[id].zones = zones
+    for _, zoneKey in ipairs(zoneKeys) do
+        local owner = assign[zoneKey]
+        if owner and owner ~= id and cs.profiles[owner] then
+            moved[#moved + 1] = { zone = zoneKey, from = owner }
+        end
+        assign[zoneKey] = id
+    end
     return moved
 end
 
@@ -221,8 +310,24 @@ function QSP.CaptureWheel()
     return slots
 end
 
+-- What tells stacks of one item id apart: quality and level, and the last field of the link,
+-- which holds the effects of crafted potions and poisons (they all share a few item ids and
+-- often the name, e.g. "Essence of Health" with different effects). Fields that don't
+-- change what the item does (crafted, bound, stolen...) are left out.
+local function ItemKey(link, itemId)
+    local data = link and link:match("|H%d:item:([^|]+)|h")
+    if not data then return tostring(itemId) end
+    local fields = {}
+    for field in data:gmatch("[^:]+") do fields[#fields + 1] = field end
+    return table.concat({ fields[1] or tostring(itemId), fields[2] or "", fields[3] or "", fields[#fields] or "" }, ":")
+end
+QSP.ItemKey = ItemKey
+
 local function Signature(entry)
     if not entry then return "" end
+    if entry.type == ACTION_TYPE_ITEM then
+        return entry.type .. ":" .. ItemKey(entry.link, entry.id)
+    end
     return entry.type .. ":" .. tostring(entry.id)
 end
 QSP.Signature = Signature
@@ -243,20 +348,19 @@ function QSP.DescribeEntry(entry, withIcon)
     return text
 end
 
--- Prefers a stack with exactly the saved link (crafted potions with different effects share
--- one item id), then any stack with the item id. Reads the bag directly: the shared
--- inventory cache isn't always up to date right after a loading screen.
+-- A stack of exactly the saved item (same item id, quality, level and potion effects). Only
+-- if the profile has no link to compare (very old entries) any stack with the item id will
+-- do: a crafted potion with other effects isn't the same potion. Reads the bag directly: the
+-- shared inventory cache isn't always up to date right after a loading screen.
 local function FindInBackpack(entry, slot)
-    local byId
+    local key = entry.link and entry.link ~= "" and ItemKey(entry.link, entry.id)
     for slotIndex = 0, GetBagSize(BAG_BACKPACK) - 1 do
         if GetItemId(BAG_BACKPACK, slotIndex) == entry.id and IsValidItemForSlot(BAG_BACKPACK, slotIndex, slot, CATEGORY) then
-            if entry.link and GetItemLink(BAG_BACKPACK, slotIndex) == entry.link then
+            if not key or ItemKey(GetItemLink(BAG_BACKPACK, slotIndex), entry.id) == key then
                 return slotIndex
             end
-            byId = byId or slotIndex
         end
     end
-    return byId
 end
 
 -- Puts an entry into a wheel slot. Every change is a message to the server, so slots that
@@ -452,7 +556,7 @@ local function InitializeProfiles()
             slots = GetBaseSlots()
         end
         local id = QSP.CreateProfile(default.name, slots)
-        cs.profiles[id].zones[default.zone] = true
+        GetAssign(DEFAULT_LAYER)[default.zone] = id
         ids[default.key] = id
     end
 
@@ -469,16 +573,37 @@ end
 
 local function MigrateProfiles()
     if cs.schema < 2 then
+        -- Zone types were still kept on the profiles (profile.zones) here.
+        local base, hasBattlegrounds
+        for _, id in ipairs(cs.order) do
+            local zones = cs.profiles[id].zones or {}
+            if zones.other then base = cs.profiles[id] end
+            if zones.battleground then hasBattlegrounds = true end
+        end
+        local baseSlots = function() return CopySlots(base and base.slots or QSP.CaptureWheel()) end
         for _, id in ipairs(cs.order) do
             local profile = cs.profiles[id]
-            if not profile.slots then profile.slots = GetBaseSlots() end
+            if not profile.slots then profile.slots = baseSlots() end
         end
-        if not QSP.GetZoneTypeOwner("battleground") then
-            local id = QSP.CreateProfile("Battlegrounds", GetBaseSlots())
-            cs.profiles[id].zones.battleground = true
+        if not hasBattlegrounds then
+            local id = QSP.CreateProfile("Battlegrounds", baseSlots())
+            cs.profiles[id].zones = { battleground = true }
             QSP.Msg("Added a " .. QSP.Hi(QSP.ProfileName(id)) .. " profile (a copy of your Everything else profile). "
                 .. "Edit it in the inventory's Quickslots tab.")
         end
+    end
+    if cs.schema < 3 then
+        -- Zone types move from the profiles to the "Default" set. If two profiles had the
+        -- same zone type, the first one in the list had it, as before.
+        local assign = {}
+        for _, id in ipairs(cs.order) do
+            local profile = cs.profiles[id]
+            for zoneKey in pairs(profile.zones or {}) do
+                if assign[zoneKey] == nil then assign[zoneKey] = id end
+            end
+            profile.zones = nil
+        end
+        cs.assign = { [DEFAULT_LAYER] = assign }
     end
     cs.schema = SCHEMA
 end
@@ -498,6 +623,38 @@ local function OnPlayerActivated()
         end
     end
     QSP.ApplyZoneProfile(false, { retryMs = LOAD_RETRY_MS })
+end
+
+-- A build restored or saved at the Armory is the one in use from now on. The first time,
+-- "Default" becomes that build's set and the other builds start with a copy of it.
+local function OnArmoryBuildUsed(buildIndex)
+    if not buildIndex or buildIndex < 1 then return end
+    local layer = BuildLayer(buildIndex)
+    if not cs.armory.unlocked then
+        local default = cs.assign[DEFAULT_LAYER] or {}
+        cs.assign = { [layer] = default }
+        for i = 1, QSP.GetNumBuilds() do
+            if i ~= buildIndex then cs.assign[BuildLayer(i)] = ZO_ShallowTableCopy(default) end
+        end
+        cs.armory.unlocked = true
+        cs.armory.current = buildIndex
+        QSP.Msg("Zone types are now set per Armory build. " .. QSP.Hi(QSP.GetBuildName(buildIndex))
+            .. " keeps them as they were, the other builds start with a copy.")
+    else
+        GetAssign(layer, QSP.GetCurrentLayer())
+        cs.armory.current = buildIndex
+    end
+    if QSP.Editor then QSP.Editor.OnBuildChanged() end
+    QSP.RefreshSettings()
+    QSP.ApplyZoneProfile(false)
+end
+
+local function OnArmoryRestore(_, result, buildIndex)
+    if result == ARMORY_BUILD_RESTORE_RESULT_SUCCESS then OnArmoryBuildUsed(buildIndex) end
+end
+
+local function OnArmorySave(_, result, buildIndex)
+    if result == ARMORY_BUILD_SAVE_RESULT_SUCCESS then OnArmoryBuildUsed(buildIndex) end
 end
 
 local function OnCombatState(_, inCombat)
@@ -522,6 +679,10 @@ EVENT_MANAGER:RegisterForEvent(QSP.NAME, EVENT_ADD_ON_LOADED, function(_, addonN
 
     EVENT_MANAGER:RegisterForEvent(QSP.NAME, EVENT_PLAYER_ACTIVATED, OnPlayerActivated)
     EVENT_MANAGER:RegisterForEvent(QSP.NAME, EVENT_PLAYER_COMBAT_STATE, OnCombatState)
+    if EVENT_ARMORY_BUILD_RESTORE_RESPONSE then
+        EVENT_MANAGER:RegisterForEvent(QSP.NAME, EVENT_ARMORY_BUILD_RESTORE_RESPONSE, OnArmoryRestore)
+        EVENT_MANAGER:RegisterForEvent(QSP.NAME, EVENT_ARMORY_BUILD_SAVE_RESPONSE, OnArmorySave)
+    end
     SLASH_COMMANDS["/qsp"] = function() QSP.OpenSettings() end
 
     QSP.Editor.Initialize()

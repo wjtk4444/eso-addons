@@ -2,6 +2,7 @@
 -- tab. Picking a profile puts it on the wheel; you edit it with the game's own drag and
 -- drop and keep the changes with Save. Unsaved changes are dropped when you pick another
 -- profile or leave the tab, and the current zone's profile goes back on the wheel.
+-- Above the game's "Quickslot" title, the Armory build whose zone types are edited.
 
 local QSP = QuickslotProfiles
 local Editor = {}
@@ -9,9 +10,12 @@ QSP.Editor = Editor
 
 local editingId = nil -- profile shown on the wheel while the tab is open
 local pendingId = nil -- profile to show when the tab opens (Edit slots in the settings)
+local editLayer = nil -- set of zone type assignments edited ("default" or an Armory build)
 local container, comboBox, zonesComboBox, saveButton, discardButton = nil, nil, nil, nil, nil
+local buildComboBox, buildLockOverlay, settingsInfo = nil, nil, nil
 local entriesById = {}
 local zoneEntries = {} -- zone key -> combo box entry
+local buildEntries = {} -- layer -> combo box entry
 
 function Editor.IsEditing(id)
     return editingId ~= nil and editingId == id
@@ -36,11 +40,11 @@ end
 local function RefreshZones()
     if not zonesComboBox then return end
     zonesComboBox:ClearAllSelections()
-    local profile = QSP.GetProfile(editingId)
-    if profile then
+    if QSP.GetProfile(editingId) then
+        local zones = QSP.GetProfileZones(editingId, editLayer)
         local IGNORE_CALLBACK = true
         for _, zoneType in ipairs(QSP.ZONE_TYPES) do
-            if profile.zones[zoneType.key] then zonesComboBox:SelectItem(zoneEntries[zoneType.key], IGNORE_CALLBACK) end
+            if zones[zoneType.key] then zonesComboBox:SelectItem(zoneEntries[zoneType.key], IGNORE_CALLBACK) end
         end
     end
     zonesComboBox:RefreshSelectedItemText()
@@ -55,15 +59,15 @@ local function SaveZones()
     for _, zoneType in ipairs(QSP.ZONE_TYPES) do
         if zonesComboBox:IsItemSelected(zoneEntries[zoneType.key]) then keys[#keys + 1] = zoneType.key end
     end
-    local profile = QSP.GetProfile(editingId)
+    local zones = QSP.GetProfileZones(editingId, editLayer)
     local changed = false
     for _, zoneType in ipairs(QSP.ZONE_TYPES) do
         local selected = false
         for _, key in ipairs(keys) do if key == zoneType.key then selected = true end end
-        if (profile.zones[zoneType.key] == true) ~= selected then changed = true end
+        if (zones[zoneType.key] == true) ~= selected then changed = true end
     end
     if not changed then return end
-    for _, move in ipairs(QSP.SetProfileZones(editingId, keys)) do
+    for _, move in ipairs(QSP.SetProfileZones(editingId, keys, editLayer)) do
         QSP.Msg(QSP.ZONE_TYPE_NAMES[move.zone] .. " moved from " .. QSP.Hi(QSP.ProfileName(move.from))
             .. " to " .. QSP.Hi(QSP.ProfileName(editingId)) .. ".")
     end
@@ -121,9 +125,10 @@ RefreshEntries = function()
     ZO_ClearTable(entriesById)
     for _, id in ipairs(QSP.GetOrder()) do
         local profile = QSP.GetProfile(id)
+        local profileZones = QSP.GetProfileZones(id, editLayer)
         local zones = {}
         for _, zoneType in ipairs(QSP.ZONE_TYPES) do
-            if profile.zones[zoneType.key] then zones[#zones + 1] = zoneType.name end
+            if profileZones[zoneType.key] then zones[#zones + 1] = zoneType.name end
         end
         local entry = comboBox:CreateItemEntry(profile.name, function() ShowProfile(id) end)
         local tooltip = #zones > 0 and ("Loads in: " .. table.concat(zones, ", ")) or "Doesn't load anywhere"
@@ -137,6 +142,70 @@ RefreshEntries = function()
     end
     comboBox:UpdateItems()
     if editingId then SelectInDropdown(editingId) end
+end
+
+local function OnOff(on) return QSP.Hi(on and "on" or "off") end
+
+function Editor.RefreshSettingsInfo()
+    if not settingsInfo then return end
+    settingsInfo:SetText("Autosave: " .. OnOff(QSP.IsSaveOnLeaveOn()) .. "      Clear empty slots: " .. OnOff(QSP.IsClearEmptyOn()))
+end
+
+local function ShowTooltip(control, text)
+    InitializeTooltip(InformationTooltip, control, BOTTOM, 0, -5, TOP)
+    SetTooltipText(InformationTooltip, text)
+end
+
+local BUILD_TOOLTIP = "Zone types are set per Armory build. Pick a build to set the zone types its profiles load in; "
+    .. "restoring a build at the Armory makes it the one in use."
+local LOCKED_TOOLTIP = "Restore or save a build at the Armory to set zone types per build. "
+    .. "The first build you restore or save keeps the current zone types, the other builds start with a copy."
+
+local function SelectLayer(layer)
+    if layer == editLayer then return end
+    editLayer = layer
+    RefreshEntries()
+    RefreshZones()
+end
+
+local function RefreshBuilds()
+    if not buildComboBox then return end
+    buildComboBox:ClearItems()
+    ZO_ClearTable(buildEntries)
+    if not QSP.IsArmoryUnlocked() then
+        local entry = buildComboBox:CreateItemEntry("Default")
+        buildEntries[QSP.DEFAULT_LAYER] = entry
+        buildComboBox:AddItem(entry, ZO_COMBOBOX_SUPPRESS_UPDATE)
+        buildComboBox:UpdateItems()
+        buildComboBox:SelectItem(entry, true)
+        buildComboBox:SetEnabled(false)
+        buildLockOverlay:SetHidden(false)
+        return
+    end
+    buildLockOverlay:SetHidden(true)
+    buildComboBox:SetEnabled(true)
+    local current = QSP.GetCurrentLayer()
+    for _, layer in ipairs(QSP.GetBuildLayers()) do
+        local buildIndex = QSP.LayerBuildIndex(layer)
+        local icon = QSP.GetBuildIcon(buildIndex)
+        local text = (icon and (zo_iconFormat(icon, 24, 24) .. " ") or "") .. QSP.GetBuildName(buildIndex)
+        if layer == current then text = text .. " |c888888(current)|r" end
+        local entry = buildComboBox:CreateItemEntry(text, function() SelectLayer(layer) end)
+        buildEntries[layer] = entry
+        buildComboBox:AddItem(entry, ZO_COMBOBOX_SUPPRESS_UPDATE)
+    end
+    buildComboBox:UpdateItems()
+    local entry = buildEntries[editLayer] or buildEntries[current]
+    if entry then buildComboBox:SelectItem(entry, true) end
+end
+
+-- A build was restored or saved at the Armory while the tab may be open.
+function Editor.OnBuildChanged()
+    editLayer = QSP.GetCurrentLayer()
+    if not container then return end
+    RefreshBuilds()
+    RefreshEntries()
+    RefreshZones()
 end
 
 local function CreateButton(name, text, onClicked)
@@ -173,6 +242,28 @@ local function CreateEditorControls()
     container:SetAnchor(TOP, wheel, BOTTOM, 0, 110)
     container:SetDrawLayer(DL_CONTROLS)
     container:SetDrawLevel(10)
+
+    -- Armory build, above the game's "Quickslot" title.
+    local builds = CreateControlFromVirtual("QuickslotProfilesEditorBuild", container, "ZO_ComboBox")
+    builds:SetDimensions(240, 31)
+    builds:SetAnchor(BOTTOM, container, TOP, 0, -36)
+    local buildLabel = CreateControl("QuickslotProfilesEditorBuildLabel", container, CT_LABEL)
+    buildLabel:SetFont("ZoFontWinH4")
+    buildLabel:SetColor(ZO_NORMAL_TEXT:UnpackRGBA())
+    buildLabel:SetText("Armory build")
+    buildLabel:SetAnchor(RIGHT, builds, LEFT, -10, 0)
+    buildComboBox = ZO_ComboBox_ObjectFromContainer(builds)
+    buildComboBox:SetSortsItems(false)
+    buildComboBox:SetFont("ZoFontWinT1")
+    buildComboBox:SetSpacing(4)
+    ZO_PostHookHandler(builds, "OnMouseEnter", function(control) ShowTooltip(control, BUILD_TOOLTIP) end)
+    ZO_PostHookHandler(builds, "OnMouseExit", function() ClearTooltip(InformationTooltip) end)
+    -- The disabled dropdown takes no mouse input, so this catches the tooltip instead.
+    buildLockOverlay = CreateControl("QuickslotProfilesEditorBuildLock", container, CT_CONTROL)
+    buildLockOverlay:SetAnchorFill(builds)
+    buildLockOverlay:SetMouseEnabled(true)
+    buildLockOverlay:SetHandler("OnMouseEnter", function(control) ShowTooltip(control, LOCKED_TOOLTIP) end)
+    buildLockOverlay:SetHandler("OnMouseExit", function() ClearTooltip(InformationTooltip) end)
 
     -- Profile on the left, its zone types on the right.
     local dropdown = CreateControlFromVirtual("QuickslotProfilesEditorDropdown", container, "ZO_ComboBox")
@@ -211,6 +302,11 @@ local function CreateEditorControls()
     discardButton = CreateButton("QuickslotProfilesEditorDiscard", "Discard", OnDiscard)
     discardButton:SetAnchor(LEFT, saveButton, RIGHT, 8, 0)
 
+    settingsInfo = CreateControl("QuickslotProfilesEditorSettingsInfo", container, CT_LABEL)
+    settingsInfo:SetFont("ZoFontGameSmall")
+    settingsInfo:SetColor(ZO_NORMAL_TEXT:UnpackRGBA())
+    settingsInfo:SetAnchor(TOP, saveButton, BOTTOM, 0, 8)
+
     local note = CreateControl("QuickslotProfilesEditorNote", container, CT_LABEL)
     note:SetFont("ZoFontGameSmall")
     note:SetColor(ZO_DISABLED_TEXT:UnpackRGBA())
@@ -218,7 +314,7 @@ local function CreateEditorControls()
     note:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
     note:SetText("Every slot change is a message to the server. If the game says you're sending messages too quickly, "
         .. "wait about 10 seconds before switching profiles again.")
-    note:SetAnchor(TOP, saveButton, BOTTOM, 0, 10)
+    note:SetAnchor(TOP, settingsInfo, BOTTOM, 0, 6)
 
     container:RegisterForEvent(EVENT_HOTBAR_SLOT_UPDATED, function(_, _, hotbarCategory)
         if hotbarCategory == QSP.CATEGORY then Editor.OnWheelChanged() end
@@ -228,6 +324,9 @@ end
 
 local function OnShowing()
     if not container and not CreateEditorControls() then return end
+    editLayer = QSP.GetCurrentLayer()
+    RefreshBuilds()
+    Editor.RefreshSettingsInfo()
     RefreshEntries()
     local id = pendingId or QSP.GetActiveId()
     pendingId = nil

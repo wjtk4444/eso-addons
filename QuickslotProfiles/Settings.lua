@@ -63,6 +63,9 @@ local function ZoneOverviewText()
     end
     local active = QSP.GetActiveId()
     lines[#lines + 1] = ""
+    if QSP.IsArmoryUnlocked() then
+        lines[#lines + 1] = "Armory build in use: " .. QSP.Hi(QSP.LayerName(QSP.GetCurrentLayer()))
+    end
     lines[#lines + 1] = "On the wheel now: " .. QSP.Hi(active and QSP.ProfileName(active) or "none")
     return table.concat(lines, "\n")
 end
@@ -85,7 +88,9 @@ function QSP.InitializeSettings()
             text = "Each profile is a set of quickslots. A loading screen puts the profile of the zone type you're in on the wheel.\n"
                 .. "Profiles are edited in the inventory's Quickslots tab (or " .. QSP.Hi("Edit slots") .. " below): under the wheel "
                 .. "you pick a profile and the zone types it loads in, and keep changes with " .. QSP.Hi("Save") .. ". "
-                .. "Opening the tab also loads the profile again, e.g. after restocking.",
+                .. "Opening the tab also loads the profile again, e.g. after restocking.\n"
+                .. "Zone types can be set per Armory build: restore or save a build at the Armory once, then pick the build "
+                .. "above the wheel in the Quickslots tab.",
         },
         {
             type = "dropdown",
@@ -156,6 +161,12 @@ function QSP.InitializeSettings()
         {
             type = "header",
             name = "Zone types",
+        },
+        {
+            type = "description",
+            text = function()
+                return QSP.IsArmoryUnlocked() and "For the Armory build in use. Other builds: pick the build above the wheel in the Quickslots tab." or ""
+            end,
         },
         {
             type = "description",
