@@ -15,7 +15,7 @@ IDR records much more about your death than the game does: every hit, damage ove
 - **An icon for how the hit landed:** direct hit, damage over time, blocked, healed, absorbed by a shield, or oblivion (unblockable).
 - **Critical hits** are marked with `!` after the number.
 - **Remaining health** after each event, colored from green to red.
-- **Attacker names** with their AvA rank icon in their alliance color. In battlegrounds, names are colored by team. This only works for players you saw earlier (target reticle or battleground scoreboard), because the attacker may be gone by the time you die.
+- **Attacker names** as @names, with their AvA rank icon in their alliance color. In battlegrounds, names are colored by team. Improved Death Recap only records character names, so the @name comes from wherever the game knows it: players you had under the reticle, everyone in a battleground, your group, and the attackers in the game's own (short) death recap list, the killing blow included. Anyone else shows their character name.
 
 If IDR has nothing recorded for a death (for example right after `/reloadui`), the normal death recap is shown.
 
@@ -39,6 +39,3 @@ This is the same addon under a new name. Delete or disable the old `ImprovedImpr
 - Improved Death Recap
 - LibAddonMenu-2.0
 
-## Debugging
-
-`/iidr` prints the last window layout to chat.

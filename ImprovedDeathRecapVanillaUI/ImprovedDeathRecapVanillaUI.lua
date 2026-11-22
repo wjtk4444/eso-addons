@@ -84,6 +84,56 @@ end
 local nameCache = LRU.new(256)
 IDRCache = nameCache
 
+-- Puts what we know about a player into the name cache. The death recap always
+-- shows the @name, but IDR only records character names, so @names come from
+-- whatever saw the player: the reticle, the battleground scoreboard, the group,
+-- or the game's own killing attack list. Fields a source doesn't have (nil) keep
+-- the cached value - the scoreboard, for example, knows the team but not the
+-- alliance or the AvA rank.
+local function RememberPlayer(characterName, displayName, team, alliance, rank)
+	if not characterName or characterName == "" or not displayName or displayName == "" then return end
+	local cached = nameCache:get(characterName)
+	nameCache:set(characterName, {
+		name = displayName,
+		team = team or (cached and cached.team),
+		alliance = alliance or (cached and cached.alliance),
+		rank = rank or (cached and cached.rank),
+	})
+end
+
+-- Called when the death recap is built, so attackers that were never under the
+-- reticle still get their @name where the game knows it.
+local function RememberPlayersAtDeath()
+	-- The game's own (short) list of killing attacks has the @name of every
+	-- player in it, the killing blow included.
+	for i = 1, GetNumKillingAttacks() do
+		if DoesKillingAttackHaveAttacker(i) then
+			local rawName, _, _, avaRank, isPlayer, _, alliance, _, displayName = GetKillingAttackerInfo(i)
+			if isPlayer then
+				RememberPlayer(rawName, displayName, GetKillingAttackerBattlegroundTeam(i), alliance, avaRank)
+			end
+		end
+	end
+
+	-- Group members.
+	for i = 1, GetGroupSize() do
+		local unitTag = GetGroupUnitTagByIndex(i)
+		if unitTag and DoesUnitExist(unitTag) then
+			RememberPlayer(GetUnitName(unitTag), GetUnitDisplayName(unitTag), GetUnitBattlegroundTeam(unitTag), GetUnitAlliance(unitTag), GetUnitAvARank(unitTag))
+		end
+	end
+
+	-- Everyone in the battleground. The scoreboard data is there even if the
+	-- scoreboard was never opened.
+	if IsActiveWorldBattleground() then
+		local roundIndex = GetCurrentBattlegroundRoundIndex()
+		for entryIndex = 1, GetNumScoreboardEntries(roundIndex) do
+			local characterName, displayName, battlegroundTeam = GetScoreboardEntryInfo(entryIndex, roundIndex)
+			RememberPlayer(characterName, displayName, battlegroundTeam)
+		end
+	end
+end
+
 -- Hit-type icon shown right before the damage number (see control.hitTypeIcon
 -- in the row factory override, and its placement/texture logic in the render
 -- loop below). Placeholder vanilla icons for now (armory build icons - not
@@ -474,8 +524,6 @@ local function GetHintsHeight()
 	return height
 end
 
-local lastLayout = {}
-
 local function LayoutDeathRecap()
 	-- Re-applied every time: DEATH_RECAP:ApplyStyle (platform style change)
 	-- re-applies vanilla's template, which re-anchors tel var loss / hints and
@@ -550,29 +598,6 @@ local function LayoutDeathRecap()
 	if pendingScrollToBottom then
 		ScrollAttackListToBottom()
 	end
-
-	lastLayout.guiHeight = guiHeight
-	lastLayout.topOffset = topOffset
-	lastLayout.above = aboveHeight
-	lastLayout.below = belowHeight
-	lastLayout.rows = DEATH_RECAP.attackPool:GetActiveObjectCount()
-	lastLayout.rowsHeight = rowsHeight
-	lastLayout.listHeight = listHeight
-	lastLayout.windowHeight = windowHeight
-end
-
--- /iidr - dumps the last layout plus live control sizes, for debugging.
-SLASH_COMMANDS["/iidr"] = function()
-	local _, extents = attackList.scroll:GetScrollExtents()
-	local _, offset = attackList.scroll:GetScrollOffsets()
-	d(string.format("[IDR-VanillaUI] GuiRoot %.0fx%.0f, top %s, above %s, below %s, rows %s (%s px), list %s, window %s",
-		GuiRoot:GetWidth(), GuiRoot:GetHeight(), tostring(lastLayout.topOffset), tostring(lastLayout.above), tostring(lastLayout.below),
-		tostring(lastLayout.rows), tostring(lastLayout.rowsHeight), tostring(lastLayout.listHeight), tostring(lastLayout.windowHeight)))
-	d(string.format("[IDR-VanillaUI] live: attacks %.0fx%.0f, list child %.0f, list %.0f, extents %.0f, offset %.0f, scrollbar hidden %s, window %.0f",
-		attacksContainer:GetWidth(), attacksContainer:GetHeight(), attackListChild:GetHeight(), attackList:GetHeight(),
-		extents, offset, tostring(attackList.scrollbar:IsHidden()), ZO_DeathRecap:GetHeight()))
-	local minX, minY, maxX, maxY = attacksContainer:GetDimensionConstraints()
-	d(string.format("[IDR-VanillaUI] attacks constraints %s %s %s %s", tostring(minX), tostring(minY), tostring(maxX), tostring(maxY)))
 end
 
 -- Same layout again on the next frame, once resizeToFitDescendents controls
@@ -623,6 +648,7 @@ DEATH_RECAP.SetupAttacks = function(self)
 	if not deathHistory then
 		return orig(self)
 	end
+	RememberPlayersAtDeath()
 
     local startAlpha = self:GetStartAlpha()
     self.attackPool:ReleaseAllObjects()
@@ -1051,37 +1077,23 @@ EVENT_MANAGER:RegisterForEvent("ImprovedDeathRecapVanillaUI", EVENT_ADD_ON_LOADE
 	local frame = UNIT_FRAMES:GetFrame("reticleover")
 	ZO_PostHook(frame, "RefreshControls", function(self)
 			if IsUnitPlayer(self.unitTag) then
-				local displayName = ZO_ShouldPreferUserId() and ZO_GetPrimaryPlayerNameFromUnitTag(self.unitTag) or ZO_GetSecondaryPlayerNameFromUnitTag(self.unitTag)
-				nameCache:set(GetUnitName(self.unitTag), {
-					name = displayName,
-					team = GetUnitBattlegroundTeam(self.unitTag),
-					alliance = GetUnitAlliance(self.unitTag),
-					rank = GetUnitAvARank(self.unitTag),
-				})
+				local unitTag = self.unitTag
+				RememberPlayer(GetUnitName(unitTag), GetUnitDisplayName(unitTag), GetUnitBattlegroundTeam(unitTag), GetUnitAlliance(unitTag), GetUnitAvARank(unitTag))
 				--d(GetRawUnitName(self.unitTag) .. " -> " .. ZO_GetSecondaryPlayerNameFromUnitTag(self.unitTag))
 			end
 		end)
 end)
 
-SecurePostHook(Battleground_Scoreboard_Player_Row, "UpdateRow", function(row)
-	local charName = row.data.characterName
-	local displayName =  row.data.displayName
-	if charName ~= nil and charName ~= "" then
-		local cached = nameCache:get(charName)
-		nameCache:set(charName, {
-			name = displayName,
-			-- row.data.battlegroundTeam mirrors the field name GetScoreboardEntryInfo()
-			-- returns (characterName, displayName, battlegroundTeam, isLocalPlayer), which
-			-- is what populates this row - fall back to whatever the nameplate hook may
-			-- have already captured in case this field ever turns out to be named
-			-- differently than expected.
-			team = row.data.battlegroundTeam or (cached and cached.team),
-			-- GetScoreboardEntryInfo only ever returns (characterName, displayName,
-			-- battlegroundTeam, isLocalPlayer) - no alliance or AW rank - so both can
-			-- only come from whatever the nameplate hook has already captured, if any.
-			alliance = cached and cached.alliance,
-			rank = cached and cached.rank,
-		})
-		--d(characterName ..  " -> " .. displayName)
-	end
-end)
+-- Battleground scoreboard rows (Battleground_Scoreboard_Player_Row is only the
+-- base game's compatibility alias of the new class name). RememberPlayersAtDeath
+-- reads the same data when the recap is built; this keeps the cache fresh while
+-- the board is open.
+local scoreboardRowClass = ZO_Battleground_Scoreboard_Player_Row_Object or Battleground_Scoreboard_Player_Row
+if scoreboardRowClass and scoreboardRowClass.UpdateRow then
+	SecurePostHook(scoreboardRowClass, "UpdateRow", function(row)
+		local data = row.data
+		if data then
+			RememberPlayer(data.characterName, data.displayName, data.battlegroundTeam)
+		end
+	end)
+end
