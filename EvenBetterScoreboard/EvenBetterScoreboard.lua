@@ -29,6 +29,7 @@ local defaultAccountSettings = {
 	nameDisplayMode = "default",
 	showQuickQueueButtons = true,
 	replaceBattlegroundsPanel = true,
+	queueTimerInTracker = true,
 	competitiveColor = { r = 0xC5 / 255, g = 0x96 / 255, b = 0x15 / 255, a = 1 },
 	standardColor = { r = 0x00 / 255, g = 0xAA / 255, b = 0x00 / 255, a = 1 },
 	healColor = { r = 1, g = 0.85, b = 0, a = 1 },
@@ -798,23 +799,11 @@ function ebs.buildPanel()
 	ebs.rowPool = ZO_ControlPool:New("EBS_Row", EBS_PanelList, "EBS_Row")
 	ebs.rebuildRows()
 
-	-- "Requeue automatically" toggle, same checkbox-row look as the queue checklist above it (it's
-	-- just another EBS_Row instance, standalone rather than pool-managed since there's always
-	-- exactly one of it). Always starts unchecked: ebs.requeueAutomatically isn't part of
-	-- ebs.vars, so this never restores a checked state from a previous session.
-	local requeueToggle = CreateControlFromVirtual("EBS_RequeueToggle", EBS_Panel, "EBS_Row")
-	requeueToggle:SetAnchor(TOPLEFT, EBS_PanelList, BOTTOMLEFT, 0, 15)
-	requeueToggle:GetNamedChild("Name"):SetText("Requeue automatically")
-	local requeueCheckbox = requeueToggle:GetNamedChild("Check")
-	ZO_CheckButton_SetCheckState(requeueCheckbox, false)
-	ZO_CheckButton_SetToggleFunction(requeueCheckbox, function(control, checked)
-		ebs.requeueAutomatically = checked
-		ebs.refreshAutoRequeueLabel()
-	end)
-
-	-- Bonus rewards (ebs.refreshBonusInfo), under the requeue toggle.
+	-- Bonus rewards (ebs.refreshBonusInfo), under the queue list. ("Requeue automatically" is
+	-- the clickable "Auto requeue: On/Off" line in the Finder's status block, see
+	-- ebs_getAutoRequeueLabel.)
 	local bonus = CreateControl("EBS_PanelBonus", EBS_Panel, CT_CONTROL)
-	bonus:SetAnchor(TOPLEFT, requeueToggle, BOTTOMLEFT, 10, 15)
+	bonus:SetAnchor(TOPLEFT, EBS_PanelList, BOTTOMLEFT, 10, 20)
 	bonus:SetDimensions(520, 80)
 	local function BonusLabel(name, font, anchorTo)
 		local label = CreateControl(name, bonus, CT_LABEL)
@@ -1036,6 +1025,25 @@ local function ebs_getAutoRequeueLabel()
 		autoRequeueLabel:SetFont("ZoFontHeader")
 		autoRequeueLabel:SetColor(GetInterfaceColor(INTERFACE_COLOR_TYPE_TEXT_COLORS, INTERFACE_TEXT_COLOR_NORMAL))
 		autoRequeueLabel:SetAnchor(BOTTOM, SEARCHING_FOR_GROUP.statusLabel, TOP, 0, 0)
+		-- Clicking it switches "Requeue automatically" (never saved: off after every reload).
+		autoRequeueLabel:SetMouseEnabled(true)
+		autoRequeueLabel:SetHandler("OnMouseEnter", function(control)
+			control:SetColor(GetInterfaceColor(INTERFACE_COLOR_TYPE_TEXT_COLORS, INTERFACE_TEXT_COLOR_HIGHLIGHT))
+			InitializeTooltip(InformationTooltip, control, BOTTOM, 0, -5, TOP)
+			SetTooltipText(InformationTooltip, "Click to turn on or off.\n\nWhen on, declining a ready check queues you again for the same battlegrounds once the cooldown is over. "
+				.. "A ready check that times out, or leaving the queue yourself, never does. Turns off on every reload.")
+		end)
+		autoRequeueLabel:SetHandler("OnMouseExit", function(control)
+			control:SetColor(GetInterfaceColor(INTERFACE_COLOR_TYPE_TEXT_COLORS, INTERFACE_TEXT_COLOR_NORMAL))
+			ClearTooltip(InformationTooltip)
+		end)
+		autoRequeueLabel:SetHandler("OnMouseUp", function(control, button, upInside)
+			if button == MOUSE_BUTTON_INDEX_LEFT and upInside then
+				ebs.requeueAutomatically = not ebs.requeueAutomatically
+				PlaySound(SOUNDS.DEFAULT_CLICK)
+				ebs.refreshAutoRequeueLabel()
+			end
+		end)
 	end
 	return autoRequeueLabel
 end
@@ -1046,7 +1054,7 @@ end
 function ebs.refreshAutoRequeueLabel()
 	local label = ebs_getAutoRequeueLabel()
 	if label then
-		label:SetText("Auto requeue: " .. (ebs.requeueAutomatically and "On" or "Off"))
+		label:SetText("Auto requeue: " .. (ebs.requeueAutomatically and "|c00CC00On|r" or "Off"))
 	end
 end
 
@@ -1170,6 +1178,45 @@ SecurePostHook(_G, "AcceptLFGReadyCheckNotification", ebs_onAcceptedReadyCheck)
 SecurePostHook(_G, "DeclineLFGReadyCheckNotification", ebs_onDeclinedReadyCheck)
 
 -------------------------------------------------------------------------------------------------
+--  HUD activity tracker: time in queue  --
+-------------------------------------------------------------------------------------------------
+-- The game's activity tracker (the "Battlegrounds / Queued" box on the HUD) gets the time spent in
+-- queue, the same "Actual" time the Group & Activity Finder shows: "Queued for 10:45". Updated
+-- once a second while queued.
+local EBS_TRACKER_TIMER_NAME = "EBS_ActivityTrackerTimer"
+
+local function ebs_refreshTrackerTimer()
+	local tracker = ACTIVITY_TRACKER
+	if not tracker or not tracker.activityType then return end
+	local status = GetActivityFinderStatus()
+	local text = GetString("SI_ACTIVITYFINDERSTATUS", status)
+	if status == ACTIVITY_FINDER_STATUS_QUEUED and ebs.accountVars.queueTimerInTracker then
+		local searchStartTimeMs = GetLFGSearchTimes()
+		if searchStartTimeMs and searchStartTimeMs > 0 then
+			local elapsedMs = zo_max(0, GetFrameTimeMilliseconds() - searchStartTimeMs)
+			text = string.format("%s for %s", text, ZO_FormatTimeMilliseconds(elapsedMs, TIME_FORMAT_STYLE_COLONS, TIME_FORMAT_PRECISION_TWELVE_HOUR))
+		end
+	end
+	tracker:SetSubLabelText(text)
+end
+
+local function ebs_hookActivityTracker()
+	local tracker = ACTIVITY_TRACKER
+	if not tracker or ebs.trackerHooked then return end
+	ebs.trackerHooked = true
+	ZO_PostHook(tracker, "Update", function()
+		local queued = GetActivityFinderStatus() == ACTIVITY_FINDER_STATUS_QUEUED and ebs.accountVars.queueTimerInTracker
+		EVENT_MANAGER:UnregisterForUpdate(EBS_TRACKER_TIMER_NAME)
+		if queued then
+			EVENT_MANAGER:RegisterForUpdate(EBS_TRACKER_TIMER_NAME, 1000, ebs_refreshTrackerTimer)
+		end
+		ebs_refreshTrackerTimer()
+	end)
+	tracker:Update()
+end
+ebs.hookActivityTracker = ebs_hookActivityTracker
+
+-------------------------------------------------------------------------------------------------
 --  LibAddonMenu-2.0 settings panel  --
 -------------------------------------------------------------------------------------------------
 -- Optional -- LibStub(..., true) returns nil instead of erroring if LAM2 isn't installed, in
@@ -1215,6 +1262,18 @@ function ebs.registerSettingsPanel()
 			setFunc = function(value) ebs.accountVars.replaceBattlegroundsPanel = value end,
 			default = true,
 			requiresReload = true,
+			width = "full",
+		},
+		{
+			type = "checkbox",
+			name = "Time in queue on the HUD",
+			tooltip = "The game's activity tracker on the HUD (\"Battlegrounds / Queued\") shows how long you've been in queue, e.g. \"Queued for 10:45\".",
+			getFunc = function() return ebs.accountVars.queueTimerInTracker end,
+			setFunc = function(value)
+				ebs.accountVars.queueTimerInTracker = value
+				if ACTIVITY_TRACKER and ebs.trackerHooked then ACTIVITY_TRACKER:Update() end
+			end,
+			default = true,
 			width = "full",
 		},
 		{
@@ -1360,6 +1419,8 @@ function ebs:Initialize()
 		ebs_restoreBattlegroundMode()
 		ebs_hookBattlegroundModeSelection()
 		ebs.attachPanel()
+		ebs_hookActivityTracker()
+		ebs.refreshAutoRequeueLabel()
 		EVENT_MANAGER:UnregisterForEvent(ebs.name, EVENT_PLAYER_ACTIVATED)
 	end)
 end

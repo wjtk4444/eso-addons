@@ -7,6 +7,10 @@ Version 1.2
 - Bonus rewards under the queue list: whether today's daily bonus reward is still available, what
   the reward is, and the solo bonus for joining a Group queue alone.
 - /ebs opens the settings.
+- "Requeue automatically" is no longer a checkbox under the queue list: the "Auto requeue: On/Off"
+  line above the Finder's status is clickable instead.
+- The HUD activity tracker ("Battlegrounds / Queued") shows the time in queue, e.g.
+  "Queued for 10:45" (setting "Time in queue on the HUD", on by default).
 
 Version 1.1
 -----------
