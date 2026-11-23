@@ -2,10 +2,10 @@
     <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
         <Category name="Improved Death Recap: Vanilla UI">
             <Action name="IIDR_SCROLL_UP">
-                <Down>ImprovedDeathRecapVanillaUI_Scroll(-1)</Down>
+                <Down>ImprovedDeathRecapVanillaUI.Scroll(-1)</Down>
             </Action>
             <Action name="IIDR_SCROLL_DOWN">
-                <Down>ImprovedDeathRecapVanillaUI_Scroll(1)</Down>
+                <Down>ImprovedDeathRecapVanillaUI.Scroll(1)</Down>
             </Action>
         </Category>
     </Layer>

@@ -82,7 +82,6 @@ function LRU:set(key, value)
 end
 
 local nameCache = LRU.new(256)
-IDRCache = nameCache
 
 -- Puts what we know about a player into the name cache. The death recap always
 -- shows the @name, but IDR only records character names, so @names come from
@@ -632,7 +631,9 @@ EVENT_MANAGER:RegisterForEvent(LAYOUT_UPDATE_NAME, EVENT_ALL_GUI_SCREENS_RESIZED
 -- steers the camera, so the wheel only reaches the list in cursor mode.
 ZO_CreateStringId("SI_BINDING_NAME_IIDR_SCROLL_UP", "Scroll death recap up")
 ZO_CreateStringId("SI_BINDING_NAME_IIDR_SCROLL_DOWN", "Scroll death recap down")
-function ImprovedDeathRecapVanillaUI_Scroll(direction)
+-- The addon's only global: the keybinds call ImprovedDeathRecapVanillaUI.Scroll.
+ImprovedDeathRecapVanillaUI = {}
+function ImprovedDeathRecapVanillaUI.Scroll(direction)
 	if ZO_DeathRecap:IsHidden() then return end
 	pendingScrollToBottom = false
 	ZO_Scroll_ScrollRelative(attackList, direction * KEYBIND_SCROLL_STEP)
@@ -641,9 +642,6 @@ end
 local orig = DEATH_RECAP.SetupAttacks
 DEATH_RECAP.SetupAttacks = function(self)
 	-- Fallbacks to vanilla rows still get our layout (SetupDeathRecap post-hook).
-	if not IDR or not IDR.GetLatestDeath then
-		return orig(self)
-	end
 	local deathHistory = IDR.GetLatestDeath()
 	if not deathHistory then
 		return orig(self)
@@ -1033,46 +1031,45 @@ EVENT_MANAGER:RegisterForEvent("ImprovedDeathRecapVanillaUI", EVENT_ADD_ON_LOADE
 
 	savedVars = ZO_SavedVars:NewAccountWide("ImprovedDeathRecapVanillaUI_SV", 1, nil, { minAmount = DEFAULT_MIN_AMOUNT, showTips = true })
 
-	if LibAddonMenu2 then
-		local panelData = {
-			type = "panel",
-			name = "Improved Death Recap: Vanilla UI",
-			displayName = "Improved Death Recap: Vanilla UI",
-			author = "Schrodi",
-			version = "3.0.0",
-			registerForRefresh = true,
-			registerForDefaults = true,
-		}
-		LibAddonMenu2:RegisterAddonPanel("ImprovedDeathRecapVanillaUIOptions", panelData)
+	local LAM = LibAddonMenu2
+	local panelData = {
+		type = "panel",
+		name = "Improved Death Recap: Vanilla UI",
+		displayName = "Improved Death Recap: Vanilla UI",
+		author = "Schrodi",
+		version = "3.1.1",
+		registerForRefresh = true,
+		registerForDefaults = true,
+	}
+	LAM:RegisterAddonPanel("ImprovedDeathRecapVanillaUIOptions", panelData)
 
-		local optionsData = {
-			{
-				type = "slider",
-				name = "Minimum damage/healing to show",
-				tooltip = "Attacks and heals below this amount won't be shown in the death recap.",
-				min = 0,
-				max = 10000,
-				step = 50,
-				default = DEFAULT_MIN_AMOUNT,
-				getFunc = function() return savedVars.minAmount end,
-				setFunc = function(value) savedVars.minAmount = value end,
-				width = "full",
-			},
-			{
-				type = "checkbox",
-				name = "Show tips section",
-				tooltip = "The vanilla \"tips\" list under the attacks. Hiding it leaves more room for attack rows on small screens.",
-				default = true,
-				getFunc = function() return savedVars.showTips ~= false end,
-				setFunc = function(value)
-					savedVars.showTips = value
-					LayoutDeathRecap()
-				end,
-				width = "full",
-			},
-		}
-		LibAddonMenu2:RegisterOptionControls("ImprovedDeathRecapVanillaUIOptions", optionsData)
-	end
+	local optionsData = {
+		{
+			type = "slider",
+			name = "Minimum damage/healing to show",
+			tooltip = "Attacks and heals below this amount won't be shown in the death recap.",
+			min = 0,
+			max = 10000,
+			step = 50,
+			default = DEFAULT_MIN_AMOUNT,
+			getFunc = function() return savedVars.minAmount end,
+			setFunc = function(value) savedVars.minAmount = value end,
+			width = "full",
+		},
+		{
+			type = "checkbox",
+			name = "Show tips section",
+			tooltip = "The vanilla \"tips\" list under the attacks. Hiding it leaves more room for attack rows on small screens.",
+			default = true,
+			getFunc = function() return savedVars.showTips ~= false end,
+			setFunc = function(value)
+				savedVars.showTips = value
+				LayoutDeathRecap()
+			end,
+			width = "full",
+		},
+	}
+	LAM:RegisterOptionControls("ImprovedDeathRecapVanillaUIOptions", optionsData)
 
 	local frame = UNIT_FRAMES:GetFrame("reticleover")
 	ZO_PostHook(frame, "RefreshControls", function(self)
@@ -1084,16 +1081,11 @@ EVENT_MANAGER:RegisterForEvent("ImprovedDeathRecapVanillaUI", EVENT_ADD_ON_LOADE
 		end)
 end)
 
--- Battleground scoreboard rows (Battleground_Scoreboard_Player_Row is only the
--- base game's compatibility alias of the new class name). RememberPlayersAtDeath
--- reads the same data when the recap is built; this keeps the cache fresh while
--- the board is open.
-local scoreboardRowClass = ZO_Battleground_Scoreboard_Player_Row_Object or Battleground_Scoreboard_Player_Row
-if scoreboardRowClass and scoreboardRowClass.UpdateRow then
-	SecurePostHook(scoreboardRowClass, "UpdateRow", function(row)
-		local data = row.data
-		if data then
-			RememberPlayer(data.characterName, data.displayName, data.battlegroundTeam)
-		end
-	end)
-end
+-- Battleground scoreboard rows. RememberPlayersAtDeath reads the same data when
+-- the recap is built; this keeps the cache fresh while the board is open.
+SecurePostHook(ZO_Battleground_Scoreboard_Player_Row_Object, "UpdateRow", function(row)
+	local data = row.data
+	if data then
+		RememberPlayer(data.characterName, data.displayName, data.battlegroundTeam)
+	end
+end)
