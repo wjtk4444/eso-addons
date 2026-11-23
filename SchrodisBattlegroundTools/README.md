@@ -4,9 +4,9 @@ A battlegrounds addon: a more informative scoreboard and a faster way to queue.
 
 ## Credits and history
 
-Inspired by **[Better Scoreboard](https://www.esoui.com/downloads/info3182-BetterScoreboard.html)** by **M0R** (@M0R_Gaming), which added damage, healing and class icons to the battlegrounds scoreboard and a multi-queue selection. This addon started as a visual patch for Better Scoreboard's scoreboard, grew into a standalone addon (for a while called *Even Better Scoreboard*) and is now a complete rewrite: it contains no code from Better Scoreboard. Remembering the mode on the built-in Battlegrounds screen is an idea from *BattlegroundModeSaver*.
+Inspired by **[Better Scoreboard](https://www.esoui.com/downloads/info3182-BetterScoreboard.html)** by **M0R** (@M0R_Gaming), which added damage, healing and class icons to the battlegrounds scoreboard and a multi-queue selection. This addon started as a visual patch for Better Scoreboard's scoreboard, grew into a standalone addon and is now a complete rewrite: it contains no code from Better Scoreboard. Remembering the mode on the built-in Battlegrounds screen is an idea from *BattlegroundModeSaver*.
 
-Better Scoreboard isn't needed. Disable it, as well as Even Better Scoreboard, BetterBetterScoreboard and BattlegroundModeSaver if you still have them: they hook the same game controls, and this addon does what they did.
+Better Scoreboard isn't needed. Disable it, as well as BetterBetterScoreboard and BattlegroundModeSaver if you still have them: they hook the same game controls, and this addon does what they did.
 
 ## Scoreboard
 
