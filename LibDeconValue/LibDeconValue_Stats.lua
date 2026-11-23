@@ -18,7 +18,6 @@ local CONTEXT_TTL_MS = 5000
 local RESULT_TIMEOUT_MS = 15000
 -- Champion skill id of Meticulous Disassembly (as used by LibLootStats). /ldv prints its name.
 local METICULOUS_DISASSEMBLY_ID = 83
-local CHAMPION_BAR_SLOTS = 12
 
 local sv
 
@@ -88,22 +87,20 @@ end
 
 local function IsMeticulousDisassemblyActive()
   local id = METICULOUS_DISASSEMBLY_ID
-  local ok, active = pcall(function()
-    local maxPoints = GetChampionSkillMaxPoints(id)
-    if not maxPoints or maxPoints <= 0 or GetNumPointsSpentOnChampionSkill(id) < maxPoints then
-      return false
-    end
-    if CanChampionSkillTypeBeSlotted(GetChampionSkillType(id)) then
-      for slot = 1, CHAMPION_BAR_SLOTS do
-        if GetSlotBoundId(slot, HOTBAR_CATEGORY_CHAMPION) == id then
-          return true
-        end
+  local maxPoints = GetChampionSkillMaxPoints(id)
+  if maxPoints <= 0 or GetNumPointsSpentOnChampionSkill(id) < maxPoints then
+    return false
+  end
+  if CanChampionSkillTypeBeSlotted(GetChampionSkillType(id)) then
+    local firstSlot, lastSlot = GetAssignableChampionBarStartAndEndSlots()
+    for slot = firstSlot, lastSlot do
+      if GetSlotBoundId(slot, HOTBAR_CATEGORY_CHAMPION) == id then
+        return true
       end
-      return false
     end
-    return true
-  end)
-  return ok and active == true
+    return false
+  end
+  return true
 end
 Stats.IsMeticulousDisassemblyActive = IsMeticulousDisassemblyActive
 

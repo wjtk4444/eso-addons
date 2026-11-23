@@ -1,4 +1,5 @@
 LibDeconValue = LibDeconValue or {}
+local LibDeconValue = LibDeconValue
 local Data = {}
 LibDeconValue.Data = Data
 

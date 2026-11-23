@@ -1,4 +1,5 @@
 LibDeconValue = LibDeconValue or {}
+local LibDeconValue = LibDeconValue
 
 -- Built-in guesses (DeconOrSell defaults; runes from LibLootStats). They are only a
 -- starting point: LibDeconValue.Stats blends them with what your own deconstructions

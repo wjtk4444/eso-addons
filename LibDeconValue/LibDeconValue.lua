@@ -1,4 +1,5 @@
-﻿LibDeconValue = LibDeconValue or { }
+LibDeconValue = LibDeconValue or { }
+local LibDeconValue = LibDeconValue
 
 function LibDeconValue:GetDeconValue(itemLink, minMatPrice)
 	local expectation = LibDeconValue:FindDeconstructionExpectation(itemLink, LibDeconValue.Analysis.ItemSaleValue, minMatPrice)
