@@ -2,7 +2,7 @@
 	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
 		<Category name="Ride Along">
 			<Action name="RIDE_ALONG_HOTKEY_MOUNT">
-				<Down>RideAlong_Mount()</Down>
+				<Down>RideAlong.Mount()</Down>
 			</Action>
 		</Category>
 	</Layer>

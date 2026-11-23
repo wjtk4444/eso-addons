@@ -59,7 +59,10 @@ local function GetShownName(unitTag, displayName)
     return zo_strformat("<<1>>", GetUnitName(unitTag))
 end
 
-function RideAlong_Mount()
+-- The addon's only global: the keybind (Bindings.xml) calls RideAlong.Mount.
+RideAlong = {}
+
+function RideAlong.Mount()
     if IsGroupMountPassenger() then
         Msg("You're already riding along.")
         return
@@ -88,5 +91,5 @@ EVENT_MANAGER:RegisterForEvent(ADDON_NAME, EVENT_ADD_ON_LOADED, function(_, addo
 
     -- The action keeps Mounty Python's name, so an existing keybind carries over.
     ZO_CreateStringId("SI_BINDING_NAME_RIDE_ALONG_HOTKEY_MOUNT", "Ride with a group member")
-    SLASH_COMMANDS["/ride"] = RideAlong_Mount
+    SLASH_COMMANDS["/ride"] = RideAlong.Mount
 end)
