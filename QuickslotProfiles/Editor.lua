@@ -372,7 +372,6 @@ function Editor.Open(id)
         QSP.Msg("Profiles can't be edited in combat.")
         return
     end
-    if not KEYBOARD_QUICKSLOT_FRAGMENT then return end
     if KEYBOARD_QUICKSLOT_FRAGMENT:IsShowing() then
         if id then
             ShowProfile(id)
@@ -390,7 +389,6 @@ function Editor.Open(id)
 end
 
 function Editor.Initialize()
-    if not KEYBOARD_QUICKSLOT_FRAGMENT then return end
     KEYBOARD_QUICKSLOT_FRAGMENT:RegisterCallback("StateChange", function(_, newState)
         if newState == SCENE_FRAGMENT_SHOWING then
             OnShowing()

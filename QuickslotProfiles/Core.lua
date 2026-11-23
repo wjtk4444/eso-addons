@@ -15,7 +15,7 @@ local QSP = QuickslotProfiles
 
 QSP.NAME = "QuickslotProfiles"
 QSP.TITLE = "Quickslot Profiles"
-QSP.VERSION = "1.4.0"
+QSP.VERSION = "1.4.1"
 
 local CATEGORY = HOTBAR_CATEGORY_QUICKSLOT_WHEEL
 local NUM_SLOTS = ACTION_BAR_UTILITY_BAR_SIZE or 8
@@ -679,10 +679,8 @@ EVENT_MANAGER:RegisterForEvent(QSP.NAME, EVENT_ADD_ON_LOADED, function(_, addonN
 
     EVENT_MANAGER:RegisterForEvent(QSP.NAME, EVENT_PLAYER_ACTIVATED, OnPlayerActivated)
     EVENT_MANAGER:RegisterForEvent(QSP.NAME, EVENT_PLAYER_COMBAT_STATE, OnCombatState)
-    if EVENT_ARMORY_BUILD_RESTORE_RESPONSE then
-        EVENT_MANAGER:RegisterForEvent(QSP.NAME, EVENT_ARMORY_BUILD_RESTORE_RESPONSE, OnArmoryRestore)
-        EVENT_MANAGER:RegisterForEvent(QSP.NAME, EVENT_ARMORY_BUILD_SAVE_RESPONSE, OnArmorySave)
-    end
+    EVENT_MANAGER:RegisterForEvent(QSP.NAME, EVENT_ARMORY_BUILD_RESTORE_RESPONSE, OnArmoryRestore)
+    EVENT_MANAGER:RegisterForEvent(QSP.NAME, EVENT_ARMORY_BUILD_SAVE_RESPONSE, OnArmorySave)
     SLASH_COMMANDS["/qsp"] = function() QSP.OpenSettings() end
 
     QSP.Editor.Initialize()

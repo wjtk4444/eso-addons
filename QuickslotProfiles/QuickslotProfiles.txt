@@ -7,11 +7,11 @@
 ## Title: Quickslot Profiles
 ## Description: Quickslot wheel profiles that load by themselves in the zone types you choose: overland, dungeons, trials, arenas, Cyrodiil, Imperial City, battlegrounds, houses... Edit them in the game's own quickslot menu.
 ## Author: Schrodi
-## Version: 1.4.0
-## AddOnVersion: 5
+## Version: 1.4.1
+## AddOnVersion: 6
 ## APIVersion: 101051 101052
 ## SavedVariables: QuickslotProfiles_SV
-## DependsOn: LibAddonMenu-2.0
+## DependsOn: LibAddonMenu-2.0>=43
 ## OptionalDependsOn: CyroQuickslots
 
 Zones.lua
