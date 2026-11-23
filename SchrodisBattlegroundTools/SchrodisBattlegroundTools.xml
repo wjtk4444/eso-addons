@@ -57,7 +57,7 @@
 					<Anchor point="BOTTOM"/>
 				</Control>
 
-				<!-- "Queue <name>" shortcut buttons, 2 per row (built/shown/hidden from Lua depending
+				<!-- "<name>" shortcut buttons (e.g. "Big Team Battles"), 2 per row (built/shown/hidden from Lua depending
 				     on which queues are currently on offer), directly above Join Queue / View
 				     Veterancy. Anchoring its own BOTTOM to ButtonContainer's TOP keeps it centered
 				     above that row the same way that row is centered on the panel, and makes extra
@@ -113,7 +113,7 @@
 			</OnClicked>
 		</Button>
 
-		<!-- "Queue <name>" shortcut button: text, width and self.quickQueueKey are all set from Lua
+		<!-- "<name>" shortcut button: text, width and self.quickQueueKey are all set from Lua
 		     (sbt.rebuildQuickQueueButtons) since the queues on offer are queried live, not fixed.
 		     Clicking it selects every queue location that shares that key (its Solo and Group
 		     variants) and queues immediately (sbt.quickQueue). -->

@@ -24,7 +24,7 @@ Better Scoreboard isn't needed. Disable it, as well as Even Better Scoreboard, B
 A multi-queue panel in the Group & Activity Finder. By default it **replaces the Battlegrounds panel** (the entry keeps its name and icon); with that setting off it's a separate **Battleground Queue** entry right after Battlegrounds.
 
 - **Queue several battleground types at once** with checkboxes. Your selection is remembered between sessions. The list updates by itself when a queue unlocks or a weekly event starts or ends.
-- **Quick buttons** such as *Queue 4v4 Competitive* or *Queue Big Team Battles*: one click selects the solo and group versions of that queue and joins.
+- **Quick buttons** such as *4v4 Competitive* or *Big Team Battles* above Join Queue: one click selects the solo and group versions of that queue and joins.
 - Your **battleground rank** and XP bar, as on the Battlegrounds screen.
 - **Bonus rewards** under the list: whether today's daily bonus reward is still available (it's shared by all battlegrounds, not tied to one queue), what the reward is, and the solo bonus for joining a Group queue alone.
 - **Auto requeue** *(off by default, resets on every reload)*: click the "Auto requeue: On/Off" line above the Finder's "Status" to switch it. If you decline a ready check, you are queued again for the same battlegrounds once the cooldown is over. A ready check that times out, or leaving the queue yourself, never requeues you.

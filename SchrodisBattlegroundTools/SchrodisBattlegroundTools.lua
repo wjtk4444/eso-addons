@@ -2,7 +2,7 @@ SchrodisBattlegroundTools = {}
 local sbt = SchrodisBattlegroundTools
 sbt.name = "SchrodisBattlegroundTools"
 sbt.title = "Schrodi's Battleground Tools"
-sbt.version = "2.0.0"
+sbt.version = "2.0.1"
 sbt.queues = {}
 sbt.rows = {}
 sbt.vars = {}
@@ -44,14 +44,14 @@ local defaultAccountSettings = {
 
 -- Base 12.1.5 widened the header by 150 for its 3 new columns, and each row by 3 x (column + pad).
 local SBT_REMOVED_WINDOW_WIDTH = 150
-local SBT_REMOVED_ROW_WIDTH = (ZO_BATTLEGROUND_SCOREBOARD_HEADER_DAMAGE_WIDTH or 50) + (ZO_BATTLEGROUND_SCOREBOARD_HEADER_HEALS_WIDTH or 50) + (ZO_BATTLEGROUND_SCOREBOARD_HEADER_GAME_TYPE_WIDTH or 50) + 3 * ZO_BATTLEGROUND_SCOREBOARD_HEADER_DOUBLE_PADDING
+local SBT_REMOVED_ROW_WIDTH = ZO_BATTLEGROUND_SCOREBOARD_HEADER_DAMAGE_WIDTH + ZO_BATTLEGROUND_SCOREBOARD_HEADER_HEALS_WIDTH + ZO_BATTLEGROUND_SCOREBOARD_HEADER_GAME_TYPE_WIDTH + 3 * ZO_BATTLEGROUND_SCOREBOARD_HEADER_DOUBLE_PADDING
 local SBT_REMOVED_COLUMN_NAMES = { "Damage", "Heals", "GameTypeScore" }
 
 -- Room left for everything around the team list (header 90 + padding 60, the keyboard background's
 -- decorative overhang 186, keybind strip): with this, a 1080-high GuiRoot gives exactly the base
 -- game's own cap (680), and only taller UIs get a taller window.
 local SBT_SCOREBOARD_SCREEN_RESERVE = 400
-local SBT_ROUNDS_RESERVE = (ZO_BATTLEGROUND_SCOREBOARD_PANEL_CONTAINER_MAX_HEIGHT or 680) - (ZO_BATTLEGROUND_SCOREBOARD_PANEL_CONTAINER_MAX_HEIGHT_WITH_ROUNDS or 646)
+local SBT_ROUNDS_RESERVE = ZO_BATTLEGROUND_SCOREBOARD_PANEL_CONTAINER_MAX_HEIGHT - ZO_BATTLEGROUND_SCOREBOARD_PANEL_CONTAINER_MAX_HEIGHT_WITH_ROUNDS
 local SBT_DEFAULT_TEAM_SIZE = 4 -- base GetPanelHeight uses a fixed 220px panel up to this size
 local SBT_MIN_ROW_GAP = 2
 local SBT_MIN_INITIAL_OFFSET = 8
@@ -63,9 +63,9 @@ sbt.rowLayout = nil
 
 local function sbt_getRowHeight()
 	if IsInGamepadPreferredMode() then
-		return ZO_BATTLEGROUND_SCOREBOARD_PLAYER_ROW_HEIGHT_GAMEPAD or 32
+		return ZO_BATTLEGROUND_SCOREBOARD_PLAYER_ROW_HEIGHT_GAMEPAD
 	end
-	return ZO_BATTLEGROUND_SCOREBOARD_PLAYER_ROW_HEIGHT_KEYBOARD or 30
+	return ZO_BATTLEGROUND_SCOREBOARD_PLAYER_ROW_HEIGHT_KEYBOARD
 end
 
 local function sbt_getMaxContainerHeight(hasRounds)
@@ -164,17 +164,13 @@ local function sbt_applyScoreboardWidth(fragment)
 	end
 
 	fragment.backgroundsContainer:SetWidth(ZO_BATTLEGROUND_SCOREBOARD_BACKGROUND_WIDTH - SBT_REMOVED_WINDOW_WIDTH)
-	if ZO_BATTLEGROUND_SCOREBOARD_BACKGROUND_WIDTH_KEYBOARD then
-		fragment.keyboardBackground:SetWidth(ZO_BATTLEGROUND_SCOREBOARD_BACKGROUND_WIDTH_KEYBOARD - SBT_REMOVED_WINDOW_WIDTH)
-	end
+	fragment.keyboardBackground:SetWidth(ZO_BATTLEGROUND_SCOREBOARD_BACKGROUND_WIDTH_KEYBOARD - SBT_REMOVED_WINDOW_WIDTH)
 	fragment.panelContainer:SetWidth(ZO_BATTLEGROUND_SCOREBOARD_PANEL_CONTAINER_WIDTH - SBT_REMOVED_WINDOW_WIDTH)
 
 	local teamBgWidth = IsInGamepadPreferredMode() and ZO_BATTLEGROUND_SCOREBOARD_TEAM_WIDTH_GAMEPAD or ZO_BATTLEGROUND_SCOREBOARD_TEAM_WIDTH_KEYBOARD
 	for _, teamPanel in pairs(fragment.teamPanels) do
 		teamPanel.control:SetWidth(ZO_BATTLEGROUND_SCOREBOARD_PANEL_WIDTH - SBT_REMOVED_WINDOW_WIDTH)
-		if teamBgWidth then
-			teamPanel.bgControl:SetWidth(teamBgWidth - SBT_REMOVED_WINDOW_WIDTH)
-		end
+		teamPanel.bgControl:SetWidth(teamBgWidth - SBT_REMOVED_WINDOW_WIDTH)
 	end
 end
 
@@ -447,7 +443,7 @@ end
 -- Quick-queue grouping key: the queue's own name with the words "Solo"/"Group" (and whatever
 -- separator/brackets they leave behind) taken out, e.g. "4v4 Competitive - Solo" and "4v4
 -- Competitive - Group" -> "4v4 Competitive", "Big Team Battles (Solo)" -> "Big Team Battles".
--- Every queue sharing a key goes under one "Queue <key>" button. Purely name-based on purpose: the
+-- Every queue sharing a key goes under one "<key>" button. Purely name-based on purpose: the
 -- line-up changes with events (weeklies, holiday queues, new formats like 9v9 without any team
 -- size in the name), and the name is the one thing every variant reliably shares. A queue
 -- without a Solo/Group word just gets its own button.
@@ -552,8 +548,6 @@ function sbt.refreshQueueButtonState()
 		button:SetEnabled(isQuickQueueEnabled)
 	end
 
-	if not SBT_QueueButton then return end
-
 	if isCooldownActive then
 		SBT_QueueButton:SetEnabled(false)
 		return
@@ -623,18 +617,19 @@ function sbt.rebuildRows()
 	-- The panel might already be open when the queue list changes (e.g. a weekly queue turning
 	-- on while you're sitting on this tab) -- re-sync the fresh rows immediately instead of
 	-- waiting for the tab to be reopened.
-	if SBT_Panel and not SBT_Panel:IsHidden() then
+	if not SBT_Panel:IsHidden() then
 		sbt.refreshVisibleState()
 	end
 end
 
--- Rebuilds the "Queue <name>" shortcut buttons above Join Queue / View Veterancy from the current
+-- Rebuilds the "<name>" shortcut buttons above Join Queue / View Veterancy from the current
 -- sbt.queues, same live data sbt.rebuildRows uses -- one button per quick-queue key (see
 -- sbt_getQuickQueueKey), in the order the queues are listed, so whatever the game offers right now
 -- (e.g. "4v4 Competitive" + "Big Team Battles", plus any event queue) gets a button without a
 -- /reloadui. Laid out SBT_QUICK_QUEUE_PER_ROW per row, each row centered, extra rows stacking
--- upward from Join Queue (the container is anchored by its BOTTOM). Each button is at least as
--- wide as Join Queue, wider if its label needs it.
+-- upward from Join Queue (the container is anchored by its BOTTOM). Each button is as wide as
+-- Join Queue, so a full row lines up exactly with Join Queue / View Veterancy below it; only a
+-- label too long for that (e.g. a long event queue name) makes its button wider.
 local function sbt_getQuickQueueButton(index)
 	local button = sbt.quickQueueButtons[index]
 	if not button then
@@ -667,7 +662,7 @@ function sbt.rebuildQuickQueueButtons()
 	local buttons = {}
 	for i, key in ipairs(keys) do
 		local button = sbt_getQuickQueueButton(i)
-		button:SetText("Queue " .. key)
+		button:SetText(key)
 		button.quickQueueKey = key
 		local label = button:GetLabelControl()
 		local textWidth = label and label:GetTextWidth() or 0
@@ -811,8 +806,6 @@ local SBT_BONUS_NONE_COLOR = "8F8F8F"
 local SBT_SOLO_BONUS_ICON = "EsoUI/Art/LFG/LFG_solo_bonus.dds"
 
 function sbt.refreshBonusInfo()
-	if not SBT_PanelBonus then return end
-
 	local rewardLocation, eligible, soloBonus = nil, false, false
 	for _, location in ipairs(sbt.queues) do
 		if location:HasRewardData() then
@@ -885,13 +878,13 @@ function sbt.attachPanel()
 		menu:RebuildCategories()
 	else
 		-- Same icons as the game's own Battlegrounds entry.
-		local finderData = BATTLEGROUND_FINDER_KEYBOARD and BATTLEGROUND_FINDER_KEYBOARD.categoryData or {}
+		local finderData = BATTLEGROUND_FINDER_KEYBOARD.categoryData
 		GROUP_MENU_KEYBOARD:AddCategory({
 			name = "Battleground Queue",
 			categoryFragment = sbt.panelFragment,
-			normalIcon = finderData.normalIcon or "EsoUI/Art/LFG/LFG_indexIcon_battlegrounds_up.dds",
-			pressedIcon = finderData.pressedIcon or "EsoUI/Art/LFG/LFG_indexIcon_battlegrounds_down.dds",
-			mouseoverIcon = finderData.mouseoverIcon or "EsoUI/Art/LFG/LFG_indexIcon_battlegrounds_over.dds",
+			normalIcon = finderData.normalIcon,
+			pressedIcon = finderData.pressedIcon,
+			mouseoverIcon = finderData.mouseoverIcon,
 			-- Right after Battlegrounds, ahead of Tales of Tribute -- see
 			-- esoui/ingame/lfg/zo_activityfinderroot_manager.lua for the full priority table.
 			priority = ZO_ACTIVITY_FINDER_SORT_PRIORITY.BATTLEGROUNDS + 10,
@@ -934,7 +927,7 @@ local SBT_COOLDOWN_UPDATE_NAME = "SBT_QueueCooldown"
 local cooldownLabel
 
 local function sbt_getCooldownLabel()
-	if not cooldownLabel and SEARCHING_FOR_GROUP and SEARCHING_FOR_GROUP.leaveQueueButton then
+	if not cooldownLabel then
 		-- Same spot the base game's own "Actual:" label (ZO_SearchingForGroupActualTime) uses.
 		-- Trade-off, by design: this only shows up while the Group & Activity Finder window
 		-- happens to be open.
@@ -948,16 +941,15 @@ local function sbt_getCooldownLabel()
 end
 
 local function sbt_setVanillaLabelsHidden(hidden)
-	if not SEARCHING_FOR_GROUP then return end
-	if SEARCHING_FOR_GROUP.statusLabel then SEARCHING_FOR_GROUP.statusLabel:SetHidden(hidden) end
-	if SEARCHING_FOR_GROUP.actualTimeLabel then SEARCHING_FOR_GROUP.actualTimeLabel:SetHidden(hidden) end
-	if SEARCHING_FOR_GROUP.estimatedTimeLabel then SEARCHING_FOR_GROUP.estimatedTimeLabel:SetHidden(hidden) end
+	SEARCHING_FOR_GROUP.statusLabel:SetHidden(hidden)
+	SEARCHING_FOR_GROUP.actualTimeLabel:SetHidden(hidden)
+	SEARCHING_FOR_GROUP.estimatedTimeLabel:SetHidden(hidden)
 end
 
 local autoRequeueLabel
 
 local function sbt_getAutoRequeueLabel()
-	if not autoRequeueLabel and SEARCHING_FOR_GROUP and SEARCHING_FOR_GROUP.statusLabel then
+	if not autoRequeueLabel then
 		-- One more row stacked above the base game's own "Status: Queued" label (same
 		-- ZO_SearchingForGroup_StatusLabel look), so it reads as part of that same block instead
 		-- of a bolted-on extra. Unlike the cooldown label above, this one is never hidden by us --
@@ -1128,7 +1120,7 @@ local SBT_TRACKER_TIMER_NAME = "SBT_ActivityTrackerTimer"
 
 local function sbt_refreshTrackerTimer()
 	local tracker = ACTIVITY_TRACKER
-	if not tracker or not tracker.activityType then return end
+	if not tracker.activityType then return end
 	local status = GetActivityFinderStatus()
 	local text = GetString("SI_ACTIVITYFINDERSTATUS", status)
 	if status == ACTIVITY_FINDER_STATUS_QUEUED and sbt.accountVars.queueTimerInTracker then
@@ -1143,8 +1135,6 @@ end
 
 local function sbt_hookActivityTracker()
 	local tracker = ACTIVITY_TRACKER
-	if not tracker or sbt.trackerHooked then return end
-	sbt.trackerHooked = true
 	ZO_PostHook(tracker, "Update", function()
 		local queued = GetActivityFinderStatus() == ACTIVITY_FINDER_STATUS_QUEUED and sbt.accountVars.queueTimerInTracker
 		EVENT_MANAGER:UnregisterForUpdate(SBT_TRACKER_TIMER_NAME)
@@ -1160,12 +1150,11 @@ sbt.hookActivityTracker = sbt_hookActivityTracker
 -------------------------------------------------------------------------------------------------
 --  LibAddonMenu-2.0 settings panel  --
 -------------------------------------------------------------------------------------------------
--- Optional -- LibStub(..., true) returns nil instead of erroring if LAM2 isn't installed, in
--- which case this is skipped entirely and every setting just keeps whatever's in SavedVariables
--- (or the defaults above).
+-- Optional: without LibAddonMenu-2.0 there is no panel, and every setting keeps whatever's in
+-- SavedVariables (or the defaults above).
 
 function sbt.registerSettingsPanel()
-	local LAM = LibAddonMenu2 or (LibStub and LibStub("LibAddonMenu-2.0", true))
+	local LAM = LibAddonMenu2
 	if not LAM then return end
 
 	local panelData = {
@@ -1213,7 +1202,7 @@ function sbt.registerSettingsPanel()
 			getFunc = function() return sbt.accountVars.queueTimerInTracker end,
 			setFunc = function(value)
 				sbt.accountVars.queueTimerInTracker = value
-				if ACTIVITY_TRACKER and sbt.trackerHooked then ACTIVITY_TRACKER:Update() end
+				ACTIVITY_TRACKER:Update()
 			end,
 			default = true,
 			width = "full",
@@ -1329,7 +1318,7 @@ end
 function sbt.refreshQueues()
 	sbt.collectQueues()
 	sbt.rebuildRows()
-	if SBT_Panel and not SBT_Panel:IsHidden() then sbt.refreshBonusInfo() end
+	if not SBT_Panel:IsHidden() then sbt.refreshBonusInfo() end
 end
 
 local function sbt_onLoaded()
@@ -1338,9 +1327,8 @@ local function sbt_onLoaded()
 	sbt.accountVars = ZO_SavedVars:NewAccountWide("SchrodisBattlegroundTools_SV", 1, "Settings", defaultAccountSettings)
 	sbt.registerSettingsPanel()
 	SLASH_COMMANDS["/sbt"] = function()
-		local LAM = LibAddonMenu2 or (LibStub and LibStub("LibAddonMenu-2.0", true))
-		if LAM and sbt.settingsPanel then
-			LAM:OpenToPanel(sbt.settingsPanel)
+		if sbt.settingsPanel then
+			LibAddonMenu2:OpenToPanel(sbt.settingsPanel)
 		else
 			CHAT_ROUTER:AddSystemMessage(sbt.title .. ": the settings need LibAddonMenu-2.0.")
 		end
