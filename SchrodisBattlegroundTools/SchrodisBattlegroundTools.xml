@@ -78,9 +78,11 @@
 			</OnInitialized>
 			<OnMouseEnter>
 				self.highlight:SetAlpha(1)
+				SchrodisBattlegroundTools.showRowTooltip(self)
 			</OnMouseEnter>
 			<OnMouseExit>
 				self.highlight:SetAlpha(0)
+				SchrodisBattlegroundTools.hideDisabledReasonTooltip()
 			</OnMouseExit>
 			<OnMouseUp>
 				if button == MOUSE_BUTTON_INDEX_LEFT and upInside then
@@ -101,6 +103,12 @@
 		<!-- Bottom action bar, matching the built-in Join Queue / View Veterancy button pair. -->
 		<Button name="SBT_QueueButtonTemplate" inherits="ZO_DefaultButton" text="SI_LFG_JOIN_QUEUE" virtual="true">
 			<Dimensions x="200"/>
+			<OnMouseEnter>
+				SchrodisBattlegroundTools.showDisabledReasonTooltip(self)
+			</OnMouseEnter>
+			<OnMouseExit>
+				SchrodisBattlegroundTools.hideDisabledReasonTooltip()
+			</OnMouseExit>
 			<OnClicked>
 				SchrodisBattlegroundTools.joinQueue()
 			</OnClicked>
@@ -119,6 +127,12 @@
 		     variants) and queues immediately (sbt.quickQueue). -->
 		<Button name="SBT_QuickQueueButtonTemplate" inherits="ZO_DefaultButton" virtual="true">
 			<Dimensions x="200"/>
+			<OnMouseEnter>
+				SchrodisBattlegroundTools.showDisabledReasonTooltip(self)
+			</OnMouseEnter>
+			<OnMouseExit>
+				SchrodisBattlegroundTools.hideDisabledReasonTooltip()
+			</OnMouseExit>
 			<OnClicked>
 				SchrodisBattlegroundTools.quickQueue(self.quickQueueKey)
 			</OnClicked>

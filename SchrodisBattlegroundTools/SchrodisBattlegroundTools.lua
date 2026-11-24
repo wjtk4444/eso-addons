@@ -500,6 +500,59 @@ function sbt.applySelections()
 	end
 end
 
+-- Why none of these queues can be picked right now (the game's own lock reason, e.g. "You can't
+-- queue while carrying more than 50 Tel Var Stones" in Imperial City), or nil when at least one of
+-- them can. Used to grey out the queue buttons with that reason as their tooltip, instead of
+-- letting them through to the game's unhelpful "select at least one queue" error.
+local function sbt_getLocationLockReason(location, groupSize)
+	local lockReason = location:IsLocked() and location:GetLockReasonText() or ""
+	-- The game's Tel Var reason says "You cannot queue here while holding ..."; on our buttons
+	-- "here" reads as if it were about the button, so it goes (English client only, the other
+	-- languages keep the game's text as is).
+	lockReason = lockReason:gsub("^You cannot queue here ", "You cannot queue ")
+	if lockReason ~= "" then
+		return lockReason
+	elseif groupSize > location.maxGroupSize then
+		return GetString(SI_LFG_LOCK_REASON_GROUP_TOO_LARGE)
+	end
+end
+
+local function sbt_getUnavailableReason(quickQueueKey)
+	local groupSize = GetGroupSize()
+	local reason
+	for _, data in ipairs(sbt.rows) do
+		local location = data.location
+		if not quickQueueKey or sbt_getQuickQueueKey(location.rawName) == quickQueueKey then
+			if sbt_isSelectable(location, groupSize) then
+				return nil
+			end
+			reason = reason or sbt_getLocationLockReason(location, groupSize)
+		end
+	end
+	return reason or GetString(SI_ACTIVITY_FINDER_ACTIVITY_DISABLED)
+end
+
+function sbt.showDisabledReasonTooltip(control)
+	local reason = control.sbtDisabledReason
+	if reason and reason ~= "" then
+		InitializeTooltip(InformationTooltip, control, BOTTOM, 0, -5)
+		SetTooltipText(InformationTooltip, reason)
+	end
+end
+
+-- Queue rows: the lock reason for a queue that can't be picked, like the built-in list shows.
+function sbt.showRowTooltip(row)
+	local location = row.sbtLocation
+	if not location then return end
+	local groupSize = GetGroupSize()
+	row.sbtDisabledReason = not sbt_isSelectable(location, groupSize) and sbt_getLocationLockReason(location, groupSize) or nil
+	sbt.showDisabledReasonTooltip(row)
+end
+
+function sbt.hideDisabledReasonTooltip()
+	ClearTooltip(InformationTooltip)
+end
+
 local function sbt_isAnyQueueTicked()
 	local groupSize = GetGroupSize()
 	for _, data in ipairs(sbt.rows) do
@@ -543,10 +596,17 @@ function sbt.refreshQueueButtonState()
 	local isCurrentlyInQueue = ZO_ACTIVITY_FINDER_ROOT_MANAGER:GetIsCurrentlyInQueue()
 	local isGroupFinderInUse = ZO_GroupFinder_IsGroupFinderInUse()
 
+	-- A quick-queue button also greys out when none of its own queues can be picked (e.g. all
+	-- locked in Imperial City while carrying Tel Var), with the reason as its tooltip.
 	local isQuickQueueEnabled = not (isCooldownActive or isCurrentlyInQueue or isGroupFinderInUse)
 	for _, button in ipairs(sbt.quickQueueButtons) do
-		button:SetEnabled(isQuickQueueEnabled)
+		local reason = button.quickQueueKey and sbt_getUnavailableReason(button.quickQueueKey)
+		button.sbtDisabledReason = reason
+		button:SetEnabled(isQuickQueueEnabled and not reason)
 	end
+
+	-- Join Queue: a tooltip only when no queue at all can be picked; "nothing ticked" needs no explanation.
+	SBT_QueueButton.sbtDisabledReason = sbt_getUnavailableReason(nil)
 
 	if isCooldownActive then
 		SBT_QueueButton:SetEnabled(false)
@@ -590,6 +650,7 @@ function sbt.rebuildRows()
 		row:GetNamedChild("Name"):SetText(sbt_colorizeLocationName(location.rawName))
 
 		sbt.rows[i] = { control = row, location = location }
+		row.sbtLocation = location
 
 		row:SetAnchor(TOPLEFT, last, i == 1 and TOPLEFT or BOTTOMLEFT, 0, 0)
 		last = row
@@ -785,6 +846,7 @@ end
 function sbt.joinQueue()
 	if sbt.queueCooldownEndMs then return end -- can't requeue during the post-ready-check-decline/timeout cooldown
 	if IsCurrentlySearchingForGroup() then return end
+	if not sbt_isAnyQueueTicked() then return end -- e.g. a quick-queue whose queues are all locked
 
 	sbt.applySelections()
 	ZO_ACTIVITY_FINDER_ROOT_MANAGER:StartSearch()
