@@ -1,5 +1,7 @@
 # Ride Along
 
+**Discontinued.** Ride Along is no longer maintained. For riding along with group members, please use [RidinDirty](https://www.esoui.com/downloads/info3560-RidinDirty.html) by sinnereso.
+
 One keybind to hop on the multi-rider mount of a group member, without targeting them or opening the interaction wheel.
 
 *Controls → Ride Along → Ride with a group member*, or `/ride`.
