@@ -1,0 +1,17 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax Media
+; Inc. or its affiliates. The Elder Scrolls and related logos are registered
+; trademarks or trademarks of ZeniMax Media Inc. in the United States and/or
+; other countries. All rights reserved.
+; https://account.elderscrollsonline.com/add-on-terms
+
+## Title: Schrodi's Transmute Tools
+## Description: Transmute station: text search and a bank toggle, a trait list without scrolling, a one-click "Nirnhoned" context menu entry for weapons, and the crystal count on the Reconstruction tab.
+## Author: Schrodi
+## Version: 1.0.0
+## AddOnVersion: 100
+## APIVersion: 101051 101052
+## SavedVariables: SchrodisTransmuteTools_SV
+## DependsOn: LibCustomMenu>=730
+
+SchrodisTransmuteTools.xml
+SchrodisTransmuteTools.lua

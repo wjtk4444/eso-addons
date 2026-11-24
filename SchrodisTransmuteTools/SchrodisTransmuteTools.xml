@@ -1,0 +1,18 @@
+<GuiXml>
+    <Controls>
+        <Backdrop name="SchrodisTransmuteTools_SearchTemplate" inherits="ZO_SingleLineEditBackdrop_Keyboard" virtual="true">
+            <Dimensions x="190"/>
+            <Controls>
+                <EditBox name="$(parent)Box" inherits="ZO_DefaultEditForBackdrop" defaultText="SI_ITEM_FILTER_BY_TEXT"/>
+            </Controls>
+        </Backdrop>
+        <Button name="SchrodisTransmuteTools_BankToggleTemplate" mouseEnabled="true" virtual="true">
+            <Dimensions x="32" y="32"/>
+            <Controls>
+                <Texture name="$(parent)Icon" textureFile="EsoUI/Art/Tooltips/icon_bank.dds">
+                    <AnchorFill/>
+                </Texture>
+            </Controls>
+        </Button>
+    </Controls>
+</GuiXml>
