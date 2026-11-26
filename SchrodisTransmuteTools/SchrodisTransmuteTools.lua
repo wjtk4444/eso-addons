@@ -3,11 +3,9 @@ local ADDON = "SchrodisTransmuteTools"
 local NIRNHONED = ITEM_TRAIT_TYPE_WEAPON_NIRNHONED
 local SEARCH_DELAY_MS = 150
 
-local defaults = {
-    includeBanked = true,
-}
+-- Banked items are hidden after every /reloadui or login; the bank toggle only lasts until then.
+local includeBanked = false
 
-local sv
 local retrait -- ZO_RETRAIT_KEYBOARD
 local searchTerms = {}
 local bankButton
@@ -64,18 +62,18 @@ local function HookInventoryGather()
                 return MatchesSearch(bagId, slotIndex)
             end
         end
-        return class.GetIndividualInventorySlotsAndAddToScrollData(self, predicate, filter, filterType, data, useWornBag, excludeBankedItems or not sv.includeBanked)
+        return class.GetIndividualInventorySlotsAndAddToScrollData(self, predicate, filter, filterType, data, useWornBag, excludeBankedItems or not includeBanked)
     end
 end
 
 local function BankTooltipText()
-    return sv.includeBanked and "Include banked items: |c00FF00ON|r" or "Include banked items: |cFF0000OFF|r (backpack + equipped only)"
+    return includeBanked and "Include banked items: |c00FF00ON|r" or "Include banked items: |cFF0000OFF|r (backpack + equipped only)"
 end
 
 local function UpdateBankButton()
     local icon = bankButton:GetNamedChild("Icon")
-    icon:SetAlpha(sv.includeBanked and 1 or 0.35)
-    icon:SetDesaturation(sv.includeBanked and 0 or 1)
+    icon:SetAlpha(includeBanked and 1 or 0.35)
+    icon:SetDesaturation(includeBanked and 0 or 1)
 end
 
 local function CreateFilterControls()
@@ -111,7 +109,7 @@ local function CreateFilterControls()
         if ZO_CraftingUtils_IsPerformingCraftProcess() then
             return
         end
-        sv.includeBanked = not sv.includeBanked
+        includeBanked = not includeBanked
         PlaySound(SOUNDS.DEFAULT_CLICK)
         UpdateBankButton()
         ClearTooltip(InformationTooltip)
@@ -259,8 +257,6 @@ local function OnAddOnLoaded(_, name)
         return
     end
     EVENT_MANAGER:UnregisterForEvent(ADDON, EVENT_ADD_ON_LOADED)
-
-    sv = ZO_SavedVars:NewAccountWide("SchrodisTransmuteTools_SV", 1, nil, defaults)
 
     retrait = ZO_RETRAIT_KEYBOARD
 

@@ -7,10 +7,9 @@
 ## Title: Schrodi's Transmute Tools
 ## Description: Transmute station: text search and a bank toggle, a trait list without scrolling, a one-click "Nirnhoned" context menu entry for weapons, and the crystal count on the Reconstruction tab.
 ## Author: Schrodi
-## Version: 1.0.0
-## AddOnVersion: 100
+## Version: 1.1.0
+## AddOnVersion: 110
 ## APIVersion: 101051 101052
-## SavedVariables: SchrodisTransmuteTools_SV
 ## DependsOn: LibCustomMenu>=730
 
 SchrodisTransmuteTools.xml
