@@ -33,9 +33,13 @@ A multi-queue panel in the Group & Activity Finder. By default it **replaces the
 
   ![Time in queue on the HUD](../_screenshots/SchrodisBattlegroundTools/SchrodisBattlegroundTools-tracker.png)
 
-The buttons and checkboxes are disabled whenever the game wouldn't let you queue anyway: already queued, mid ready check, using the Group Finder, or on cooldown.
+The buttons and checkboxes are disabled whenever the game wouldn't let you queue anyway: already queued, mid ready check, using the Group Finder, or on cooldown. A button whose queues are all locked (e.g. in Imperial City while carrying Tel Var Stones) is greyed out with the reason as its tooltip.
 
 If you prefer the game's own Battlegrounds screen (turn off *Replace the Battlegrounds panel*), it **remembers the last selected mode** across reloads (account-wide).
+
+## Veterancy
+
+The Veterancy screen opens on the page with your **first unclaimed reward** (or the next rank to earn) instead of ranks 1-10, and on the last page once everything is claimed. Can be turned off.
 
 ## Settings
 
@@ -46,6 +50,7 @@ If you prefer the game's own Battlegrounds screen (turn off *Replace the Battleg
 - **Time in queue on the HUD** (on).
 - **Remember last battleground mode in vanilla finder** (on).
 - **Show quick queue buttons** (on).
+- **Veterancy: open on the first unclaimed reward** (on).
 - Colors for Competitive and Standard queues and for damage and healing numbers.
 
 All settings are account-wide and apply immediately, except replacing the Battlegrounds panel.

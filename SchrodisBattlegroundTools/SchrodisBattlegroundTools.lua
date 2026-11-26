@@ -2,7 +2,7 @@ SchrodisBattlegroundTools = {}
 local sbt = SchrodisBattlegroundTools
 sbt.name = "SchrodisBattlegroundTools"
 sbt.title = "Schrodi's Battleground Tools"
-sbt.version = "2.0.1"
+sbt.version = "2.1.0"
 sbt.queues = {}
 sbt.rows = {}
 sbt.vars = {}
@@ -22,6 +22,7 @@ local defaultAccountSettings = {
 	showQuickQueueButtons = true,
 	replaceBattlegroundsPanel = true,
 	queueTimerInTracker = true,
+	veterancyScrollToUnclaimed = true,
 	competitiveColor = { r = 0xC5 / 255, g = 0x96 / 255, b = 0x15 / 255, a = 1 },
 	standardColor = { r = 0x00 / 255, g = 0xAA / 255, b = 0x00 / 255, a = 1 },
 	healColor = { r = 1, g = 0.85, b = 0, a = 1 },
@@ -1210,6 +1211,44 @@ end
 sbt.hookActivityTracker = sbt_hookActivityTracker
 
 -------------------------------------------------------------------------------------------------
+--  Veterancy: open on the first unclaimed rank  --
+-------------------------------------------------------------------------------------------------
+-- The game opens the Veterancy screen on its first page (ranks 1-10), or on the page last viewed
+-- this session, and the ranks that matter are pages to the right. With the option on, every open
+-- lands on the page with the first rank whose rewards aren't claimed yet: a claimable one, or else
+-- the next rank to earn. With everything claimed (max rank), the last page.
+
+local function sbt_getVeterancyTargetRank()
+	local numRanks = ZO_VETERANCY_MANAGER:GetNumRanks()
+	for rankIndex = 1, numRanks do
+		if not ZO_VETERANCY_MANAGER:GetRankDataByIndex(rankIndex):IsClaimed() then
+			return rankIndex
+		end
+	end
+	return numRanks
+end
+
+-- UpdatePageNavigation only runs from the screen's OnShowing, right after it has picked its page.
+local function sbt_hookVeterancy()
+	SecurePostHook(VETERANCY_KEYBOARD, "UpdatePageNavigation", function(self)
+		if not sbt.accountVars.veterancyScrollToUnclaimed then return end
+		local numPages = self.GetNumRewardPages()
+		if numPages == 0 then return end
+
+		local page = zo_clamp(zo_ceil(sbt_getVeterancyTargetRank() / ZO_VETERANCY_RANKS_PER_PAGE), 1, numPages)
+		if page ~= self.pageNavigation:GetCurrentPage() then
+			-- Jump the rank list there first, without the slide across every page in between;
+			-- the page navigator's own PageChanged then finds it already selected.
+			local ALLOW_EVEN_IF_DISABLED = true
+			local WITHOUT_ANIMATION = true
+			self.scrollList:SetSelectedIndex(1 - page, ALLOW_EVEN_IF_DISABLED, WITHOUT_ANIMATION)
+			local SUPPRESS_SOUND = true
+			self.pageNavigation:SelectPage(page, SUPPRESS_SOUND)
+		end
+	end)
+end
+
+-------------------------------------------------------------------------------------------------
 --  LibAddonMenu-2.0 settings panel  --
 -------------------------------------------------------------------------------------------------
 -- Optional: without LibAddonMenu-2.0 there is no panel, and every setting keeps whatever's in
@@ -1275,6 +1314,15 @@ function sbt.registerSettingsPanel()
 			tooltip = "On the built-in Battlegrounds queue screen (when it isn't replaced by this addon's panel), remember the mode dropdown's last selection and restore it automatically across UI reloads and relogs.",
 			getFunc = function() return sbt.accountVars.saveVanillaBattlegroundMode end,
 			setFunc = function(value) sbt.accountVars.saveVanillaBattlegroundMode = value end,
+			default = true,
+			width = "full",
+		},
+		{
+			type = "checkbox",
+			name = "Veterancy: open on the first unclaimed reward",
+			tooltip = "The Veterancy screen opens on the page with the first rank whose rewards you haven't claimed yet (or the next rank to earn) instead of ranks 1-10. With everything claimed, it opens on the last page.",
+			getFunc = function() return sbt.accountVars.veterancyScrollToUnclaimed end,
+			setFunc = function(value) sbt.accountVars.veterancyScrollToUnclaimed = value end,
 			default = true,
 			width = "full",
 		},
@@ -1388,6 +1436,7 @@ local function sbt_onLoaded()
 	sbt.vars = ZO_SavedVars:NewCharacterIdSettings("SchrodisBattlegroundTools_SV", 1, nil, SBT_DEFAULTS)
 	sbt.accountVars = ZO_SavedVars:NewAccountWide("SchrodisBattlegroundTools_SV", 1, "Settings", defaultAccountSettings)
 	sbt.registerSettingsPanel()
+	sbt_hookVeterancy()
 	SLASH_COMMANDS["/sbt"] = function()
 		if sbt.settingsPanel then
 			LibAddonMenu2:OpenToPanel(sbt.settingsPanel)

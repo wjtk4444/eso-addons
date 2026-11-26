@@ -1,3 +1,8 @@
+Version 2.1.0
+-------------
+- New option (on by default): the Veterancy screen opens on the first unclaimed reward (or the
+  next rank to earn) instead of ranks 1-10; on the last page once everything is claimed.
+
 Version 2.0.2
 -------------
 - Queue buttons that can't queue for anything are greyed out, with the game's reason as their
